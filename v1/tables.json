@@ -1,0 +1,4401 @@
+{
+  "components": {
+    "schemas": {
+      "ShowTableDeleteColumnsRequest": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "description": "Which columns to delete. Mandatory.",
+            "type": "object",
+            "properties": {
+              "range": {
+                "description": "Range of column indices to delete, with both ends included. Mandatory.",
+                "type": "object",
+                "properties": {
+                  "start_index": {
+                    "format": "int32",
+                    "description": "First index in the range, counting from 0. Mandatory.",
+                    "type": "integer"
+                  },
+                  "end_index": {
+                    "format": "int32",
+                    "description": "Last index in the range, counting from 0 and itself included in the range. Mandatory.",
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "start_index",
+                  "end_index"
+                ]
+              }
+            },
+            "required": [
+              "range"
+            ]
+          },
+          "table": {
+            "description": "The table the columns are deleted from, named by its slide and object id. Mandatory.",
+            "type": "object",
+            "properties": {
+              "slide_id": {
+                "pattern": "^[a-f0-9A-F]{8}-[a-f0-9A-F]{4}-[a-f0-9A-F]{4}-[a-f0-9A-F]{4}-[a-f0-9A-F]{12}$",
+                "description": "UUID of the slide, master or layout holding the table. Mandatory.",
+                "type": "string",
+                "maxLength": 36
+              },
+              "object_id": {
+                "pattern": "^[a-f0-9A-F]{8}-[a-f0-9A-F]{4}-[a-f0-9A-F]{4}-[a-f0-9A-F]{4}-[a-f0-9A-F]{12}$",
+                "description": "UUID of the table object itself. Mandatory.",
+                "type": "string",
+                "maxLength": 36
+              }
+            },
+            "required": [
+              "slide_id",
+              "object_id"
+            ]
+          }
+        },
+        "required": [
+          "table",
+          "payload"
+        ]
+      },
+      "ShowTableInsertRowsRequest": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "description": "Where to insert the rows and how many of them. Mandatory.",
+            "type": "object",
+            "properties": {
+              "anchor_index": {
+                "format": "int32",
+                "description": "Index of the existing row the new rows are placed relative to, counting from 0. Mandatory.",
+                "type": "integer"
+              },
+              "count": {
+                "format": "int32",
+                "description": "How many rows to insert.",
+                "type": "integer"
+              },
+              "position": {
+                "description": "Whether the new rows go BEFORE or AFTER the anchor row. INSERT_POSITION_UNSPECIFIED leaves the server to apply its default.",
+                "type": "string",
+                "maxLength": 40,
+                "enum": [
+                  "INSERT_POSITION_UNSPECIFIED",
+                  "BEFORE",
+                  "AFTER"
+                ]
+              }
+            },
+            "required": [
+              "anchor_index"
+            ]
+          },
+          "table": {
+            "description": "The table the rows are inserted into, named by its slide and object id. Mandatory.",
+            "type": "object",
+            "properties": {
+              "slide_id": {
+                "pattern": "^[a-f0-9A-F]{8}-[a-f0-9A-F]{4}-[a-f0-9A-F]{4}-[a-f0-9A-F]{4}-[a-f0-9A-F]{12}$",
+                "description": "UUID of the slide, master or layout holding the table. Mandatory.",
+                "type": "string",
+                "maxLength": 36
+              },
+              "object_id": {
+                "pattern": "^[a-f0-9A-F]{8}-[a-f0-9A-F]{4}-[a-f0-9A-F]{4}-[a-f0-9A-F]{4}-[a-f0-9A-F]{12}$",
+                "description": "UUID of the table object itself. Mandatory.",
+                "type": "string",
+                "maxLength": 36
+              }
+            },
+            "required": [
+              "slide_id",
+              "object_id"
+            ]
+          }
+        },
+        "required": [
+          "table",
+          "payload"
+        ]
+      },
+      "FlatPutTablesRequest": {
+        "$defs": {
+          "protoRGBColor": {
+            "type": "object",
+            "properties": {
+              "red": {
+                "format": "int32",
+                "description": "Red channel intensity, an integer from 0 to 255. Mandatory.",
+                "type": "integer"
+              },
+              "green": {
+                "format": "int32",
+                "description": "Green channel intensity, an integer from 0 to 255. Mandatory.",
+                "type": "integer"
+              },
+              "blue": {
+                "format": "int32",
+                "description": "Blue channel intensity, an integer from 0 to 255. Mandatory.",
+                "type": "integer"
+              }
+            },
+            "required": [
+              "red",
+              "green",
+              "blue"
+            ]
+          },
+          "protoColor": {
+            "allOf": [
+              {
+                "not": {
+                  "anyOf": [
+                    {
+                      "required": [
+                        "rgb",
+                        "hsb"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "rgb",
+                        "hex"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "hsb",
+                        "hex"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "type": "object",
+            "properties": {
+              "hsb": {
+                "description": "Color expressed as hue, saturation and brightness. Set exactly one of rgb, hsb or hex.",
+                "type": "object",
+                "$ref": "#/$defs/protoHSBColor"
+              },
+              "hex": {
+                "description": "Color expressed as a hex string such as #4A90D9. Set exactly one of rgb, hsb or hex.",
+                "type": "object",
+                "$ref": "#/$defs/protoHexColor"
+              },
+              "rgb": {
+                "description": "Color expressed as red, green and blue channel values. Set exactly one of rgb, hsb or hex.",
+                "type": "object",
+                "$ref": "#/$defs/protoRGBColor"
+              }
+            }
+          },
+          "protoSolidFill": {
+            "type": "object",
+            "properties": {
+              "color": {
+                "description": "The single flat color painted across the whole filled area. Mandatory.",
+                "type": "object",
+                "$ref": "#/$defs/protoColor"
+              }
+            },
+            "required": [
+              "color"
+            ]
+          },
+          "protoHSBColor": {
+            "type": "object",
+            "properties": {
+              "saturation": {
+                "format": "float",
+                "description": "Intensity of the hue, from 0 for a fully desaturated gray to 1 for the pure color. Mandatory.",
+                "type": "number"
+              },
+              "brightness": {
+                "format": "float",
+                "description": "Brightness of the color, from 0 for black to 1 for the fully lit hue. Mandatory.",
+                "type": "number"
+              },
+              "hue": {
+                "format": "float",
+                "description": "Position on the color wheel in degrees, from 0 to 360, where 0 is red, 120 green and 240 blue. Mandatory.",
+                "type": "number"
+              }
+            },
+            "required": [
+              "hue",
+              "saturation",
+              "brightness"
+            ]
+          },
+          "protoPoint": {
+            "type": "object",
+            "properties": {
+              "x": {
+                "format": "float",
+                "description": "Horizontal position in canvas units, measured rightward from the left edge of the viewbox.",
+                "type": "number"
+              },
+              "y": {
+                "format": "float",
+                "description": "Vertical position in canvas units, measured downward from the top edge of the viewbox.",
+                "type": "number"
+              }
+            }
+          },
+          "protoHexColor": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "description": "Color written as a hex string, for example #4A90D9. Up to 20 characters. Mandatory.",
+                "type": "string",
+                "maxLength": 20
+              }
+            },
+            "required": [
+              "value"
+            ]
+          }
+        },
+        "type": "object",
+        "properties": {
+          "elements": {
+            "minItems": 1,
+            "maxItems": 50,
+            "description": "Per-table patches, from 1 to 50 in a single call, each naming its target table by id. Mandatory.",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "pattern": "^[a-f0-9A-F]{8}-[a-f0-9A-F]{4}-[a-f0-9A-F]{4}-[a-f0-9A-F]{4}-[a-f0-9A-F]{12}$",
+                  "description": "UUID of the table this entry patches. Mandatory.",
+                  "type": "string",
+                  "maxLength": 200
+                },
+                "properties": {
+                  "description": "Layout and table style to patch on the table.",
+                  "type": "object",
+                  "properties": {
+                    "layout": {
+                      "description": "Replacement position, size, rotation and mirroring for the table. Sending this field replaces the layout as a whole.",
+                      "type": "object",
+                      "properties": {
+                        "rotate": {
+                          "format": "int32",
+                          "description": "Clockwise rotation of the object about its own center, in degrees.",
+                          "type": "integer"
+                        },
+                        "top": {
+                          "format": "float",
+                          "description": "Distance from the top edge of the slide to the top of the object, in pixels.",
+                          "type": "number"
+                        },
+                        "left": {
+                          "format": "float",
+                          "description": "Distance from the left edge of the slide to the left of the object, in pixels.",
+                          "type": "number"
+                        },
+                        "width": {
+                          "format": "float",
+                          "description": "Width of the object, in pixels.",
+                          "type": "number"
+                        },
+                        "flipv": {
+                          "description": "Whether the object is mirrored top to bottom about its horizontal center line.",
+                          "type": "boolean"
+                        },
+                        "fliph": {
+                          "description": "Whether the object is mirrored left to right about its vertical center line.",
+                          "type": "boolean"
+                        },
+                        "height": {
+                          "format": "float",
+                          "description": "Height of the object, in pixels.",
+                          "type": "number"
+                        }
+                      }
+                    },
+                    "style": {
+                      "description": "Replacement table style, covering header and total rows, banding, and the suggested fill and border.",
+                      "type": "object",
+                      "properties": {
+                        "band_row": {
+                          "description": "Whether alternating rows take a contrasting fill, to make long tables easier to read.",
+                          "type": "boolean"
+                        },
+                        "first_col": {
+                          "description": "Whether the first column takes the style's header formatting.",
+                          "type": "boolean"
+                        },
+                        "band_col": {
+                          "description": "Whether alternating columns take a contrasting fill, to make wide tables easier to read.",
+                          "type": "boolean"
+                        },
+                        "first_row": {
+                          "description": "Whether the first row takes the style's header formatting.",
+                          "type": "boolean"
+                        },
+                        "last_row": {
+                          "description": "Whether the last row takes the style's total-row formatting.",
+                          "type": "boolean"
+                        },
+                        "fill": {
+                          "allOf": [
+                            {
+                              "not": {
+                                "anyOf": [
+                                  {
+                                    "required": [
+                                      "no_fill",
+                                      "solid"
+                                    ]
+                                  },
+                                  {
+                                    "required": [
+                                      "no_fill",
+                                      "gradient"
+                                    ]
+                                  },
+                                  {
+                                    "required": [
+                                      "solid",
+                                      "gradient"
+                                    ]
+                                  }
+                                ]
+                              }
+                            }
+                          ],
+                          "description": "Fill suggested for the table as a whole. Individual cells may override it.",
+                          "type": "object",
+                          "properties": {
+                            "no_fill": {
+                              "description": "No fill. Set only one of no_fill, solid or gradient.",
+                              "type": "object"
+                            },
+                            "solid": {
+                              "description": "Fills the area with a single flat color. Set only one of no_fill, solid or gradient.",
+                              "type": "object",
+                              "$ref": "#/$defs/protoSolidFill"
+                            },
+                            "gradient": {
+                              "description": "Fills the area with a blend running between two or more colors. Set only one of no_fill, solid or gradient.",
+                              "type": "object",
+                              "properties": {
+                                "linear": {
+                                  "description": "Start and end points of the gradient axis. Applies when type is LINEAR.",
+                                  "type": "object",
+                                  "properties": {
+                                    "start": {
+                                      "description": "Point at which the gradient axis begins, in normalized coordinates from 0 to 1 across the object's bounding box. Mandatory.",
+                                      "type": "object",
+                                      "$ref": "#/$defs/protoPoint"
+                                    },
+                                    "end": {
+                                      "description": "Point at which the gradient axis ends, in normalized coordinates from 0 to 1 across the object's bounding box. Mandatory.",
+                                      "type": "object",
+                                      "$ref": "#/$defs/protoPoint"
+                                    }
+                                  },
+                                  "required": [
+                                    "start",
+                                    "end"
+                                  ]
+                                },
+                                "radial_angular": {
+                                  "description": "Center, spread, rotation and mirroring of the gradient. Applies when type is RADIAL or ANGULAR.",
+                                  "type": "object",
+                                  "properties": {
+                                    "flip_horizontal": {
+                                      "description": "Whether to mirror the gradient left to right about its center point.",
+                                      "type": "boolean"
+                                    },
+                                    "center": {
+                                      "description": "Point the gradient radiates from, in normalized coordinates from 0 to 1 across the object's bounding box. Mandatory.",
+                                      "type": "object",
+                                      "$ref": "#/$defs/protoPoint"
+                                    },
+                                    "spread_x": {
+                                      "format": "float",
+                                      "description": "How far the gradient reaches horizontally from its center, as a ratio of the bounding box. Must be 0 or greater.",
+                                      "type": "number"
+                                    },
+                                    "spread_y": {
+                                      "format": "float",
+                                      "description": "How far the gradient reaches vertically from its center, as a ratio of the bounding box. Must be 0 or greater.",
+                                      "type": "number"
+                                    },
+                                    "rotation_angle": {
+                                      "format": "float",
+                                      "description": "Rotation applied to the gradient about its center point, in degrees.",
+                                      "type": "number"
+                                    },
+                                    "flip_vertical": {
+                                      "description": "Whether to mirror the gradient top to bottom about its center point.",
+                                      "type": "boolean"
+                                    }
+                                  },
+                                  "required": [
+                                    "center"
+                                  ]
+                                },
+                                "stops": {
+                                  "minItems": 2,
+                                  "maxItems": 20,
+                                  "description": "Colors along the gradient and where each one sits, from 2 to 20 of them. At least two are required, since a gradient has to blend from one color to another. Mandatory.",
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "color": {
+                                        "description": "Color the gradient takes at this stop. Mandatory.",
+                                        "type": "object",
+                                        "$ref": "#/$defs/protoColor"
+                                      },
+                                      "position": {
+                                        "format": "float",
+                                        "description": "Where this stop sits along the gradient, from 0 at the start of the axis to 1 at its end. Mandatory.",
+                                        "type": "number"
+                                      }
+                                    },
+                                    "required": [
+                                      "color",
+                                      "position"
+                                    ]
+                                  }
+                                },
+                                "type": {
+                                  "description": "Shape of the blend: LINEAR runs along a straight axis, RADIAL spreads outward from a center point, ANGULAR sweeps around one. These three are the only values the client renders.",
+                                  "type": "string",
+                                  "maxLength": 50,
+                                  "enum": [
+                                    "LINEAR",
+                                    "RADIAL",
+                                    "ANGULAR"
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "stops"
+                              ]
+                            },
+                            "alpha": {
+                              "format": "float",
+                              "description": "Transparency applied to whichever fill is set, from 0 for fully opaque to 1 for fully transparent.",
+                              "type": "number"
+                            }
+                          }
+                        },
+                        "stroke": {
+                          "description": "Border suggested for the table as a whole. Individual cells may override it.",
+                          "type": "object",
+                          "properties": {
+                            "captype": {
+                              "description": "How a border line ends: FLAT stops at the endpoint, CAPROUND adds a half-circle, SQUARE adds a half-square.",
+                              "type": "string",
+                              "maxLength": 20,
+                              "enum": [
+                                "FLAT",
+                                "CAPROUND",
+                                "SQUARE"
+                              ]
+                            },
+                            "jointype": {
+                              "description": "How two border segments meet at a corner: ROUND curves the join, BEVEL cuts it flat, MITER extends it to a sharp point.",
+                              "type": "string",
+                              "maxLength": 20,
+                              "enum": [
+                                "ROUND",
+                                "BEVEL",
+                                "MITER"
+                              ]
+                            },
+                            "width": {
+                              "format": "float",
+                              "description": "Thickness of the border line, in pixels.",
+                              "type": "number"
+                            },
+                            "position": {
+                              "description": "Where the border sits relative to the shape outline: CENTER straddles it, INSIDE keeps it within the shape, OUTSIDE draws it beyond the shape.",
+                              "type": "string",
+                              "maxLength": 20,
+                              "enum": [
+                                "CENTER",
+                                "INSIDE",
+                                "OUTSIDE"
+                              ]
+                            },
+                            "type": {
+                              "description": "Line style of the border: SOLID for an unbroken line, DASH for dashes, SQUARE_DOT for square dots. To remove the border entirely set fill.no_fill instead of this field.",
+                              "type": "string",
+                              "maxLength": 50,
+                              "enum": [
+                                "SOLID",
+                                "DASH",
+                                "SQUARE_DOT"
+                              ]
+                            },
+                            "fill": {
+                              "allOf": [
+                                {
+                                  "not": {
+                                    "anyOf": [
+                                      {
+                                        "required": [
+                                          "solid",
+                                          "no_fill"
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                }
+                              ],
+                              "description": "Paint used to draw the border line. Carries either a solid color or no_fill, which turns the border off.",
+                              "type": "object",
+                              "properties": {
+                                "solid": {
+                                  "description": "Paints the border with a single flat color. Set either solid or no_fill, never both.",
+                                  "type": "object",
+                                  "$ref": "#/$defs/protoSolidFill"
+                                },
+                                "no_fill": {
+                                  "description": "No stroke fill — stroke-off toggle (oneof variant)",
+                                  "type": "object"
+                                },
+                                "alpha": {
+                                  "format": "float",
+                                  "description": "Opacity of the border paint, given as a ratio from 0.0 to 1.0.",
+                                  "type": "number"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "last_col": {
+                          "description": "Whether the last column takes the style's total-column formatting.",
+                          "type": "boolean"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "required": [
+                "id"
+              ]
+            }
+          }
+        },
+        "required": [
+          "elements"
+        ]
+      },
+      "ShowTableMergeCellsRequest": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "description": "Which rectangle of cells to merge. Mandatory.",
+            "type": "object",
+            "properties": {
+              "range": {
+                "description": "Rectangle of cells to merge into a single cell. All four bounds are required, since a partial rectangle would merge the wrong block. Mandatory.",
+                "type": "object",
+                "properties": {
+                  "end_column_index": {
+                    "format": "int32",
+                    "description": "Rightmost column of the rectangle, counting from 0 and itself included. Mandatory.",
+                    "type": "integer"
+                  },
+                  "start_column_index": {
+                    "format": "int32",
+                    "description": "Leftmost column of the rectangle, counting from 0. Mandatory.",
+                    "type": "integer"
+                  },
+                  "start_row_index": {
+                    "format": "int32",
+                    "description": "Topmost row of the rectangle, counting from 0. Mandatory.",
+                    "type": "integer"
+                  },
+                  "end_row_index": {
+                    "format": "int32",
+                    "description": "Bottom row of the rectangle, counting from 0 and itself included. Mandatory.",
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "start_row_index",
+                  "end_row_index",
+                  "start_column_index",
+                  "end_column_index"
+                ]
+              }
+            },
+            "required": [
+              "range"
+            ]
+          },
+          "table": {
+            "description": "The table whose cells are merged, named by its slide and object id. Mandatory.",
+            "type": "object",
+            "properties": {
+              "slide_id": {
+                "pattern": "^[a-f0-9A-F]{8}-[a-f0-9A-F]{4}-[a-f0-9A-F]{4}-[a-f0-9A-F]{4}-[a-f0-9A-F]{12}$",
+                "description": "UUID of the slide, master or layout holding the table. Mandatory.",
+                "type": "string",
+                "maxLength": 36
+              },
+              "object_id": {
+                "pattern": "^[a-f0-9A-F]{8}-[a-f0-9A-F]{4}-[a-f0-9A-F]{4}-[a-f0-9A-F]{4}-[a-f0-9A-F]{12}$",
+                "description": "UUID of the table object itself. Mandatory.",
+                "type": "string",
+                "maxLength": 36
+              }
+            },
+            "required": [
+              "slide_id",
+              "object_id"
+            ]
+          }
+        },
+        "required": [
+          "table",
+          "payload"
+        ]
+      },
+      "ShowTableUnmergeCellsRequest": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "description": "Which merged cell to split. Mandatory.",
+            "type": "object",
+            "properties": {
+              "cell": {
+                "description": "Position of the merged cell to split back into the cells it was made from. Mandatory.",
+                "type": "object",
+                "properties": {
+                  "row_index": {
+                    "format": "int32",
+                    "description": "Row the cell sits in, counting from 0. An omitted value is read as 0 rather than rejected.",
+                    "type": "integer"
+                  },
+                  "column_index": {
+                    "format": "int32",
+                    "description": "Column the cell sits in, counting from 0. An omitted value is read as 0 rather than rejected.",
+                    "type": "integer"
+                  }
+                }
+              }
+            },
+            "required": [
+              "cell"
+            ]
+          },
+          "table": {
+            "description": "The table whose cell is unmerged, named by its slide and object id. Mandatory.",
+            "type": "object",
+            "properties": {
+              "slide_id": {
+                "pattern": "^[a-f0-9A-F]{8}-[a-f0-9A-F]{4}-[a-f0-9A-F]{4}-[a-f0-9A-F]{4}-[a-f0-9A-F]{12}$",
+                "description": "UUID of the slide, master or layout holding the table. Mandatory.",
+                "type": "string",
+                "maxLength": 36
+              },
+              "object_id": {
+                "pattern": "^[a-f0-9A-F]{8}-[a-f0-9A-F]{4}-[a-f0-9A-F]{4}-[a-f0-9A-F]{4}-[a-f0-9A-F]{12}$",
+                "description": "UUID of the table object itself. Mandatory.",
+                "type": "string",
+                "maxLength": 36
+              }
+            },
+            "required": [
+              "slide_id",
+              "object_id"
+            ]
+          }
+        },
+        "required": [
+          "table",
+          "payload"
+        ]
+      },
+      "ShowEnvelope": {
+        "description": "Standard Zoho Show response envelope.",
+        "type": "object",
+        "properties": {
+          "data": {
+            "description": "Operation payload; endpoint-specific schemas narrow this where available.",
+            "type": "object"
+          },
+          "message": {
+            "type": "string"
+          },
+          "request_uri": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      },
+      "ShowTableDeleteRowsRequest": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "description": "Which rows to delete. Mandatory.",
+            "type": "object",
+            "properties": {
+              "range": {
+                "description": "Range of row indices to delete, with both ends included. Mandatory.",
+                "type": "object",
+                "properties": {
+                  "start_index": {
+                    "format": "int32",
+                    "description": "First index in the range, counting from 0. Mandatory.",
+                    "type": "integer"
+                  },
+                  "end_index": {
+                    "format": "int32",
+                    "description": "Last index in the range, counting from 0 and itself included in the range. Mandatory.",
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "start_index",
+                  "end_index"
+                ]
+              }
+            },
+            "required": [
+              "range"
+            ]
+          },
+          "table": {
+            "description": "The table the rows are deleted from, named by its slide and object id. Mandatory.",
+            "type": "object",
+            "properties": {
+              "slide_id": {
+                "pattern": "^[a-f0-9A-F]{8}-[a-f0-9A-F]{4}-[a-f0-9A-F]{4}-[a-f0-9A-F]{4}-[a-f0-9A-F]{12}$",
+                "description": "UUID of the slide, master or layout holding the table. Mandatory.",
+                "type": "string",
+                "maxLength": 36
+              },
+              "object_id": {
+                "pattern": "^[a-f0-9A-F]{8}-[a-f0-9A-F]{4}-[a-f0-9A-F]{4}-[a-f0-9A-F]{4}-[a-f0-9A-F]{12}$",
+                "description": "UUID of the table object itself. Mandatory.",
+                "type": "string",
+                "maxLength": 36
+              }
+            },
+            "required": [
+              "slide_id",
+              "object_id"
+            ]
+          }
+        },
+        "required": [
+          "table",
+          "payload"
+        ]
+      },
+      "ShowError": {
+        "description": "Standard Zoho Show error response.",
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "details": {
+                "additionalProperties": true,
+                "type": "object",
+                "properties": {
+                  "error_code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "request_uri": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      },
+      "ShowTableEditCellTextRequest": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "description": "The text mutation to apply. Mandatory.",
+            "type": "object",
+            "properties": {
+              "text": {
+                "allOf": [
+                  {
+                    "not": {
+                      "anyOf": [
+                        {
+                          "required": [
+                            "range",
+                            "cursor"
+                          ]
+                        },
+                        {
+                          "required": [
+                            "range",
+                            "all_text"
+                          ]
+                        },
+                        {
+                          "required": [
+                            "cursor",
+                            "all_text"
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "description": "The text mutation to apply to the cell. Mandatory.",
+                "type": "object",
+                "properties": {
+                  "cursor": {
+                    "description": "Insert or delete at a single position in the cell's text. Set exactly one of range, cursor or all_text.",
+                    "type": "object",
+                    "properties": {
+                      "cursor_index": {
+                        "format": "int32",
+                        "description": "Character position the cursor sits at, counting from 0. Mandatory.",
+                        "type": "integer"
+                      },
+                      "text": {
+                        "description": "Text inserted at the cursor. Used only when operation is CURSOR_TEXT_OPERATION_INSERT_TEXT.",
+                        "type": "string",
+                        "maxLength": 500000
+                      },
+                      "operation": {
+                        "description": "What to do at the cursor: INSERT_TEXT writes text there, INSERT_NEWLINE starts a new paragraph, DELETE_NEWLINE joins the paragraph onto the one before it. Mandatory.",
+                        "type": "string",
+                        "maxLength": 50,
+                        "enum": [
+                          "CURSOR_TEXT_OPERATION_UNSPECIFIED",
+                          "CURSOR_TEXT_OPERATION_INSERT_TEXT",
+                          "CURSOR_TEXT_OPERATION_INSERT_NEWLINE",
+                          "CURSOR_TEXT_OPERATION_DELETE_NEWLINE"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "cursor_index",
+                      "operation"
+                    ]
+                  },
+                  "all_text": {
+                    "description": "Replace or clear the cell's text as a whole. Set exactly one of range, cursor or all_text.",
+                    "type": "object",
+                    "properties": {
+                      "replacement_text": {
+                        "description": "Text written over the whole cell. Used only when operation is ALL_TEXT_OPERATION_REPLACE.",
+                        "type": "string",
+                        "maxLength": 500000
+                      },
+                      "operation": {
+                        "description": "What to do with the cell's whole text: ALL_TEXT_OPERATION_REPLACE writes replacement_text over it, ALL_TEXT_OPERATION_DELETE clears it. Mandatory.",
+                        "type": "string",
+                        "maxLength": 50,
+                        "enum": [
+                          "ALL_TEXT_OPERATION_UNSPECIFIED",
+                          "ALL_TEXT_OPERATION_REPLACE",
+                          "ALL_TEXT_OPERATION_DELETE"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "operation"
+                    ]
+                  },
+                  "range": {
+                    "description": "Edit a span of the cell's text. Set exactly one of range, cursor or all_text.",
+                    "type": "object",
+                    "properties": {
+                      "replacement_text": {
+                        "description": "Text written over the span. Used only when operation is RANGE_TEXT_OPERATION_REPLACE.",
+                        "type": "string",
+                        "maxLength": 500000
+                      },
+                      "range": {
+                        "description": "The span of characters the operation applies to. Mandatory.",
+                        "type": "object",
+                        "properties": {
+                          "start_index": {
+                            "format": "int32",
+                            "description": "First character of the span, counting from 0. Mandatory.",
+                            "type": "integer"
+                          },
+                          "end_index": {
+                            "format": "int32",
+                            "description": "Character index the span stops at, counting from 0. This character is not itself part of the span. Mandatory.",
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "start_index",
+                          "end_index"
+                        ]
+                      },
+                      "operation": {
+                        "description": "What to do with the span: RANGE_TEXT_OPERATION_REPLACE writes replacement_text over it, RANGE_TEXT_OPERATION_DELETE removes it. Mandatory.",
+                        "type": "string",
+                        "maxLength": 50,
+                        "enum": [
+                          "RANGE_TEXT_OPERATION_UNSPECIFIED",
+                          "RANGE_TEXT_OPERATION_REPLACE",
+                          "RANGE_TEXT_OPERATION_DELETE"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "range",
+                      "operation"
+                    ]
+                  }
+                }
+              }
+            },
+            "required": [
+              "text"
+            ]
+          },
+          "cell": {
+            "description": "Position of the cell whose text is edited. Mandatory.",
+            "type": "object",
+            "properties": {
+              "row_index": {
+                "format": "int32",
+                "description": "Row the cell sits in, counting from 0. An omitted value is read as 0 rather than rejected.",
+                "type": "integer"
+              },
+              "column_index": {
+                "format": "int32",
+                "description": "Column the cell sits in, counting from 0. An omitted value is read as 0 rather than rejected.",
+                "type": "integer"
+              }
+            }
+          },
+          "table": {
+            "description": "The table holding the cell, named by its slide and object id. Mandatory.",
+            "type": "object",
+            "properties": {
+              "slide_id": {
+                "pattern": "^[a-f0-9A-F]{8}-[a-f0-9A-F]{4}-[a-f0-9A-F]{4}-[a-f0-9A-F]{4}-[a-f0-9A-F]{12}$",
+                "description": "UUID of the slide, master or layout holding the table. Mandatory.",
+                "type": "string",
+                "maxLength": 36
+              },
+              "object_id": {
+                "pattern": "^[a-f0-9A-F]{8}-[a-f0-9A-F]{4}-[a-f0-9A-F]{4}-[a-f0-9A-F]{4}-[a-f0-9A-F]{12}$",
+                "description": "UUID of the table object itself. Mandatory.",
+                "type": "string",
+                "maxLength": 36
+              }
+            },
+            "required": [
+              "slide_id",
+              "object_id"
+            ]
+          }
+        },
+        "required": [
+          "table",
+          "cell",
+          "payload"
+        ]
+      },
+      "ShowTableInsertColumnsRequest": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "description": "Where to insert the columns and how many of them. Mandatory.",
+            "type": "object",
+            "properties": {
+              "anchor_index": {
+                "format": "int32",
+                "description": "Index of the existing column the new columns are placed relative to, counting from 0. Mandatory.",
+                "type": "integer"
+              },
+              "count": {
+                "format": "int32",
+                "description": "How many columns to insert.",
+                "type": "integer"
+              },
+              "position": {
+                "description": "Whether the new columns go BEFORE or AFTER the anchor column. INSERT_POSITION_UNSPECIFIED leaves the server to apply its default.",
+                "type": "string",
+                "maxLength": 40,
+                "enum": [
+                  "INSERT_POSITION_UNSPECIFIED",
+                  "BEFORE",
+                  "AFTER"
+                ]
+              }
+            },
+            "required": [
+              "anchor_index"
+            ]
+          },
+          "table": {
+            "description": "The table the columns are inserted into, named by its slide and object id. Mandatory.",
+            "type": "object",
+            "properties": {
+              "slide_id": {
+                "pattern": "^[a-f0-9A-F]{8}-[a-f0-9A-F]{4}-[a-f0-9A-F]{4}-[a-f0-9A-F]{4}-[a-f0-9A-F]{12}$",
+                "description": "UUID of the slide, master or layout holding the table. Mandatory.",
+                "type": "string",
+                "maxLength": 36
+              },
+              "object_id": {
+                "pattern": "^[a-f0-9A-F]{8}-[a-f0-9A-F]{4}-[a-f0-9A-F]{4}-[a-f0-9A-F]{4}-[a-f0-9A-F]{12}$",
+                "description": "UUID of the table object itself. Mandatory.",
+                "type": "string",
+                "maxLength": 36
+              }
+            },
+            "required": [
+              "slide_id",
+              "object_id"
+            ]
+          }
+        },
+        "required": [
+          "table",
+          "payload"
+        ]
+      },
+      "TableInsertRequest": {
+        "$defs": {
+          "protoParaStyle": {
+            "type": "object",
+            "properties": {
+              "spacing": {
+                "description": "Line spacing inside the paragraph and the blank space held above and below it.",
+                "type": "object",
+                "$ref": "#/$defs/protoParaSpacing"
+              },
+              "level": {
+                "format": "int32",
+                "description": "Indent depth of the paragraph, counting outward from 0 for a top-level paragraph.",
+                "type": "integer"
+              },
+              "portion_style": {
+                "description": "Text styling applied to every run in the paragraph that does not override it.",
+                "type": "object",
+                "$ref": "#/$defs/protoPortionStyle"
+              },
+              "halign": {
+                "description": "Horizontal alignment of the paragraph: LEFT, CENTER, RIGHT, or JUSTIFY to stretch its lines out to both margins.",
+                "type": "string",
+                "maxLength": 20,
+                "enum": [
+                  "LEFT",
+                  "CENTER",
+                  "RIGHT",
+                  "JUSTIFY"
+                ]
+              }
+            }
+          },
+          "protoColor": {
+            "allOf": [
+              {
+                "not": {
+                  "anyOf": [
+                    {
+                      "required": [
+                        "rgb",
+                        "hsb"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "rgb",
+                        "hex"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "hsb",
+                        "hex"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "type": "object",
+            "properties": {
+              "hsb": {
+                "description": "Color expressed as hue, saturation and brightness. Set exactly one of rgb, hsb or hex.",
+                "type": "object",
+                "$ref": "#/$defs/protoHSBColor"
+              },
+              "hex": {
+                "description": "Color expressed as a hex string such as #4A90D9. Set exactly one of rgb, hsb or hex.",
+                "type": "object",
+                "$ref": "#/$defs/protoHexColor"
+              },
+              "rgb": {
+                "description": "Color expressed as red, green and blue channel values. Set exactly one of rgb, hsb or hex.",
+                "type": "object",
+                "$ref": "#/$defs/protoRGBColor"
+              }
+            }
+          },
+          "protoSolidFill": {
+            "type": "object",
+            "properties": {
+              "color": {
+                "description": "The single flat color painted across the whole filled area. Mandatory.",
+                "type": "object",
+                "$ref": "#/$defs/protoColor"
+              }
+            },
+            "required": [
+              "color"
+            ]
+          },
+          "protoStroke": {
+            "type": "object",
+            "properties": {
+              "captype": {
+                "description": "How a border line ends: FLAT stops at the endpoint, CAPROUND adds a half-circle, SQUARE adds a half-square.",
+                "type": "string",
+                "maxLength": 20,
+                "enum": [
+                  "FLAT",
+                  "CAPROUND",
+                  "SQUARE"
+                ]
+              },
+              "jointype": {
+                "description": "How two border segments meet at a corner: ROUND curves the join, BEVEL cuts it flat, MITER extends it to a sharp point.",
+                "type": "string",
+                "maxLength": 20,
+                "enum": [
+                  "ROUND",
+                  "BEVEL",
+                  "MITER"
+                ]
+              },
+              "width": {
+                "format": "float",
+                "description": "Thickness of the border line, in pixels.",
+                "type": "number"
+              },
+              "position": {
+                "description": "Where the border sits relative to the shape outline: CENTER straddles it, INSIDE keeps it within the shape, OUTSIDE draws it beyond the shape.",
+                "type": "string",
+                "maxLength": 20,
+                "enum": [
+                  "CENTER",
+                  "INSIDE",
+                  "OUTSIDE"
+                ]
+              },
+              "type": {
+                "description": "Line style of the border: SOLID for an unbroken line, DASH for dashes, SQUARE_DOT for square dots. To remove the border entirely set fill.no_fill instead of this field.",
+                "type": "string",
+                "maxLength": 50,
+                "enum": [
+                  "SOLID",
+                  "DASH",
+                  "SQUARE_DOT"
+                ]
+              },
+              "fill": {
+                "description": "Paint used to draw the border line. Carries either a solid color or no_fill, which turns the border off.",
+                "type": "object",
+                "$ref": "#/$defs/protoStrokeFill"
+              }
+            }
+          },
+          "protoLinearGeometry": {
+            "type": "object",
+            "properties": {
+              "start": {
+                "description": "Point at which the gradient axis begins, in normalized coordinates from 0 to 1 across the object's bounding box. Mandatory.",
+                "type": "object",
+                "$ref": "#/$defs/protoPoint"
+              },
+              "end": {
+                "description": "Point at which the gradient axis ends, in normalized coordinates from 0 to 1 across the object's bounding box. Mandatory.",
+                "type": "object",
+                "$ref": "#/$defs/protoPoint"
+              }
+            },
+            "required": [
+              "start",
+              "end"
+            ]
+          },
+          "protoRadialAngularGeometry": {
+            "type": "object",
+            "properties": {
+              "flip_horizontal": {
+                "description": "Whether to mirror the gradient left to right about its center point.",
+                "type": "boolean"
+              },
+              "center": {
+                "description": "Point the gradient radiates from, in normalized coordinates from 0 to 1 across the object's bounding box. Mandatory.",
+                "type": "object",
+                "$ref": "#/$defs/protoPoint"
+              },
+              "spread_x": {
+                "format": "float",
+                "description": "How far the gradient reaches horizontally from its center, as a ratio of the bounding box. Must be 0 or greater.",
+                "type": "number"
+              },
+              "spread_y": {
+                "format": "float",
+                "description": "How far the gradient reaches vertically from its center, as a ratio of the bounding box. Must be 0 or greater.",
+                "type": "number"
+              },
+              "rotation_angle": {
+                "format": "float",
+                "description": "Rotation applied to the gradient about its center point, in degrees.",
+                "type": "number"
+              },
+              "flip_vertical": {
+                "description": "Whether to mirror the gradient top to bottom about its center point.",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "center"
+            ]
+          },
+          "protoGradientStop": {
+            "type": "object",
+            "properties": {
+              "color": {
+                "description": "Color the gradient takes at this stop. Mandatory.",
+                "type": "object",
+                "$ref": "#/$defs/protoColor"
+              },
+              "position": {
+                "format": "float",
+                "description": "Where this stop sits along the gradient, from 0 at the start of the axis to 1 at its end. Mandatory.",
+                "type": "number"
+              }
+            },
+            "required": [
+              "color",
+              "position"
+            ]
+          },
+          "protoFontName": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "description": "Font family applied to the text. Must be one of the families Zoho Show bundles; any other name is rejected.",
+                "type": "string",
+                "maxLength": 200,
+                "enum": [
+                  "Abel",
+                  "Adamina",
+                  "Alegreya",
+                  "Antic",
+                  "Anton",
+                  "Arapey",
+                  "Archivo",
+                  "Arvo",
+                  "Barlow",
+                  "Bentham",
+                  "Cabin",
+                  "Caveat",
+                  "Chivo",
+                  "Comfortaa",
+                  "Cookie",
+                  "Coustard",
+                  "Dosis",
+                  "Economica",
+                  "Exo",
+                  "Flamenco",
+                  "Gabriela",
+                  "Inter",
+                  "Italiana",
+                  "Jura",
+                  "Kalam",
+                  "Lato",
+                  "Lobster",
+                  "Magra",
+                  "Metrophobic",
+                  "Michroma",
+                  "Miltonian",
+                  "Molle",
+                  "Monoton",
+                  "Montez",
+                  "Montserrat",
+                  "Niconne",
+                  "Nosifer",
+                  "Nunito",
+                  "Oregano",
+                  "Oswald",
+                  "Pacifico",
+                  "Parisienne",
+                  "Philosopher",
+                  "Playball",
+                  "Pompiere",
+                  "Poppins",
+                  "Quando",
+                  "Questrial",
+                  "Quicksand",
+                  "Qwigley",
+                  "Raleway",
+                  "Roboto",
+                  "Rochester",
+                  "Rokkitt",
+                  "Rubik",
+                  "Sansation",
+                  "Satisfy",
+                  "Schoolbell",
+                  "Signika",
+                  "Syncopate",
+                  "Teko",
+                  "TeXGyreAdventor",
+                  "Ubuntu",
+                  "Unkempt",
+                  "Unna",
+                  "Vollkorn",
+                  "Yesteryear"
+                ]
+              },
+              "style": {
+                "description": "Variant of that family to use, such as Regular, Bold or Italic. Up to 100 characters.",
+                "type": "string",
+                "maxLength": 100
+              }
+            }
+          },
+          "protoParaSpacing": {
+            "type": "object",
+            "properties": {
+              "before": {
+                "format": "int32",
+                "description": "Extra blank space held above the paragraph, on top of its line spacing.",
+                "type": "integer"
+              },
+              "line": {
+                "format": "float",
+                "description": "Spacing between the lines of the paragraph, as a multiple of the line height: 1.0 is single spacing, 2.0 double.",
+                "type": "number"
+              },
+              "after": {
+                "format": "int32",
+                "description": "Extra blank space held below the paragraph, on top of its line spacing.",
+                "type": "integer"
+              }
+            }
+          },
+          "protoNoFill": {
+            "type": "object"
+          },
+          "protoStrokeFill": {
+            "allOf": [
+              {
+                "not": {
+                  "anyOf": [
+                    {
+                      "required": [
+                        "solid",
+                        "no_fill"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "type": "object",
+            "properties": {
+              "solid": {
+                "description": "Paints the border with a single flat color. Set either solid or no_fill, never both.",
+                "type": "object",
+                "$ref": "#/$defs/protoSolidFill"
+              },
+              "no_fill": {
+                "description": "No stroke fill — stroke-off toggle (oneof variant)",
+                "type": "object",
+                "$ref": "#/$defs/protoNoFill"
+              },
+              "alpha": {
+                "format": "float",
+                "description": "Opacity of the border paint, given as a ratio from 0.0 to 1.0.",
+                "type": "number"
+              }
+            }
+          },
+          "protoHexColor": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "description": "Color written as a hex string, for example #4A90D9. Up to 20 characters. Mandatory.",
+                "type": "string",
+                "maxLength": 20
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "protoFill": {
+            "allOf": [
+              {
+                "not": {
+                  "anyOf": [
+                    {
+                      "required": [
+                        "no_fill",
+                        "solid"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "no_fill",
+                        "gradient"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "solid",
+                        "gradient"
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "type": "object",
+            "properties": {
+              "no_fill": {
+                "description": "No fill. Set only one of no_fill, solid or gradient.",
+                "type": "object",
+                "$ref": "#/$defs/opaqueJsonObject"
+              },
+              "solid": {
+                "description": "Fills the area with a single flat color. Set only one of no_fill, solid or gradient.",
+                "type": "object",
+                "$ref": "#/$defs/protoSolidFill"
+              },
+              "gradient": {
+                "description": "Fills the area with a blend running between two or more colors. Set only one of no_fill, solid or gradient.",
+                "type": "object",
+                "$ref": "#/$defs/protoGradientFill"
+              },
+              "alpha": {
+                "format": "float",
+                "description": "Transparency applied to whichever fill is set, from 0 for fully opaque to 1 for fully transparent.",
+                "type": "number"
+              }
+            }
+          },
+          "protoRGBColor": {
+            "type": "object",
+            "properties": {
+              "red": {
+                "format": "int32",
+                "description": "Red channel intensity, an integer from 0 to 255. Mandatory.",
+                "type": "integer"
+              },
+              "green": {
+                "format": "int32",
+                "description": "Green channel intensity, an integer from 0 to 255. Mandatory.",
+                "type": "integer"
+              },
+              "blue": {
+                "format": "int32",
+                "description": "Blue channel intensity, an integer from 0 to 255. Mandatory.",
+                "type": "integer"
+              }
+            },
+            "required": [
+              "red",
+              "green",
+              "blue"
+            ]
+          },
+          "protoGradientFill": {
+            "type": "object",
+            "properties": {
+              "linear": {
+                "description": "Start and end points of the gradient axis. Applies when type is LINEAR.",
+                "type": "object",
+                "$ref": "#/$defs/protoLinearGeometry"
+              },
+              "radial_angular": {
+                "description": "Center, spread, rotation and mirroring of the gradient. Applies when type is RADIAL or ANGULAR.",
+                "type": "object",
+                "$ref": "#/$defs/protoRadialAngularGeometry"
+              },
+              "stops": {
+                "minItems": 2,
+                "maxItems": 20,
+                "description": "Colors along the gradient and where each one sits, from 2 to 20 of them. At least two are required, since a gradient has to blend from one color to another. Mandatory.",
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/protoGradientStop"
+                }
+              },
+              "type": {
+                "description": "Shape of the blend: LINEAR runs along a straight axis, RADIAL spreads outward from a center point, ANGULAR sweeps around one. These three are the only values the client renders.",
+                "type": "string",
+                "maxLength": 50,
+                "enum": [
+                  "LINEAR",
+                  "RADIAL",
+                  "ANGULAR"
+                ]
+              }
+            },
+            "required": [
+              "stops"
+            ]
+          },
+          "protoPortionStyle": {
+            "type": "object",
+            "properties": {
+              "fontweight": {
+                "description": "Stroke weight of the text, lightest to heaviest: THIN, EXTRA_LIGHT, LIGHT, NORMAL, MEDIUM, DEMI_BOLD, BOLD, HEAVY, BLACK.",
+                "type": "string",
+                "maxLength": 20,
+                "enum": [
+                  "THIN",
+                  "EXTRA_LIGHT",
+                  "LIGHT",
+                  "NORMAL",
+                  "MEDIUM",
+                  "DEMI_BOLD",
+                  "BOLD",
+                  "HEAVY",
+                  "BLACK"
+                ]
+              },
+              "size": {
+                "format": "float",
+                "description": "Font size of this run of text, in points.",
+                "type": "number"
+              },
+              "color": {
+                "description": "Color the text of this run is drawn in.",
+                "type": "object",
+                "$ref": "#/$defs/protoColor"
+              },
+              "underline": {
+                "description": "Whether this run of text carries an underline.",
+                "type": "boolean"
+              },
+              "strike": {
+                "description": "Whether this run of text is struck through.",
+                "type": "boolean"
+              },
+              "italic": {
+                "description": "Whether this run of text is slanted.",
+                "type": "boolean"
+              },
+              "font_name": {
+                "description": "Font family and variant applied to this run of text.",
+                "type": "object",
+                "$ref": "#/$defs/protoFontName"
+              }
+            }
+          },
+          "protoHSBColor": {
+            "type": "object",
+            "properties": {
+              "saturation": {
+                "format": "float",
+                "description": "Intensity of the hue, from 0 for a fully desaturated gray to 1 for the pure color. Mandatory.",
+                "type": "number"
+              },
+              "brightness": {
+                "format": "float",
+                "description": "Brightness of the color, from 0 for black to 1 for the fully lit hue. Mandatory.",
+                "type": "number"
+              },
+              "hue": {
+                "format": "float",
+                "description": "Position on the color wheel in degrees, from 0 to 360, where 0 is red, 120 green and 240 blue. Mandatory.",
+                "type": "number"
+              }
+            },
+            "required": [
+              "hue",
+              "saturation",
+              "brightness"
+            ]
+          },
+          "protoPoint": {
+            "type": "object",
+            "properties": {
+              "x": {
+                "format": "float",
+                "description": "Horizontal position in canvas units, measured rightward from the left edge of the viewbox.",
+                "type": "number"
+              },
+              "y": {
+                "format": "float",
+                "description": "Vertical position in canvas units, measured downward from the top edge of the viewbox.",
+                "type": "number"
+              }
+            }
+          },
+          "opaqueJsonObject": {
+            "type": "object"
+          }
+        },
+        "type": "object",
+        "properties": {
+          "insert_index": {
+            "format": "int32",
+            "description": "Position in the slide's object order at which the new tables are placed. They are appended after the last object when omitted.",
+            "type": "integer"
+          },
+          "elements": {
+            "minItems": 1,
+            "maxItems": 50,
+            "description": "Tables to insert, from 1 to 50 in a single call. Mandatory.",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "description": "Display name for the new table, shown in the editor's object list. Up to 500 characters.",
+                  "type": "string",
+                  "maxLength": 500
+                },
+                "table": {
+                  "description": "The table to create, with its columns, rows and styling. Its id is generated by the server. Mandatory.",
+                  "type": "object",
+                  "properties": {
+                    "layout": {
+                      "description": "Position, size, rotation and mirroring of the new table on the slide.",
+                      "type": "object",
+                      "properties": {
+                        "rotate": {
+                          "format": "int32",
+                          "description": "Clockwise rotation of the object about its own center, in degrees.",
+                          "type": "integer"
+                        },
+                        "top": {
+                          "format": "float",
+                          "description": "Distance from the top edge of the slide to the top of the object, in pixels.",
+                          "type": "number"
+                        },
+                        "left": {
+                          "format": "float",
+                          "description": "Distance from the left edge of the slide to the left of the object, in pixels.",
+                          "type": "number"
+                        },
+                        "width": {
+                          "format": "float",
+                          "description": "Width of the object, in pixels.",
+                          "type": "number"
+                        },
+                        "flipv": {
+                          "description": "Whether the object is mirrored top to bottom about its horizontal center line.",
+                          "type": "boolean"
+                        },
+                        "fliph": {
+                          "description": "Whether the object is mirrored left to right about its vertical center line.",
+                          "type": "boolean"
+                        },
+                        "height": {
+                          "format": "float",
+                          "description": "Height of the object, in pixels.",
+                          "type": "number"
+                        }
+                      }
+                    },
+                    "columns": {
+                      "minItems": 1,
+                      "maxItems": 1000,
+                      "description": "Columns of the new table in left-to-right order, from 1 to 1000, each carrying its width. Mandatory.",
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "width": {
+                            "format": "float",
+                            "description": "Width of the column, in pixels. Must be 0 or greater.",
+                            "type": "number"
+                          }
+                        }
+                      }
+                    },
+                    "style_ref": {
+                      "allOf": [
+                        {
+                          "not": {
+                            "anyOf": [
+                              {
+                                "required": [
+                                  "local_id",
+                                  "library"
+                                ]
+                              }
+                            ]
+                          }
+                        }
+                      ],
+                      "description": "Reference to a saved table style, either one held in this document or a system style such as 'table.system.default'.",
+                      "type": "object",
+                      "properties": {
+                        "library": {
+                          "description": "Reference to an asset held in a subscribed library rather than in this document. Set either local_id or library, never both.",
+                          "type": "object",
+                          "properties": {
+                            "library_id": {
+                              "pattern": "^[A-z0-9_.,@:\\-\\s/]*$",
+                              "description": "Id of the subscribed library the asset is taken from, up to 200 characters. Mandatory.",
+                              "type": "string",
+                              "maxLength": 200
+                            },
+                            "asset_id": {
+                              "pattern": "^[A-z0-9_.,@:\\-\\s/]*$",
+                              "description": "Id identifying the asset within that library, up to 200 characters. Mandatory.",
+                              "type": "string",
+                              "maxLength": 200
+                            }
+                          },
+                          "required": [
+                            "library_id",
+                            "asset_id"
+                          ]
+                        },
+                        "local_id": {
+                          "pattern": "^[A-z0-9_.,@:\\-\\s/]*$",
+                          "description": "Id of an asset already held in this document, such as a media object id or a system style id like 'table.system.default'. Set either local_id or library, never both.",
+                          "type": "string",
+                          "maxLength": 200
+                        }
+                      }
+                    },
+                    "style": {
+                      "description": "Table style settings supplied inline. Sending this overrides whatever style_ref points at.",
+                      "type": "object",
+                      "properties": {
+                        "band_row": {
+                          "description": "Whether alternating rows take a contrasting fill, to make long tables easier to read.",
+                          "type": "boolean"
+                        },
+                        "first_col": {
+                          "description": "Whether the first column takes the style's header formatting.",
+                          "type": "boolean"
+                        },
+                        "band_col": {
+                          "description": "Whether alternating columns take a contrasting fill, to make wide tables easier to read.",
+                          "type": "boolean"
+                        },
+                        "first_row": {
+                          "description": "Whether the first row takes the style's header formatting.",
+                          "type": "boolean"
+                        },
+                        "last_row": {
+                          "description": "Whether the last row takes the style's total-row formatting.",
+                          "type": "boolean"
+                        },
+                        "fill": {
+                          "description": "Fill suggested for the table as a whole. Individual cells may override it.",
+                          "type": "object",
+                          "$ref": "#/$defs/protoFill"
+                        },
+                        "stroke": {
+                          "description": "Border suggested for the table as a whole. Individual cells may override it.",
+                          "type": "object",
+                          "$ref": "#/$defs/protoStroke"
+                        },
+                        "last_col": {
+                          "description": "Whether the last column takes the style's total-column formatting.",
+                          "type": "boolean"
+                        }
+                      }
+                    },
+                    "rows": {
+                      "minItems": 1,
+                      "maxItems": 1000,
+                      "description": "Rows of the new table in top-to-bottom order, from 1 to 1000, each carrying its cells. Mandatory.",
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "cells": {
+                            "maxItems": 1000,
+                            "description": "Cells of the new row in left-to-right order, up to 1000.",
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "border": {
+                                  "description": "Borders drawn around the cell, overriding whatever the table style supplies.",
+                                  "type": "object",
+                                  "properties": {
+                                    "all": {
+                                      "description": "Border applied to all four edges at once, as a shorthand for setting each of them separately.",
+                                      "type": "object",
+                                      "$ref": "#/$defs/protoStroke"
+                                    },
+                                    "top": {
+                                      "description": "Border drawn along the top edge of the cell.",
+                                      "type": "object",
+                                      "$ref": "#/$defs/protoStroke"
+                                    },
+                                    "left": {
+                                      "description": "Border drawn along the left edge of the cell.",
+                                      "type": "object",
+                                      "$ref": "#/$defs/protoStroke"
+                                    },
+                                    "bottom": {
+                                      "description": "Border drawn along the bottom edge of the cell.",
+                                      "type": "object",
+                                      "$ref": "#/$defs/protoStroke"
+                                    },
+                                    "right": {
+                                      "description": "Border drawn along the right edge of the cell.",
+                                      "type": "object",
+                                      "$ref": "#/$defs/protoStroke"
+                                    }
+                                  }
+                                },
+                                "merge_cols": {
+                                  "format": "int32",
+                                  "description": "Number of columns this cell is merged across, counting from its own position. Must be 0 or greater.",
+                                  "type": "integer"
+                                },
+                                "merge_rows": {
+                                  "format": "int32",
+                                  "description": "Number of rows this cell is merged across, counting from its own position. Must be 0 or greater.",
+                                  "type": "integer"
+                                },
+                                "text": {
+                                  "description": "Text to place in the cell, as paragraphs carrying their own styling.",
+                                  "type": "object",
+                                  "properties": {
+                                    "paragraphs": {
+                                      "maxItems": 1000,
+                                      "description": "Paragraphs making up the text body being inserted, in the order they read, up to 1000.",
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "properties": {
+                                          "style": {
+                                            "description": "Alignment, spacing, indent level and default text styling for the paragraph being inserted.",
+                                            "type": "object",
+                                            "$ref": "#/$defs/protoParaStyle"
+                                          },
+                                          "portions": {
+                                            "maxItems": 500,
+                                            "description": "Runs of text making up the paragraph being inserted, up to 500. Each run carries its own styling.",
+                                            "type": "array",
+                                            "items": {
+                                              "type": "object",
+                                              "properties": {
+                                                "style": {
+                                                  "description": "Styling applied to the inserted run alone, overriding the paragraph's default style.",
+                                                  "type": "object",
+                                                  "$ref": "#/$defs/protoPortionStyle"
+                                                },
+                                                "text": {
+                                                  "description": "The literal text of the run being inserted, up to 500,000 characters. HTML markup is stripped before the text is stored.",
+                                                  "type": "string",
+                                                  "maxLength": 500000
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "properties": {
+                                      "description": "Vertical alignment, padding, default paragraph style and auto-fit behavior for the inserted text body.",
+                                      "type": "object",
+                                      "properties": {
+                                        "inset": {
+                                          "description": "Padding held between the shape's edges and its text, on each of the four sides.",
+                                          "type": "object",
+                                          "properties": {
+                                            "top": {
+                                              "format": "float",
+                                              "description": "Space held between the top edge of the shape and its text, in pixels.",
+                                              "type": "number"
+                                            },
+                                            "left": {
+                                              "format": "float",
+                                              "description": "Space held between the left edge of the shape and its text, in pixels.",
+                                              "type": "number"
+                                            },
+                                            "bottom": {
+                                              "format": "float",
+                                              "description": "Space held between the bottom edge of the shape and its text, in pixels.",
+                                              "type": "number"
+                                            },
+                                            "right": {
+                                              "format": "float",
+                                              "description": "Space held between the right edge of the shape and its text, in pixels.",
+                                              "type": "number"
+                                            }
+                                          }
+                                        },
+                                        "auto_fit": {
+                                          "description": "How text and shape adapt when the text does not fit: NONE leaves it overflowing, TEXT shrinks the text down to the shape, SHAPE grows the shape out to the text.",
+                                          "type": "string",
+                                          "maxLength": 20,
+                                          "enum": [
+                                            "NONE",
+                                            "TEXT",
+                                            "SHAPE"
+                                          ]
+                                        },
+                                        "valign": {
+                                          "description": "Vertical placement of the text block inside the shape: TOP, MIDDLE or BOTTOM.",
+                                          "type": "string",
+                                          "maxLength": 20,
+                                          "enum": [
+                                            "MIDDLE",
+                                            "TOP",
+                                            "BOTTOM"
+                                          ]
+                                        },
+                                        "para_style": {
+                                          "description": "Paragraph styling applied to every paragraph in the body that does not override it.",
+                                          "type": "object",
+                                          "$ref": "#/$defs/protoParaStyle"
+                                        }
+                                      }
+                                    }
+                                  }
+                                },
+                                "is_merged": {
+                                  "description": "Whether this cell forms part of a merged region rather than standing on its own.",
+                                  "type": "boolean"
+                                },
+                                "fill": {
+                                  "description": "Fill painted behind the cell's contents, overriding whatever the table style supplies.",
+                                  "type": "object",
+                                  "$ref": "#/$defs/protoFill"
+                                }
+                              }
+                            }
+                          },
+                          "height": {
+                            "format": "float",
+                            "description": "Height of the new row, in pixels. Must be 0 or greater.",
+                            "type": "number"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "columns",
+                    "rows"
+                  ]
+                }
+              },
+              "required": [
+                "table"
+              ]
+            }
+          }
+        },
+        "required": [
+          "elements"
+        ]
+      }
+    },
+    "responses": {
+      "RateLimitExceededThisOperationAllows30Re": {
+        "description": "Rate limit exceeded - this operation allows 30 requests per 1M",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      },
+      "SuccessfulResponse": {
+        "description": "Successful response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowEnvelope"
+            }
+          }
+        }
+      },
+      "InternalServerErrorTheRequestCouldNotBeC": {
+        "description": "Internal server error - the request could not be completed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      },
+      "RateLimitExceededThisOperationAllows100R": {
+        "description": "Rate limit exceeded - this operation allows 100 requests per 1M",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      },
+      "InvalidRequestValidationFailed": {
+        "description": "Invalid request - validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      },
+      "RateLimitExceededThisOperationAllows60Re": {
+        "description": "Rate limit exceeded - this operation allows 60 requests per 1M",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      },
+      "UnauthorizedMissingOrInvalidAccessToken": {
+        "description": "Unauthorized - missing or invalid access token",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      },
+      "NotFoundAResourceNamedInThePathDoesNotEx": {
+        "description": "Not found - a resource named in the path does not exist or is not visible",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "iam-oauth2-schema": {
+        "flows": {
+          "authorizationCode": {
+            "tokenUrl": "https://accounts.zoho.com/oauth/v2/token",
+            "authorizationUrl": "https://accounts.zoho.com/oauth/v2/auth",
+            "scopes": {
+              "ZohoShow.showdocslist.READ": "Read presentations, metadata, and document content",
+              "ZohoShow.showdocslist.UPDATE": "Update presentations, metadata, and document content",
+              "ZohoShow.fullaccess.ALL": "Create, read, update and delete presentations and presentation resources through Show MCP",
+              "ZohoShow.showdocslist.CREATE": "Create presentations and presentation resources",
+              "ZohoShow.showdocslist.DELETE": "Delete presentations and presentation resources"
+            }
+          }
+        },
+        "description": "OAuth 2.0 through Zoho Accounts. For a non-US edition, use the matching host from x-show-accounts-hosts; Canada uses accounts.zohocloud.ca.",
+        "type": "oauth2",
+        "x-show-accounts-hosts": {
+          "EU": "accounts.zoho.eu",
+          "LOCALZOHO": "accounts.localzoho.com",
+          "AU": "accounts.zoho.com.au",
+          "SG": "accounts.zoho.sg",
+          "IN": "accounts.zoho.in",
+          "JP": "accounts.zoho.jp",
+          "UK": "accounts.zoho.uk",
+          "UAE": "accounts.zoho.ae",
+          "CN": "accounts.zoho.com.cn",
+          "US": "accounts.zoho.com",
+          "CA": "accounts.zohocloud.ca",
+          "SA": "accounts.zoho.sa"
+        },
+        "x-show-data-centre": "US"
+      }
+    },
+    "parameters": {
+      "ContainerId": {
+        "schema": {
+          "type": "string"
+        },
+        "in": "path",
+        "name": "container_id",
+        "description": "The unique identifier of the container",
+        "required": true
+      },
+      "ContainerType": {
+        "schema": {
+          "type": "string"
+        },
+        "in": "path",
+        "name": "container_type",
+        "description": "The unique identifier of the container_type",
+        "required": true
+      },
+      "Ids2": {
+        "schema": {
+          "type": "string",
+          "maxLength": 5000
+        },
+        "in": "query",
+        "name": "ids",
+        "description": "Comma-separated ids to return; omit to list every item in the container.",
+        "required": false
+      },
+      "Ids": {
+        "schema": {
+          "type": "string",
+          "maxLength": 5000
+        },
+        "in": "query",
+        "name": "ids",
+        "description": "Comma-separated ids of the items to delete.",
+        "required": true
+      },
+      "Count": {
+        "schema": {
+          "format": "int32",
+          "maximum": 99,
+          "type": "integer",
+          "minimum": 1
+        },
+        "in": "query",
+        "name": "count",
+        "description": "Maximum number of items to return; pages with 'from'.",
+        "required": false
+      },
+      "From": {
+        "schema": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "in": "query",
+        "name": "from",
+        "description": "Zero-based index of the first item to return (default 0).",
+        "required": false
+      },
+      "PresentationId": {
+        "schema": {
+          "type": "string"
+        },
+        "in": "path",
+        "name": "presentation_id",
+        "description": "The unique identifier of the presentation",
+        "required": true
+      }
+    }
+  },
+  "servers": [
+    {
+      "description": "US DC",
+      "url": "https://show.zoho.com"
+    },
+    {
+      "description": "IN DC",
+      "url": "https://show.zoho.in"
+    },
+    {
+      "description": "CT1 DC",
+      "url": "https://show.localzoho.com"
+    },
+    {
+      "description": "AU DC",
+      "url": "https://show.zoho.com.au"
+    },
+    {
+      "description": "CA DC",
+      "url": "https://show.zohocloud.ca"
+    },
+    {
+      "description": "EU DC",
+      "url": "https://show.zoho.eu"
+    },
+    {
+      "description": "SA DC",
+      "url": "https://show.zoho.sa"
+    },
+    {
+      "description": "UAE DC",
+      "url": "https://show.zoho.ae"
+    },
+    {
+      "description": "CN DC",
+      "url": "https://show.zoho.com.cn"
+    },
+    {
+      "description": "JP DC",
+      "url": "https://show.zoho.jp"
+    },
+    {
+      "description": "SG DC",
+      "url": "https://show.zoho.sg"
+    },
+    {
+      "description": "UK DC",
+      "url": "https://show.zoho.uk"
+    }
+  ],
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v1/presentation/{presentation_id}/{container_type}/{container_id}/table/editcelltext": {
+      "put": {
+        "summary": "Edit text content in a table cell on a slide",
+        "security": [
+          {
+            "iam-oauth2-schema": [
+              "ZohoShow.showdocslist.UPDATE"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShowTableEditCellTextRequest"
+              }
+            }
+          }
+        },
+        "operationId": "updatePresentationByPresentationIdByContce08afe4",
+        "description": "Edit text content in a table cell on a slide",
+        "responses": {
+          "200": {
+            "description": "Table Cell Text Edited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowEnvelope"
+                },
+                "examples": {
+                  "table_cell_text_edited": {
+                    "value": {
+                      "data": {
+                        "result": {
+                          "text": {
+                            "applied_range": {
+                              "start_index": 0,
+                              "end_index": 16
+                            }
+                          }
+                        }
+                      },
+                      "message": "Table cell text edited successfully",
+                      "request_uri": "/api/v1/presentation/i6b0q7d7c08e73e494feda86c30e660626925/slide/0a9643c7-ecc3-4a61-b956-5186a78372e1/table/editcelltext",
+                      "status": "success"
+                    },
+                    "summary": "Table Cell Text Edited",
+                    "x-request-body": {
+                      "table": {
+                        "slide_id": "0a9643c7-ecc3-4a61-b956-5186a78372e1",
+                        "object_id": "e1f562a0-2fe0-4fdb-982e-6a718fe63569"
+                      },
+                      "cell": {
+                        "row_index": 0,
+                        "column_index": 0
+                      },
+                      "payload": {
+                        "text": {
+                          "all_text": {
+                            "operation": "ALL_TEXT_OPERATION_REPLACE",
+                            "replacement_text": "Edited Cell Text"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequestValidationFailed"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedMissingOrInvalidAccessToken"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundAResourceNamedInThePathDoesNotEx"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceededThisOperationAllows60Re"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerErrorTheRequestCouldNotBeC"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PresentationId"
+          },
+          {
+            "$ref": "#/components/parameters/ContainerType"
+          },
+          {
+            "$ref": "#/components/parameters/ContainerId"
+          }
+        ],
+        "x-mcp-operation-type": "update",
+        "tags": [
+          "Tables"
+        ]
+      }
+    },
+    "/api/v1/presentation/{presentation_id}/{container_type}/{container_id}/table/insertcolumns": {
+      "put": {
+        "summary": "Insert columns in a table on a slide",
+        "security": [
+          {
+            "iam-oauth2-schema": [
+              "ZohoShow.showdocslist.CREATE"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShowTableInsertColumnsRequest"
+              }
+            }
+          }
+        },
+        "operationId": "updatePresentationByPresentationIdByConte514a376",
+        "description": "Insert columns in a table on a slide",
+        "responses": {
+          "200": {
+            "description": "Table Columns Inserted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowEnvelope"
+                },
+                "examples": {
+                  "table_columns_inserted": {
+                    "value": {
+                      "data": {
+                        "result": {
+                          "column_count": 7,
+                          "row_count": 8
+                        }
+                      },
+                      "message": "Table columns inserted successfully",
+                      "request_uri": "/api/v1/presentation/i6b0q7d7c08e73e494feda86c30e660626925/slide/92df496e-4024-4a4f-a68b-8eaf81110422/table/insertcolumns",
+                      "status": "success"
+                    },
+                    "summary": "Table Columns Inserted",
+                    "x-request-body": {
+                      "table": {
+                        "slide_id": "92df496e-4024-4a4f-a68b-8eaf81110422",
+                        "object_id": "128e5dd8-8e53-4191-8214-5e419fafbd99"
+                      },
+                      "payload": {
+                        "anchor_index": 0,
+                        "position": "AFTER",
+                        "count": 1
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequestValidationFailed"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedMissingOrInvalidAccessToken"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundAResourceNamedInThePathDoesNotEx"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceededThisOperationAllows60Re"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerErrorTheRequestCouldNotBeC"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PresentationId"
+          },
+          {
+            "$ref": "#/components/parameters/ContainerType"
+          },
+          {
+            "$ref": "#/components/parameters/ContainerId"
+          }
+        ],
+        "x-mcp-operation-type": "create",
+        "tags": [
+          "Tables"
+        ]
+      }
+    },
+    "/api/v1/presentation/{presentation_id}/{container_type}/{container_id}/table/insertrows": {
+      "put": {
+        "summary": "Insert rows in a table on a slide",
+        "security": [
+          {
+            "iam-oauth2-schema": [
+              "ZohoShow.showdocslist.CREATE"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShowTableInsertRowsRequest"
+              }
+            }
+          }
+        },
+        "operationId": "updatePresentationByPresentationIdByCont3d53cf19",
+        "description": "Insert rows in a table on a slide",
+        "responses": {
+          "200": {
+            "description": "Table Rows Inserted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowEnvelope"
+                },
+                "examples": {
+                  "table_rows_inserted": {
+                    "value": {
+                      "data": {
+                        "result": {
+                          "column_count": 6,
+                          "row_count": 9
+                        }
+                      },
+                      "message": "Table rows inserted successfully",
+                      "request_uri": "/api/v1/presentation/8i4vv3f345fcf907446a2bdc4e2c871fc585e/slide/0bc0d112-654f-408a-adf3-c35c435810a4/table/insertrows",
+                      "status": "success"
+                    },
+                    "summary": "Table Rows Inserted",
+                    "x-request-body": {
+                      "table": {
+                        "slide_id": "0bc0d112-654f-408a-adf3-c35c435810a4",
+                        "object_id": "dbe7237a-068d-4c2c-9c0c-f2953339c4f1"
+                      },
+                      "payload": {
+                        "anchor_index": 0,
+                        "position": "AFTER",
+                        "count": 1
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequestValidationFailed"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedMissingOrInvalidAccessToken"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundAResourceNamedInThePathDoesNotEx"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceededThisOperationAllows60Re"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerErrorTheRequestCouldNotBeC"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PresentationId"
+          },
+          {
+            "$ref": "#/components/parameters/ContainerType"
+          },
+          {
+            "$ref": "#/components/parameters/ContainerId"
+          }
+        ],
+        "x-mcp-operation-type": "create",
+        "tags": [
+          "Tables"
+        ]
+      }
+    },
+    "/api/v1/presentation/{presentation_id}/{container_type}/{container_id}/table/unmergecells": {
+      "put": {
+        "summary": "Unmerge cells in a table on a slide",
+        "security": [
+          {
+            "iam-oauth2-schema": [
+              "ZohoShow.showdocslist.UPDATE"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShowTableUnmergeCellsRequest"
+              }
+            }
+          }
+        },
+        "operationId": "updatePresentationByPresentationIdByCont39913bcd",
+        "description": "Unmerge cells in a table on a slide",
+        "responses": {
+          "200": {
+            "description": "Table Cells Unmerged",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowEnvelope"
+                },
+                "examples": {
+                  "table_cells_unmerged": {
+                    "value": {
+                      "data": {
+                        "result": {
+                          "anchor_cell": {
+                            "row_index": 0,
+                            "column_index": 0
+                          },
+                          "unmerged_range": {
+                            "end_column_index": 1,
+                            "start_column_index": 0,
+                            "start_row_index": 0,
+                            "end_row_index": 2
+                          }
+                        }
+                      },
+                      "message": "Table cells unmerged successfully",
+                      "request_uri": "/api/v1/presentation/m71vz5f46c9524f8744aa8a9c1083ac843713/slide/947b6cc9-05b4-4d01-b0bb-75f8b3bd1bd3/table/unmergecells",
+                      "status": "success"
+                    },
+                    "summary": "Table Cells Unmerged",
+                    "x-request-body": {
+                      "table": {
+                        "slide_id": "947b6cc9-05b4-4d01-b0bb-75f8b3bd1bd3",
+                        "object_id": "33b990fd-997a-4ebc-995c-501bcf88d1a1"
+                      },
+                      "payload": {
+                        "cell": {
+                          "row_index": 0,
+                          "column_index": 0
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequestValidationFailed"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedMissingOrInvalidAccessToken"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundAResourceNamedInThePathDoesNotEx"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceededThisOperationAllows60Re"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerErrorTheRequestCouldNotBeC"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PresentationId"
+          },
+          {
+            "$ref": "#/components/parameters/ContainerType"
+          },
+          {
+            "$ref": "#/components/parameters/ContainerId"
+          }
+        ],
+        "x-mcp-operation-type": "update",
+        "tags": [
+          "Tables"
+        ]
+      }
+    },
+    "/api/v1/presentation/{presentation_id}/{container_type}/{container_id}/table/mergecells": {
+      "put": {
+        "summary": "Merge cells in a table on a slide",
+        "security": [
+          {
+            "iam-oauth2-schema": [
+              "ZohoShow.showdocslist.UPDATE"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShowTableMergeCellsRequest"
+              }
+            }
+          }
+        },
+        "operationId": "updatePresentationByPresentationIdByCont3a223ae6",
+        "description": "Merge cells in a table on a slide",
+        "responses": {
+          "200": {
+            "description": "Table Cells Merged",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowEnvelope"
+                },
+                "examples": {
+                  "table_cells_merged": {
+                    "value": {
+                      "data": {
+                        "result": {
+                          "anchor_cell": {
+                            "row_index": 0,
+                            "column_index": 0
+                          },
+                          "merged_range": {
+                            "end_column_index": 1,
+                            "start_column_index": 0,
+                            "start_row_index": 0,
+                            "end_row_index": 2
+                          }
+                        }
+                      },
+                      "message": "Table cells merged successfully",
+                      "request_uri": "/api/v1/presentation/i6b0q7d7c08e73e494feda86c30e660626925/slide/e1ea22fd-7276-4aa7-9e6e-8b4ccc6b88de/table/mergecells",
+                      "status": "success"
+                    },
+                    "summary": "Table Cells Merged",
+                    "x-request-body": {
+                      "table": {
+                        "slide_id": "e1ea22fd-7276-4aa7-9e6e-8b4ccc6b88de",
+                        "object_id": "328cd77f-2fbe-4eb4-a225-1aac958f76f9"
+                      },
+                      "payload": {
+                        "range": {
+                          "start_row_index": 0,
+                          "end_row_index": 2,
+                          "start_column_index": 0,
+                          "end_column_index": 1
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequestValidationFailed"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedMissingOrInvalidAccessToken"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundAResourceNamedInThePathDoesNotEx"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceededThisOperationAllows60Re"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerErrorTheRequestCouldNotBeC"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PresentationId"
+          },
+          {
+            "$ref": "#/components/parameters/ContainerType"
+          },
+          {
+            "$ref": "#/components/parameters/ContainerId"
+          }
+        ],
+        "x-mcp-operation-type": "update",
+        "tags": [
+          "Tables"
+        ]
+      }
+    },
+    "/api/v1/presentation/{presentation_id}/{container_type}/{container_id}/table/deleterows": {
+      "delete": {
+        "summary": "Delete rows from a table on a slide",
+        "security": [
+          {
+            "iam-oauth2-schema": [
+              "ZohoShow.showdocslist.DELETE"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShowTableDeleteRowsRequest"
+              }
+            }
+          }
+        },
+        "operationId": "deletePresentationByPresentationIdByContf3b70a7c",
+        "description": "Delete rows from a table on a slide",
+        "responses": {
+          "200": {
+            "description": "Table Rows Deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowEnvelope"
+                },
+                "examples": {
+                  "table_rows_deleted": {
+                    "value": {
+                      "data": {
+                        "result": {
+                          "column_count": 4,
+                          "row_count": 7
+                        }
+                      },
+                      "message": "Table rows deleted successfully",
+                      "request_uri": "/api/v1/presentation/m71vz5f46c9524f8744aa8a9c1083ac843713/slide/ec0f5fe6-64cf-4636-a036-b592d7f97746/table/deleterows",
+                      "status": "success"
+                    },
+                    "summary": "Table Rows Deleted",
+                    "x-request-body": {
+                      "table": {
+                        "slide_id": "ec0f5fe6-64cf-4636-a036-b592d7f97746",
+                        "object_id": "1a250214-6fd4-4862-99ad-801c10217584"
+                      },
+                      "payload": {
+                        "range": {
+                          "start_index": 0,
+                          "end_index": 1
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequestValidationFailed"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedMissingOrInvalidAccessToken"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundAResourceNamedInThePathDoesNotEx"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceededThisOperationAllows60Re"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerErrorTheRequestCouldNotBeC"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PresentationId"
+          },
+          {
+            "$ref": "#/components/parameters/ContainerType"
+          },
+          {
+            "$ref": "#/components/parameters/ContainerId"
+          }
+        ],
+        "x-mcp-operation-type": "delete",
+        "tags": [
+          "Tables"
+        ]
+      }
+    },
+    "/api/v1/presentation/{presentation_id}/{container_type}/{container_id}/table/deletecolumns": {
+      "delete": {
+        "summary": "Delete columns from a table on a slide",
+        "security": [
+          {
+            "iam-oauth2-schema": [
+              "ZohoShow.showdocslist.DELETE"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShowTableDeleteColumnsRequest"
+              }
+            }
+          }
+        },
+        "operationId": "deletePresentationByPresentationIdByCont92ef9feb",
+        "description": "Delete columns from a table on a slide",
+        "responses": {
+          "200": {
+            "description": "Table Columns Deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowEnvelope"
+                },
+                "examples": {
+                  "table_columns_deleted": {
+                    "value": {
+                      "data": {
+                        "result": {
+                          "column_count": 7,
+                          "row_count": 8
+                        }
+                      },
+                      "message": "Table columns deleted successfully",
+                      "request_uri": "/api/v1/presentation/8i4vv3f345fcf907446a2bdc4e2c871fc585e/slide/a1afcd3b-30d4-4913-9475-f9e6c157b752/table/deletecolumns",
+                      "status": "success"
+                    },
+                    "summary": "Table Columns Deleted",
+                    "x-request-body": {
+                      "table": {
+                        "slide_id": "a1afcd3b-30d4-4913-9475-f9e6c157b752",
+                        "object_id": "ced88539-0cd3-4a09-aeac-23fc994a18e7"
+                      },
+                      "payload": {
+                        "range": {
+                          "start_index": 0,
+                          "end_index": 1
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequestValidationFailed"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedMissingOrInvalidAccessToken"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundAResourceNamedInThePathDoesNotEx"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceededThisOperationAllows60Re"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerErrorTheRequestCouldNotBeC"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PresentationId"
+          },
+          {
+            "$ref": "#/components/parameters/ContainerType"
+          },
+          {
+            "$ref": "#/components/parameters/ContainerId"
+          }
+        ],
+        "x-mcp-operation-type": "delete",
+        "tags": [
+          "Tables"
+        ]
+      }
+    },
+    "/api/v1/presentation/{presentation_id}/{container_type}/{container_id}/tables": {
+      "post": {
+        "summary": "Insert one or more tables into a slide",
+        "security": [
+          {
+            "iam-oauth2-schema": [
+              "ZohoShow.showdocslist.CREATE"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TableInsertRequest"
+              }
+            }
+          }
+        },
+        "operationId": "createPresentationByPresentationIdByCont38708fb2",
+        "description": "Insert one or more tables into a slide. A table whose layout gives a position (left or top not 0) is placed exactly there, at the size sent. A table sent without a layout is placed in the slide's first content placeholder, or centred when there is none. Sending insert_index always places the table at its layout.",
+        "responses": {
+          "201": {
+            "description": "Tables Inserted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowEnvelope"
+                },
+                "examples": {
+                  "tables_inserted": {
+                    "value": {
+                      "data": {
+                        "success_count": "1",
+                        "failure_count": "0",
+                        "results": [
+                          {
+                            "insert_object": {
+                              "final_index": "140",
+                              "object": {
+                                "slide_object": {
+                                  "slide_id": "54ca442b-63d1-43df-bda9-9f8cd2654e70",
+                                  "object_id": "b5b05b26-51b4-431d-87ee-ef7b77f38d77"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "message": "Table(s) added successfully",
+                      "request_uri": "/api/v1/sdk/presentation/8i4vv3f345fcf907446a2bdc4e2c871fc585e/slides/54ca442b-63d1-43df-bda9-9f8cd2654e70/tables",
+                      "status": "success"
+                    },
+                    "summary": "Tables Inserted",
+                    "x-request-body": {
+                      "elements": [
+                        {
+                          "name": "Simple table",
+                          "table": {
+                            "layout": {
+                              "left": 60,
+                              "top": 80,
+                              "width": 400,
+                              "height": 160
+                            },
+                            "columns": [
+                              {
+                                "width": 200
+                              },
+                              {
+                                "width": 200
+                              }
+                            ],
+                            "rows": [
+                              {
+                                "height": 40,
+                                "cells": [
+                                  {
+                                    "text": {
+                                      "paragraphs": [
+                                        {
+                                          "portions": [
+                                            {
+                                              "text": "Name"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "text": {
+                                      "paragraphs": [
+                                        {
+                                          "portions": [
+                                            {
+                                              "text": "Value"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ]
+                              },
+                              {
+                                "height": 40,
+                                "cells": [
+                                  {
+                                    "text": {
+                                      "paragraphs": [
+                                        {
+                                          "portions": [
+                                            {
+                                              "text": "Alpha"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "text": {
+                                      "paragraphs": [
+                                        {
+                                          "portions": [
+                                            {
+                                              "text": "1"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            "x-request-body": {
+              "elements": [
+                {
+                  "name": "Simple table",
+                  "table": {
+                    "layout": {
+                      "left": 60,
+                      "top": 80,
+                      "width": 400,
+                      "height": 160
+                    },
+                    "columns": [
+                      {
+                        "width": 200
+                      },
+                      {
+                        "width": 200
+                      }
+                    ],
+                    "rows": [
+                      {
+                        "height": 40,
+                        "cells": [
+                          {
+                            "text": {
+                              "paragraphs": [
+                                {
+                                  "portions": [
+                                    {
+                                      "text": "Name"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "text": {
+                              "paragraphs": [
+                                {
+                                  "portions": [
+                                    {
+                                      "text": "Value"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "height": 40,
+                        "cells": [
+                          {
+                            "text": {
+                              "paragraphs": [
+                                {
+                                  "portions": [
+                                    {
+                                      "text": "Alpha"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "text": {
+                              "paragraphs": [
+                                {
+                                  "portions": [
+                                    {
+                                      "text": "1"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Missing Elements",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "missing_elements": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3830,
+                          "attribute": "zoho-inputstream : elements",
+                          "message": "Required parameter is missing or has fewer occurrences than required"
+                        }
+                      },
+                      "request_uri": "/api/v1/sdk/presentation/8i4vv3f345fcf907446a2bdc4e2c871fc585e/slides/54ca442b-63d1-43df-bda9-9f8cd2654e70/tables",
+                      "status": "error"
+                    },
+                    "summary": "Missing Elements",
+                    "x-request-body": {
+                      "elements": [
+                        {
+                          "name": "Simple table",
+                          "table": {
+                            "layout": {
+                              "left": 60,
+                              "top": 80,
+                              "width": 400,
+                              "height": 160
+                            },
+                            "columns": [
+                              {
+                                "width": 200
+                              },
+                              {
+                                "width": 200
+                              }
+                            ],
+                            "rows": [
+                              {
+                                "height": 40,
+                                "cells": [
+                                  {
+                                    "text": {
+                                      "paragraphs": [
+                                        {
+                                          "portions": [
+                                            {
+                                              "text": "Name"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "text": {
+                                      "paragraphs": [
+                                        {
+                                          "portions": [
+                                            {
+                                              "text": "Value"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ]
+                              },
+                              {
+                                "height": 40,
+                                "cells": [
+                                  {
+                                    "text": {
+                                      "paragraphs": [
+                                        {
+                                          "portions": [
+                                            {
+                                              "text": "Alpha"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "text": {
+                                      "paragraphs": [
+                                        {
+                                          "portions": [
+                                            {
+                                              "text": "1"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "missing_id": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3830,
+                          "attribute": "zoho-inputstream : id",
+                          "message": "Required parameter is missing or has fewer occurrences than required"
+                        }
+                      },
+                      "request_uri": "/api/v1/sdk/presentation/8i4vv3f345fcf907446a2bdc4e2c871fc585e/slides/54ca442b-63d1-43df-bda9-9f8cd2654e70/tables",
+                      "status": "error"
+                    },
+                    "summary": "Missing Id",
+                    "x-request-body": {
+                      "elements": [
+                        {
+                          "id": "a1000000-0000-4000-8000-000000000001",
+                          "name": "Simple table",
+                          "table": {
+                            "layout": {
+                              "left": 60,
+                              "top": 80,
+                              "width": 400,
+                              "height": 160
+                            },
+                            "columns": [
+                              {
+                                "width": 200
+                              },
+                              {
+                                "width": 200
+                              }
+                            ],
+                            "rows": [
+                              {
+                                "height": 40,
+                                "cells": [
+                                  {
+                                    "text": {
+                                      "paragraphs": [
+                                        {
+                                          "id": "3ce72c58-0537-52f0-bcac-8239fb7975fc",
+                                          "portions": [
+                                            {
+                                              "text": "Name"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "text": {
+                                      "paragraphs": [
+                                        {
+                                          "id": "3d8f1e0a-2eb0-5adc-9452-4dc3ef1ce3cd",
+                                          "portions": [
+                                            {
+                                              "text": "Value"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ]
+                              },
+                              {
+                                "height": 40,
+                                "cells": [
+                                  {
+                                    "text": {
+                                      "paragraphs": [
+                                        {
+                                          "id": "0f1ff96c-9596-5196-b296-a149d9c8e4b3",
+                                          "portions": [
+                                            {
+                                              "text": "Alpha"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "text": {
+                                      "paragraphs": [
+                                        {
+                                          "id": "2e4d2fcd-fe25-5e76-a6f3-24352e5a6b37",
+                                          "portions": [
+                                            {
+                                              "text": "1"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "invalid_id": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3832,
+                          "attribute": "zoho-inputstream : id",
+                          "message": "Parameter value does not match the required pattern"
+                        }
+                      },
+                      "request_uri": "/api/v1/sdk/presentation/8i4vv3f345fcf907446a2bdc4e2c871fc585e/slides/54ca442b-63d1-43df-bda9-9f8cd2654e70/tables",
+                      "status": "error"
+                    },
+                    "summary": "Invalid Id",
+                    "x-request-body": {
+                      "elements": [
+                        {
+                          "id": "a1000000-0000-4000-8000-000000000001",
+                          "name": "Simple table",
+                          "table": {
+                            "layout": {
+                              "left": 60,
+                              "top": 80,
+                              "width": 400,
+                              "height": 160
+                            },
+                            "columns": [
+                              {
+                                "width": 200
+                              },
+                              {
+                                "width": 200
+                              }
+                            ],
+                            "rows": [
+                              {
+                                "height": 40,
+                                "cells": [
+                                  {
+                                    "text": {
+                                      "paragraphs": [
+                                        {
+                                          "id": "3ce72c58-0537-52f0-bcac-8239fb7975fc",
+                                          "portions": [
+                                            {
+                                              "text": "Name"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "text": {
+                                      "paragraphs": [
+                                        {
+                                          "id": "3d8f1e0a-2eb0-5adc-9452-4dc3ef1ce3cd",
+                                          "portions": [
+                                            {
+                                              "text": "Value"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ]
+                              },
+                              {
+                                "height": 40,
+                                "cells": [
+                                  {
+                                    "text": {
+                                      "paragraphs": [
+                                        {
+                                          "id": "0f1ff96c-9596-5196-b296-a149d9c8e4b3",
+                                          "portions": [
+                                            {
+                                              "text": "Alpha"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "text": {
+                                      "paragraphs": [
+                                        {
+                                          "id": "2e4d2fcd-fe25-5e76-a6f3-24352e5a6b37",
+                                          "portions": [
+                                            {
+                                              "text": "1"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            "x-request-body": {
+              "elements": [
+                {
+                  "name": "Simple table",
+                  "table": {
+                    "layout": {
+                      "left": 60,
+                      "top": 80,
+                      "width": 400,
+                      "height": 160
+                    },
+                    "columns": [
+                      {
+                        "width": 200
+                      },
+                      {
+                        "width": 200
+                      }
+                    ],
+                    "rows": [
+                      {
+                        "height": 40,
+                        "cells": [
+                          {
+                            "text": {
+                              "paragraphs": [
+                                {
+                                  "portions": [
+                                    {
+                                      "text": "Name"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "text": {
+                              "paragraphs": [
+                                {
+                                  "portions": [
+                                    {
+                                      "text": "Value"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "height": 40,
+                        "cells": [
+                          {
+                            "text": {
+                              "paragraphs": [
+                                {
+                                  "portions": [
+                                    {
+                                      "text": "Alpha"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "text": {
+                              "paragraphs": [
+                                {
+                                  "portions": [
+                                    {
+                                      "text": "1"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedMissingOrInvalidAccessToken"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundAResourceNamedInThePathDoesNotEx"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceededThisOperationAllows30Re"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerErrorTheRequestCouldNotBeC"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PresentationId"
+          },
+          {
+            "$ref": "#/components/parameters/ContainerType"
+          },
+          {
+            "$ref": "#/components/parameters/ContainerId"
+          }
+        ],
+        "x-mcp-operation-type": "create",
+        "tags": [
+          "Tables"
+        ]
+      },
+      "get": {
+        "summary": "List one or more tables in a slide",
+        "security": [
+          {
+            "iam-oauth2-schema": [
+              "ZohoShow.showdocslist.READ"
+            ]
+          }
+        ],
+        "operationId": "getPresentationByPresentationIdByContainf7186a47",
+        "description": "List one or more tables in a slide",
+        "responses": {
+          "200": {
+            "description": "Tables Retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowEnvelope"
+                },
+                "examples": {
+                  "tables_retrieved": {
+                    "value": {
+                      "data": {
+                        "objects": [
+                          {
+                            "object_id": "b4110e84-9f7e-4e5e-a8ce-d9fc3736af5e",
+                            "content": {
+                              "name": "Seed",
+                              "id": "b4110e84-9f7e-4e5e-a8ce-d9fc3736af5e",
+                              "table": {
+                                "layout": {
+                                  "top": 80,
+                                  "left": 60,
+                                  "width": 400,
+                                  "height": 120
+                                },
+                                "columns": [
+                                  {
+                                    "width": 200
+                                  }
+                                ],
+                                "style_ref": {
+                                  "local_id": "1"
+                                },
+                                "style": {
+                                  "first_col": true,
+                                  "band_col": true,
+                                  "first_row": true,
+                                  "fill": {
+                                    "solid": {
+                                      "color": {
+                                        "hex": {
+                                          "value": "#000000"
+                                        }
+                                      }
+                                    }
+                                  }
+                                },
+                                "rows": [
+                                  {
+                                    "cells": [
+                                      {
+                                        "border": {
+                                          "top": {
+                                            "width": 0,
+                                            "type": "SOLID"
+                                          },
+                                          "left": {
+                                            "width": 0,
+                                            "type": "SOLID"
+                                          },
+                                          "bottom": {
+                                            "width": 0,
+                                            "type": "SOLID"
+                                          },
+                                          "right": {
+                                            "width": 0,
+                                            "type": "SOLID"
+                                          }
+                                        },
+                                        "text": {
+                                          "paragraphs": [
+                                            {
+                                              "style": {
+                                                "spacing": {
+                                                  "line": 1.2
+                                                },
+                                                "level": 1,
+                                                "halign": "LEFT"
+                                              },
+                                              "id": "4ebc6d2a-c0a7-4e8d-a1a3-4a983ae77d04",
+                                              "portions": [
+                                                {
+                                                  "style": {
+                                                    "size": 14,
+                                                    "color": {
+                                                      "rgb": {
+                                                        "red": 255,
+                                                        "green": 255,
+                                                        "blue": 255
+                                                      }
+                                                    },
+                                                    "font_name": {
+                                                      "name": "Open Sans"
+                                                    }
+                                                  }
+                                                }
+                                              ]
+                                            }
+                                          ],
+                                          "properties": {
+                                            "inset": {
+                                              "top": 5,
+                                              "left": 10,
+                                              "bottom": 5,
+                                              "right": 10
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ],
+                                    "height": 40
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        ],
+                        "container_id": "e0c287fb-000c-436b-be6d-cb2ac42f3cda"
+                      },
+                      "message": "Table(s) content retrieved successfully",
+                      "request_uri": "/api/v1/presentation/i6b0q7d7c08e73e494feda86c30e660626925/slides/e0c287fb-000c-436b-be6d-cb2ac42f3cda/tables",
+                      "status": "success"
+                    },
+                    "summary": "Tables Retrieved"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid Count",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "invalid_count": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3850,
+                          "attribute": "count",
+                          "message": "Parameter value is not valid for the expected type"
+                        }
+                      },
+                      "request_uri": "/api/v1/sdk/presentation/8i4vv3f345fcf907446a2bdc4e2c871fc585e/slides/54ca442b-63d1-43df-bda9-9f8cd2654e70/tables",
+                      "status": "error"
+                    },
+                    "summary": "Invalid Count"
+                  },
+                  "invalid_ids": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3832,
+                          "attribute": "ids",
+                          "message": "Parameter value does not match the required pattern"
+                        }
+                      },
+                      "request_uri": "/api/v1/sdk/presentation/8i4vv3f345fcf907446a2bdc4e2c871fc585e/slides/54ca442b-63d1-43df-bda9-9f8cd2654e70/tables",
+                      "status": "error"
+                    },
+                    "summary": "Invalid Ids"
+                  },
+                  "invalid_from": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3850,
+                          "attribute": "from",
+                          "message": "Parameter value is not valid for the expected type"
+                        }
+                      },
+                      "request_uri": "/api/v1/sdk/presentation/8i4vv3f345fcf907446a2bdc4e2c871fc585e/slides/54ca442b-63d1-43df-bda9-9f8cd2654e70/tables",
+                      "status": "error"
+                    },
+                    "summary": "Invalid From"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedMissingOrInvalidAccessToken"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundAResourceNamedInThePathDoesNotEx"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceededThisOperationAllows100R"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerErrorTheRequestCouldNotBeC"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PresentationId"
+          },
+          {
+            "$ref": "#/components/parameters/ContainerType"
+          },
+          {
+            "$ref": "#/components/parameters/ContainerId"
+          },
+          {
+            "$ref": "#/components/parameters/Ids2"
+          },
+          {
+            "$ref": "#/components/parameters/From"
+          },
+          {
+            "$ref": "#/components/parameters/Count"
+          }
+        ],
+        "x-mcp-operation-type": "read",
+        "tags": [
+          "Tables"
+        ]
+      },
+      "delete": {
+        "summary": "Delete one or more tables from a slide",
+        "security": [
+          {
+            "iam-oauth2-schema": [
+              "ZohoShow.showdocslist.DELETE"
+            ]
+          }
+        ],
+        "operationId": "deletePresentationByPresentationIdByCont29452ec2",
+        "description": "Delete one or more tables from a slide",
+        "responses": {
+          "200": {
+            "description": "Tables Deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowEnvelope"
+                },
+                "examples": {
+                  "tables_deleted": {
+                    "value": {
+                      "data": {
+                        "success_count": "2",
+                        "failure_count": "0",
+                        "results": [
+                          {
+                            "new_revision_id": "295",
+                            "object_id": "685546ab-e90b-4c72-87a4-25a0c8083c3b"
+                          },
+                          {
+                            "new_revision_id": "296",
+                            "object_id": "a080a9c0-8126-4503-b92f-a8db002a1785"
+                          }
+                        ]
+                      },
+                      "message": "Table(s) deleted successfully",
+                      "request_uri": "/api/v1/sdk/presentation/8i4vv3f345fcf907446a2bdc4e2c871fc585e/slides/54ca442b-63d1-43df-bda9-9f8cd2654e70/tables",
+                      "status": "success"
+                    },
+                    "summary": "Tables Deleted"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing Ids",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "missing_ids": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3831,
+                          "attribute": "ids",
+                          "message": "Required parameter is missing"
+                        }
+                      },
+                      "request_uri": "/api/v1/sdk/presentation/8i4vv3f345fcf907446a2bdc4e2c871fc585e/slides/54ca442b-63d1-43df-bda9-9f8cd2654e70/tables",
+                      "status": "error"
+                    },
+                    "summary": "Missing Ids"
+                  },
+                  "invalid_ids": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3832,
+                          "attribute": "ids",
+                          "message": "Parameter value does not match the required pattern"
+                        }
+                      },
+                      "request_uri": "/api/v1/sdk/presentation/8i4vv3f345fcf907446a2bdc4e2c871fc585e/slides/54ca442b-63d1-43df-bda9-9f8cd2654e70/tables",
+                      "status": "error"
+                    },
+                    "summary": "Invalid Ids"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedMissingOrInvalidAccessToken"
+          },
+          "404": {
+            "description": "Object Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "object_not_found": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "message": "Object not found: a1000000-0000-4000-8000-0000000000ff",
+                          "code": 3700
+                        }
+                      },
+                      "request_uri": "/api/v1/sdk/presentation/8i4vv3f345fcf907446a2bdc4e2c871fc585e/slides/54ca442b-63d1-43df-bda9-9f8cd2654e70/tables",
+                      "status": "error"
+                    },
+                    "summary": "Object Not Found"
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceededThisOperationAllows60Re"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerErrorTheRequestCouldNotBeC"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PresentationId"
+          },
+          {
+            "$ref": "#/components/parameters/ContainerType"
+          },
+          {
+            "$ref": "#/components/parameters/ContainerId"
+          },
+          {
+            "$ref": "#/components/parameters/Ids"
+          }
+        ],
+        "x-mcp-operation-type": "delete",
+        "tags": [
+          "Tables"
+        ]
+      },
+      "put": {
+        "summary": "Update one or more tables in a slide",
+        "security": [
+          {
+            "iam-oauth2-schema": [
+              "ZohoShow.showdocslist.UPDATE"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FlatPutTablesRequest"
+              }
+            }
+          }
+        },
+        "operationId": "updatePresentationByPresentationIdByCont9182a0f4",
+        "description": "Update one or more tables in a slide",
+        "responses": {
+          "200": {
+            "description": "Tables Updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowEnvelope"
+                },
+                "examples": {
+                  "tables_updated": {
+                    "value": {
+                      "data": {
+                        "success_count": "1",
+                        "failure_count": "0",
+                        "results": [
+                          {
+                            "id": "71e2e9e4-996b-498a-aa4d-fd027992c47d",
+                            "properties": {
+                              "style": {
+                                "table_id": "71e2e9e4-996b-498a-aa4d-fd027992c47d",
+                                "document_id": "5000000282907",
+                                "status": "success",
+                                "last_saved_version": "287"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "message": "Table(s) updated successfully",
+                      "request_uri": "/api/v1/sdk/presentation/8i4vv3f345fcf907446a2bdc4e2c871fc585e/slides/54ca442b-63d1-43df-bda9-9f8cd2654e70/tables",
+                      "status": "success"
+                    },
+                    "summary": "Tables Updated",
+                    "x-request-body": {
+                      "elements": [
+                        {
+                          "id": "a1000000-0000-4000-8000-000000000002",
+                          "properties": {
+                            "style": {
+                              "first_row": true,
+                              "last_row": true,
+                              "band_col": true,
+                              "fill": {
+                                "solid": {
+                                  "color": {
+                                    "rgb": {
+                                      "red": 245,
+                                      "green": 245,
+                                      "blue": 245
+                                    }
+                                  }
+                                }
+                              },
+                              "stroke": {
+                                "type": "SOLID",
+                                "width": 1
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "table_layout_updated": {
+                    "value": {
+                      "data": {
+                        "success_count": 1,
+                        "failure_count": 0,
+                        "results": [
+                          {
+                            "id": "c527f3b3-6209-4b78-9473-2cbe8cee66db",
+                            "properties": {
+                              "layout": {
+                                "applied": true,
+                                "shape_id": "c527f3b3-6209-4b78-9473-2cbe8cee66db",
+                                "status": "success",
+                                "last_saved_version": "5"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "message": "Table(s) updated successfully",
+                      "request_uri": "/api/v1/presentation/i6b0q7d7c08e73e494feda86c30e660626925/slides/16de8bbd-3246-40b2-8cf4-da91bf250713/tables",
+                      "status": "success"
+                    },
+                    "summary": "Table layout updated",
+                    "x-request-body": {
+                      "elements": [
+                        {
+                          "id": "c527f3b3-6209-4b78-9473-2cbe8cee66db",
+                          "properties": {
+                            "layout": {
+                              "left": 57.605,
+                              "top": 205,
+                              "width": 300.25,
+                              "height": 120.5
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            "x-request-body": {
+              "elements": [
+                {
+                  "id": "a1000000-0000-4000-8000-000000000002",
+                  "properties": {
+                    "style": {
+                      "first_row": true,
+                      "last_row": true,
+                      "band_col": true,
+                      "fill": {
+                        "solid": {
+                          "color": {
+                            "rgb": {
+                              "red": 245,
+                              "green": 245,
+                              "blue": 245
+                            }
+                          }
+                        }
+                      },
+                      "stroke": {
+                        "type": "SOLID",
+                        "width": 1
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Missing Elements",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "missing_elements": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 4101,
+                          "rid": "8i4vv3f345fcf907446a2bdc4e2c871fc585e",
+                          "slide_id": "54ca442b-63d1-43df-bda9-9f8cd2654e70",
+                          "sdk_error_code": "4101",
+                          "message": "Request must include a non-empty 'elements' array"
+                        }
+                      },
+                      "request_uri": "/api/v1/sdk/presentation/8i4vv3f345fcf907446a2bdc4e2c871fc585e/slides/54ca442b-63d1-43df-bda9-9f8cd2654e70/tables",
+                      "status": "error"
+                    },
+                    "summary": "Missing Elements",
+                    "x-request-body": {
+                      "elements": [
+                        {
+                          "id": "a1000000-0000-4000-8000-000000000002",
+                          "properties": {
+                            "style": {
+                              "first_row": true,
+                              "last_row": true,
+                              "band_col": true,
+                              "fill": {
+                                "solid": {
+                                  "color": {
+                                    "rgb": {
+                                      "red": 245,
+                                      "green": 245,
+                                      "blue": 245
+                                    }
+                                  }
+                                }
+                              },
+                              "stroke": {
+                                "type": "SOLID",
+                                "width": 1
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "missing_id": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3830,
+                          "attribute": "zoho-inputstream : id",
+                          "message": "Required parameter is missing or has fewer occurrences than required"
+                        }
+                      },
+                      "request_uri": "/api/v1/sdk/presentation/8i4vv3f345fcf907446a2bdc4e2c871fc585e/slides/54ca442b-63d1-43df-bda9-9f8cd2654e70/tables",
+                      "status": "error"
+                    },
+                    "summary": "Missing Id",
+                    "x-request-body": {
+                      "elements": [
+                        {
+                          "id": "a1000000-0000-4000-8000-000000000002",
+                          "properties": {
+                            "style": {
+                              "first_row": true,
+                              "last_row": true,
+                              "band_col": true,
+                              "fill": {
+                                "solid": {
+                                  "color": {
+                                    "rgb": {
+                                      "red": 245,
+                                      "green": 245,
+                                      "blue": 245
+                                    }
+                                  }
+                                }
+                              },
+                              "stroke": {
+                                "type": "SOLID",
+                                "width": 1
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            "x-request-body": {
+              "elements": [
+                {
+                  "id": "a1000000-0000-4000-8000-000000000002",
+                  "properties": {
+                    "style": {
+                      "first_row": true,
+                      "last_row": true,
+                      "band_col": true,
+                      "fill": {
+                        "solid": {
+                          "color": {
+                            "rgb": {
+                              "red": 245,
+                              "green": 245,
+                              "blue": 245
+                            }
+                          }
+                        }
+                      },
+                      "stroke": {
+                        "type": "SOLID",
+                        "width": 1
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedMissingOrInvalidAccessToken"
+          },
+          "404": {
+            "description": "Object Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "object_not_found": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "message": "Object not found: a1000000-0000-4000-8000-0000000000ff",
+                          "code": 3700
+                        }
+                      },
+                      "request_uri": "/api/v1/sdk/presentation/8i4vv3f345fcf907446a2bdc4e2c871fc585e/slides/54ca442b-63d1-43df-bda9-9f8cd2654e70/tables",
+                      "status": "error"
+                    },
+                    "summary": "Object Not Found",
+                    "x-request-body": {
+                      "elements": [
+                        {
+                          "id": "a1000000-0000-4000-8000-000000000002",
+                          "properties": {
+                            "style": {
+                              "first_row": true,
+                              "last_row": true,
+                              "band_col": true,
+                              "fill": {
+                                "solid": {
+                                  "color": {
+                                    "rgb": {
+                                      "red": 245,
+                                      "green": 245,
+                                      "blue": 245
+                                    }
+                                  }
+                                }
+                              },
+                              "stroke": {
+                                "type": "SOLID",
+                                "width": 1
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            "x-request-body": {
+              "elements": [
+                {
+                  "id": "a1000000-0000-4000-8000-000000000002",
+                  "properties": {
+                    "style": {
+                      "first_row": true,
+                      "last_row": true,
+                      "band_col": true,
+                      "fill": {
+                        "solid": {
+                          "color": {
+                            "rgb": {
+                              "red": 245,
+                              "green": 245,
+                              "blue": 245
+                            }
+                          }
+                        }
+                      },
+                      "stroke": {
+                        "type": "SOLID",
+                        "width": 1
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceededThisOperationAllows60Re"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerErrorTheRequestCouldNotBeC"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PresentationId"
+          },
+          {
+            "$ref": "#/components/parameters/ContainerType"
+          },
+          {
+            "$ref": "#/components/parameters/ContainerId"
+          }
+        ],
+        "x-mcp-operation-type": "update",
+        "tags": [
+          "Tables"
+        ]
+      }
+    }
+  },
+  "info": {
+    "description": "Create and modify presentation tables, rows, columns and cells.",
+    "title": "Tables",
+    "version": "1.0.0"
+  },
+  "tags": [
+    {
+      "name": "Tables",
+      "description": "Create and modify presentation tables, rows, columns and cells."
+    }
+  ]
+}

@@ -1,0 +1,1053 @@
+{
+  "components": {
+    "schemas": {
+      "ShareParamsRequest": {
+        "type": "object",
+        "properties": {
+          "email_id": {
+            "pattern": "^(?:[a-zA-Z0-9 ._@+\\-,]*)$",
+            "description": "Email address or Zoho username identifying a single member of the presentation.",
+            "type": "string"
+          }
+        }
+      },
+      "ShareDocumentParamsRequest": {
+        "type": "object",
+        "properties": {
+          "email_ids": {
+            "pattern": "^(?:[a-zA-Z0-9 ._@+\\-,]*)$",
+            "description": "Comma-separated email addresses  to share the presentation with, up to 255 characters in total.",
+            "type": "string",
+            "maxLength": 255
+          },
+          "role": {
+            "description": "Access level granted to every recipient in this request, in increasing order of access: VIEWER may only read, COMMENTOR may read and comment, COLLABORATOR may read and edit, COOWNER may also manage the presentation and its members. Mandatory.",
+            "type": "string",
+            "enum": [
+              "VIEWER",
+              "COLLABORATOR",
+              "COOWNER",
+              "COMMENTOR"
+            ]
+          },
+          "allow_sharing_outside": {
+            "description": "Whether the recipients may share the presentation onward with people who are not already on it. They cannot when omitted.",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "role"
+        ]
+      },
+      "ShowEnvelope": {
+        "description": "Standard Zoho Show response envelope.",
+        "type": "object",
+        "properties": {
+          "data": {
+            "description": "Operation payload; endpoint-specific schemas narrow this where available.",
+            "type": "object"
+          },
+          "message": {
+            "type": "string"
+          },
+          "request_uri": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      },
+      "ShowError": {
+        "description": "Standard Zoho Show error response.",
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "details": {
+                "additionalProperties": true,
+                "type": "object",
+                "properties": {
+                  "error_code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "request_uri": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      },
+      "UpdateRoleParamsRequest": {
+        "type": "object",
+        "properties": {
+          "share_params": {
+            "description": "Identifies the existing member whose access level is being changed, by email address or username.",
+            "type": "object",
+            "properties": {
+              "email_id": {
+                "pattern": "^(?:[a-zA-Z0-9 ._@+\\-,]*)$",
+                "description": "Email address or Zoho username identifying a single member of the presentation.",
+                "type": "string"
+              }
+            }
+          },
+          "role": {
+            "description": "New access level for that member: VIEWER, COMMENTOR, COLLABORATOR or COOWNER, in increasing order of access. Mandatory.",
+            "type": "string",
+            "enum": [
+              "VIEWER",
+              "COLLABORATOR",
+              "COOWNER",
+              "COMMENTOR"
+            ]
+          }
+        },
+        "required": [
+          "role"
+        ]
+      }
+    },
+    "responses": {
+      "SuccessfulResponse": {
+        "description": "Successful response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowEnvelope"
+            }
+          }
+        }
+      },
+      "InternalServerErrorTheRequestCouldNotBeC": {
+        "description": "Internal server error - the request could not be completed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      },
+      "InvalidRequestValidationFailed": {
+        "description": "Invalid request - validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      },
+      "RateLimitExceededThisOperationAllows60Re": {
+        "description": "Rate limit exceeded - this operation allows 60 requests per 1M",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      },
+      "UnauthorizedMissingOrInvalidAccessToken": {
+        "description": "Unauthorized - missing or invalid access token",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      },
+      "NotFoundAResourceNamedInThePathDoesNotEx": {
+        "description": "Not found - a resource named in the path does not exist or is not visible",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "iam-oauth2-schema": {
+        "flows": {
+          "authorizationCode": {
+            "tokenUrl": "https://accounts.zoho.com/oauth/v2/token",
+            "authorizationUrl": "https://accounts.zoho.com/oauth/v2/auth",
+            "scopes": {
+              "ZohoShow.showdocslist.READ": "Read presentations, metadata, and document content",
+              "ZohoShow.showdocslist.UPDATE": "Update presentations, metadata, and document content",
+              "ZohoShow.fullaccess.ALL": "Create, read, update and delete presentations and presentation resources through Show MCP",
+              "ZohoShow.showdocslist.CREATE": "Create presentations and presentation resources",
+              "ZohoShow.showdocslist.DELETE": "Delete presentations and presentation resources"
+            }
+          }
+        },
+        "description": "OAuth 2.0 through Zoho Accounts. For a non-US edition, use the matching host from x-show-accounts-hosts; Canada uses accounts.zohocloud.ca.",
+        "type": "oauth2",
+        "x-show-accounts-hosts": {
+          "EU": "accounts.zoho.eu",
+          "LOCALZOHO": "accounts.localzoho.com",
+          "AU": "accounts.zoho.com.au",
+          "SG": "accounts.zoho.sg",
+          "IN": "accounts.zoho.in",
+          "JP": "accounts.zoho.jp",
+          "UK": "accounts.zoho.uk",
+          "UAE": "accounts.zoho.ae",
+          "CN": "accounts.zoho.com.cn",
+          "US": "accounts.zoho.com",
+          "CA": "accounts.zohocloud.ca",
+          "SA": "accounts.zoho.sa"
+        },
+        "x-show-data-centre": "US"
+      }
+    },
+    "parameters": {
+      "Fields": {
+        "schema": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "in": "query",
+        "name": "fields",
+        "description": "Comma-separated field names to include on each result; omit for all.",
+        "required": false
+      },
+      "PresentationId": {
+        "schema": {
+          "type": "string"
+        },
+        "in": "path",
+        "name": "presentation_id",
+        "description": "The unique identifier of the presentation",
+        "required": true
+      }
+    }
+  },
+  "servers": [
+    {
+      "description": "US DC",
+      "url": "https://show.zoho.com"
+    },
+    {
+      "description": "IN DC",
+      "url": "https://show.zoho.in"
+    },
+    {
+      "description": "CT1 DC",
+      "url": "https://show.localzoho.com"
+    },
+    {
+      "description": "AU DC",
+      "url": "https://show.zoho.com.au"
+    },
+    {
+      "description": "CA DC",
+      "url": "https://show.zohocloud.ca"
+    },
+    {
+      "description": "EU DC",
+      "url": "https://show.zoho.eu"
+    },
+    {
+      "description": "SA DC",
+      "url": "https://show.zoho.sa"
+    },
+    {
+      "description": "UAE DC",
+      "url": "https://show.zoho.ae"
+    },
+    {
+      "description": "CN DC",
+      "url": "https://show.zoho.com.cn"
+    },
+    {
+      "description": "JP DC",
+      "url": "https://show.zoho.jp"
+    },
+    {
+      "description": "SG DC",
+      "url": "https://show.zoho.sg"
+    },
+    {
+      "description": "UK DC",
+      "url": "https://show.zoho.uk"
+    }
+  ],
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v1/presentation/{presentation_id}/members": {
+      "post": {
+        "summary": "Share Document using restapi",
+        "security": [
+          {
+            "iam-oauth2-schema": [
+              "ZohoShow.showdocslist.UPDATE"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShareDocumentParamsRequest"
+              }
+            }
+          }
+        },
+        "operationId": "createPresentationByPresentationIdMembers",
+        "description": "Share Document using restapi",
+        "responses": {
+          "201": {
+            "description": "Members added",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowEnvelope"
+                },
+                "examples": {
+                  "members_added": {
+                    "value": {
+                      "data": {
+                        "result": {
+                          "shared_users": {
+                            "viewer": [
+                              "127881604"
+                            ]
+                          }
+                        },
+                        "status": "true"
+                      },
+                      "message": "Presentation members shared",
+                      "request_uri": "/api/v1/presentation/i6b0q7d7c08e73e494feda86c30e660626925/members",
+                      "status": "success"
+                    },
+                    "summary": "Members added",
+                    "x-request-body": {
+                      "email_ids": "user@example.com",
+                      "role": "VIEWER"
+                    }
+                  },
+                  "presentation_already_shared": {
+                    "value": {
+                      "data": {
+                        "result": {
+                          "shared_users": {
+                            "viewer": [
+                              "93703623"
+                            ]
+                          }
+                        },
+                        "status": "true"
+                      },
+                      "message": "Presentation members shared",
+                      "request_uri": "/api/v1/presentation/7fgg637ac6060b3f24b368cafcbd2652f292c/members",
+                      "status": "success"
+                    },
+                    "summary": "Presentation already shared",
+                    "x-request-body": {
+                      "email_ids": "{{email_ids}}",
+                      "role": "VIEWER",
+                      "allow_sharing_outside": "true"
+                    }
+                  },
+                  "members_added_as_commentor": {
+                    "value": {
+                      "data": {
+                        "result": {
+                          "shared_users": {
+                            "commentor": [
+                              "127881604"
+                            ]
+                          }
+                        },
+                        "status": "true"
+                      },
+                      "message": "Presentation members shared",
+                      "request_uri": "/api/v1/presentation/8i4vv3f345fcf907446a2bdc4e2c871fc585e/members",
+                      "status": "success"
+                    },
+                    "summary": "Members added (role COMMENTOR)",
+                    "x-request-body": {
+                      "email_ids": "user@example.com",
+                      "role": "COMMENTOR"
+                    }
+                  },
+                  "members_added_as_collaborator": {
+                    "value": {
+                      "data": {
+                        "result": {
+                          "shared_users": {
+                            "collaborator": [
+                              "127881604"
+                            ]
+                          }
+                        },
+                        "status": "true"
+                      },
+                      "message": "Presentation members shared",
+                      "request_uri": "/api/v1/presentation/8i4vv3f345fcf907446a2bdc4e2c871fc585e/members",
+                      "status": "success"
+                    },
+                    "summary": "Members added (role COLLABORATOR)",
+                    "x-request-body": {
+                      "email_ids": "user@example.com",
+                      "role": "COLLABORATOR"
+                    }
+                  },
+                  "members_added_as_coowner": {
+                    "value": {
+                      "data": {
+                        "result": {
+                          "shared_users": {
+                            "coowner": [
+                              "127881604"
+                            ]
+                          }
+                        },
+                        "status": "true"
+                      },
+                      "message": "Presentation members shared",
+                      "request_uri": "/api/v1/presentation/8i4vv3f345fcf907446a2bdc4e2c871fc585e/members",
+                      "status": "success"
+                    },
+                    "summary": "Members added (role COOWNER)",
+                    "x-request-body": {
+                      "email_ids": "user@example.com",
+                      "role": "COOWNER"
+                    }
+                  }
+                }
+              }
+            },
+            "x-request-body": {
+              "email_ids": "user@example.com",
+              "role": "VIEWER"
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequestValidationFailed"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedMissingOrInvalidAccessToken"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundAResourceNamedInThePathDoesNotEx"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceededThisOperationAllows60Re"
+          },
+          "500": {
+            "description": "Not authorized to share",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "not_authorized_to_share": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "message": "UN-AUTHORIZED ACTION",
+                          "code": 1002
+                        }
+                      },
+                      "request_uri": "/api/v1/presentation/gcxuu5e63b5d35661468a831744345012e1f4/members",
+                      "status": "error"
+                    },
+                    "summary": "Not authorized to share",
+                    "x-request-body": {
+                      "email_ids": "{{email_ids}}",
+                      "role": "VIEWER",
+                      "allow_sharing_outside": "true"
+                    }
+                  }
+                }
+              }
+            },
+            "x-request-body": {
+              "email_ids": "{{email_ids}}",
+              "role": "VIEWER",
+              "allow_sharing_outside": "true"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PresentationId"
+          }
+        ],
+        "x-mcp-operation-type": "update",
+        "tags": [
+          "Members"
+        ]
+      },
+      "get": {
+        "summary": "Get shared users for a presentation",
+        "security": [
+          {
+            "iam-oauth2-schema": [
+              "ZohoShow.showdocslist.READ"
+            ]
+          }
+        ],
+        "operationId": "getPresentationByPresentationIdMembers",
+        "description": "Get shared users for a presentation",
+        "responses": {
+          "200": {
+            "description": "Shared Members Retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowEnvelope"
+                },
+                "examples": {
+                  "shared_members_retrieved": {
+                    "value": {
+                      "data": {
+                        "shared_users": [
+                          {
+                            "encrypted_user_id": "35ba91a9d8cb643320db79782a19d131",
+                            "primary_email": "user@example.com",
+                            "role": "VIEWER",
+                            "display_name": "Sample User",
+                            "user_id": "93703623"
+                          },
+                          {
+                            "encrypted_user_id": "df37321cb4d4723d20725cf6a8bd04c8",
+                            "primary_email": "user@example.com",
+                            "role": "COOWNER",
+                            "user_type": 3,
+                            "display_name": "Sample User",
+                            "user_id": "93600994"
+                          }
+                        ]
+                      },
+                      "message": "Shared users retrieved",
+                      "request_uri": "/api/v1/presentation/7fgg637ac6060b3f24b368cafcbd2652f292c/members",
+                      "status": "success"
+                    },
+                    "summary": "Shared Members Retrieved"
+                  },
+                  "field_specific_response": {
+                    "value": {
+                      "data": {
+                        "shared_users": [
+                          {
+                            "user_id": "93703623",
+                            "display_name": "Sample User"
+                          },
+                          {
+                            "user_id": "93600994",
+                            "display_name": "Sample User"
+                          }
+                        ]
+                      },
+                      "message": "Shared users retrieved",
+                      "request_uri": "/api/v1/presentation/7fgg637ac6060b3f24b368cafcbd2652f292c/members",
+                      "status": "success"
+                    },
+                    "summary": "Field Specific Response"
+                  },
+                  "no_permission_to_trash": {
+                    "value": {
+                      "data": {
+                        "shared_users": [
+                          {
+                            "user_id": "62510729",
+                            "display_name": "sivakumar.mp+1"
+                          },
+                          {
+                            "user_id": "93600994",
+                            "display_name": "Sample User"
+                          },
+                          {
+                            "user_id": "74753604",
+                            "display_name": "Kishore"
+                          }
+                        ]
+                      },
+                      "message": "Shared users retrieved",
+                      "request_uri": "/api/v1/presentation/gcxuu5e63b5d35661468a831744345012e1f4/members",
+                      "status": "success"
+                    },
+                    "summary": "No permission to trash"
+                  },
+                  "all_fields_requested": {
+                    "value": {
+                      "data": {
+                        "shared_users": [
+                          {
+                            "role": "OWNER",
+                            "added_time": "",
+                            "user_id": "93703623",
+                            "permission": "",
+                            "display_name": "Sample User",
+                            "email": ""
+                          },
+                          {
+                            "role": "VIEWER",
+                            "added_time": "",
+                            "user_id": "93703624",
+                            "permission": "",
+                            "display_name": "Sample User",
+                            "email": ""
+                          }
+                        ]
+                      },
+                      "message": "Shared users retrieved",
+                      "request_uri": "/api/v1/presentation/m71vz5f46c9524f8744aa8a9c1083ac843713/members",
+                      "status": "success"
+                    },
+                    "summary": "All fields requested (fields=...)"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequestValidationFailed"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedMissingOrInvalidAccessToken"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundAResourceNamedInThePathDoesNotEx"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceededThisOperationAllows60Re"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerErrorTheRequestCouldNotBeC"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PresentationId"
+          },
+          {
+            "$ref": "#/components/parameters/Fields"
+          }
+        ],
+        "x-mcp-operation-type": "read",
+        "tags": [
+          "Members"
+        ]
+      },
+      "delete": {
+        "summary": "remove permission for a presentation",
+        "security": [
+          {
+            "iam-oauth2-schema": [
+              "ZohoShow.showdocslist.DELETE"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShareParamsRequest"
+              }
+            }
+          }
+        },
+        "operationId": "deletePresentationByPresentationIdMembers",
+        "description": "remove permission for a presentation",
+        "responses": {
+          "200": {
+            "description": "Member removed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowEnvelope"
+                },
+                "examples": {
+                  "member_removed": {
+                    "value": {
+                      "data": {
+                        "status": true
+                      },
+                      "message": "Share removed",
+                      "request_uri": "/api/v1/presentation/cpnv3d0203ec89cba4207ba255d785dfe125c/members",
+                      "status": "success"
+                    },
+                    "summary": "Member removed",
+                    "x-request-body": {
+                      "email_id": "{{email_id}}"
+                    }
+                  }
+                }
+              }
+            },
+            "x-request-body": {
+              "email_id": "{{email_id}}"
+            }
+          },
+          "400": {
+            "description": "Non Member",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "non_member": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "message": "User is not shared on this resource",
+                          "code": 1004
+                        }
+                      },
+                      "request_uri": "/api/v1/presentation/v5y0m2387f5f6ef774ed3ac5382b7e4846ae3/members",
+                      "status": "error"
+                    },
+                    "summary": "Non Member",
+                    "x-request-body": {
+                      "email_id": "{{email_id}}"
+                    }
+                  },
+                  "invalid_resource_id": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3850,
+                          "message": "The resource ID is invalid"
+                        }
+                      },
+                      "request_uri": "/api/v1/presentation/sample_id/members",
+                      "status": "error"
+                    },
+                    "summary": "Invalid Resource ID"
+                  }
+                }
+              }
+            },
+            "x-request-body": {
+              "email_id": "{{email_id}}"
+            }
+          },
+          "401": {
+            "description": "Missing OAuth Token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "missing_oauth_token": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3420,
+                          "message": "The OAuth token is missing, expired, or invalid"
+                        }
+                      },
+                      "request_uri": "/api/v1/presentation/sample_id/members",
+                      "status": "error"
+                    },
+                    "summary": "Missing OAuth Token"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundAResourceNamedInThePathDoesNotEx"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceededThisOperationAllows60Re"
+          },
+          "500": {
+            "description": "Unshared Presentation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "unshared_presentation": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "message": "User is not shared on this resource",
+                          "code": 1004
+                        }
+                      },
+                      "request_uri": "/api/v1/presentation/1bpt269f6a3cf20684f49b2c9926526401fbd/members",
+                      "status": "error"
+                    },
+                    "summary": "Unshared Presentation",
+                    "x-request-body": {
+                      "email_id": "{{email_id}}"
+                    }
+                  }
+                }
+              }
+            },
+            "x-request-body": {
+              "email_id": "{{email_id}}"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PresentationId"
+          }
+        ],
+        "x-mcp-operation-type": "delete",
+        "tags": [
+          "Members"
+        ]
+      },
+      "put": {
+        "summary": "update the role for a presentation",
+        "security": [
+          {
+            "iam-oauth2-schema": [
+              "ZohoShow.showdocslist.UPDATE"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRoleParamsRequest"
+              }
+            }
+          }
+        },
+        "operationId": "updatePresentationByPresentationIdMembers",
+        "description": "update the role for a presentation",
+        "responses": {
+          "200": {
+            "description": "Member Role Updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowEnvelope"
+                },
+                "examples": {
+                  "member_role_updated": {
+                    "value": {
+                      "data": {
+                        "status": true
+                      },
+                      "message": "User role updated",
+                      "request_uri": "/api/v1/presentation/cpnv3d0203ec89cba4207ba255d785dfe125c/members",
+                      "status": "success"
+                    },
+                    "summary": "Member Role Updated",
+                    "x-request-body": {
+                      "share_params": {
+                        "email_id": "{{email_id}}"
+                      },
+                      "role": "COOWNER"
+                    }
+                  }
+                }
+              }
+            },
+            "x-request-body": {
+              "share_params": {
+                "email_id": "{{email_id}}"
+              },
+              "role": "COOWNER"
+            }
+          },
+          "400": {
+            "description": "Invalid Resource ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "invalid_resource_id": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3850,
+                          "message": "The resource ID is invalid"
+                        }
+                      },
+                      "request_uri": "/api/v1/presentation/sample_id/members",
+                      "status": "error"
+                    },
+                    "summary": "Invalid Resource ID",
+                    "x-request-body": {
+                      "share_params": {
+                        "email_id": "{{email_id}}"
+                      },
+                      "role": "COOWNER"
+                    }
+                  }
+                }
+              }
+            },
+            "x-request-body": {
+              "share_params": {
+                "email_id": "{{email_id}}"
+              },
+              "role": "COOWNER"
+            }
+          },
+          "401": {
+            "description": "Missing OAuth Token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "missing_oauth_token": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3420,
+                          "message": "The OAuth token is missing, expired, or invalid"
+                        }
+                      },
+                      "request_uri": "/api/v1/presentation/sample_id/members",
+                      "status": "error"
+                    },
+                    "summary": "Missing OAuth Token",
+                    "x-request-body": {
+                      "share_params": {
+                        "email_id": "{{email_id}}"
+                      },
+                      "role": "COOWNER"
+                    }
+                  }
+                }
+              }
+            },
+            "x-request-body": {
+              "share_params": {
+                "email_id": "{{email_id}}"
+              },
+              "role": "COOWNER"
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundAResourceNamedInThePathDoesNotEx"
+          },
+          "405": {
+            "description": "Invalid Method",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "invalid_method": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3922,
+                          "message": "The HTTP method used is not allowed for this endpoint"
+                        }
+                      },
+                      "request_uri": "/api/v1/presentation/sample_id/members",
+                      "status": "error"
+                    },
+                    "summary": "Invalid Method",
+                    "x-request-body": {
+                      "share_params": {
+                        "email_id": "{{email_id}}"
+                      },
+                      "role": "COOWNER"
+                    }
+                  }
+                }
+              }
+            },
+            "x-request-body": {
+              "share_params": {
+                "email_id": "{{email_id}}"
+              },
+              "role": "COOWNER"
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceededThisOperationAllows60Re"
+          },
+          "500": {
+            "description": "User not shared on this presentation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "user_not_shared_on_this_presentation": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "message": "User is not shared on this resource",
+                          "code": 1004
+                        }
+                      },
+                      "request_uri": "/api/v1/presentation/v5y0m2387f5f6ef774ed3ac5382b7e4846ae3/members",
+                      "status": "error"
+                    },
+                    "summary": "User not shared on this presentation",
+                    "x-request-body": {
+                      "share_params": {
+                        "email_id": "{{email_id}}"
+                      },
+                      "role": "COOWNER"
+                    }
+                  }
+                }
+              }
+            },
+            "x-request-body": {
+              "share_params": {
+                "email_id": "{{email_id}}"
+              },
+              "role": "COOWNER"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PresentationId"
+          }
+        ],
+        "x-mcp-operation-type": "update",
+        "tags": [
+          "Members"
+        ]
+      }
+    }
+  },
+  "info": {
+    "description": "Share presentations and manage member roles.",
+    "title": "Members (Sharing)",
+    "version": "1.0.0"
+  },
+  "tags": [
+    {
+      "name": "Members",
+      "description": "Share presentations and manage member roles."
+    }
+  ]
+}

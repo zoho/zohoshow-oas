@@ -1,0 +1,2336 @@
+{
+  "components": {
+    "schemas": {
+      "CreateDocumentParamsRequest": {
+        "description": "Accepted keys: file_name (required; the document name, up to 255 characters), optional team_id (numeric team space id; omit for the personal space) and optional theme_id (numeric id from getthemes; unknown ids are rejected). The new document has one default title slide. The response carries the resource id to use as presentation_id in every other tool.",
+        "type": "object",
+        "properties": {
+          "file_name": {
+            "pattern": "^(?:[0-9a-zA-Z_~`#%&\\^\\*\\(\\)\\{\\}\\[\\]\\+\\*\\|=\\-\\.\\$@\\?,:;>\\\\'\\/!\\u0080-\\uFFFF\\s<\"]+)$",
+            "description": "Name given to the new presentation, up to 255 characters. Letters, digits, spaces, common punctuation and non-Latin characters are accepted. Mandatory.",
+            "type": "string",
+            "maxLength": 255
+          },
+          "theme_id": {
+            "format": "int64",
+            "description": "Id of the theme applied to the new presentation, which sets its colors, fonts and slide layouts. The default theme is used when omitted.",
+            "type": "integer"
+          },
+          "team_id": {
+            "format": "int64",
+            "description": "Id of the team workspace the presentation is created in. The caller's default team is used when omitted.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "file_name"
+        ]
+      },
+      "ResourceIdsParamsRequest": {
+        "type": "object",
+        "properties": {
+          "resource_ids": {
+            "pattern": "^(?:([a-zA-Z0-9]{37},?)+)$",
+            "description": "Comma-separated ids of the presentations to act on, each a 37-character alphanumeric string. Mandatory.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "resource_ids"
+        ]
+      },
+      "ShowEnvelope": {
+        "description": "Standard Zoho Show response envelope.",
+        "type": "object",
+        "properties": {
+          "data": {
+            "description": "Operation payload; endpoint-specific schemas narrow this where available.",
+            "type": "object"
+          },
+          "message": {
+            "type": "string"
+          },
+          "request_uri": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      },
+      "DocumentMetaRequest": {
+        "type": "object",
+        "properties": {
+          "file_name": {
+            "pattern": "^(?:[0-9a-zA-Z_~`#%&\\^\\*\\(\\)\\{\\}\\[\\]\\+\\*\\|=\\-\\.\\$@\\?,:;>\\\\'\\/!\\u0080-\\uFFFF\\s<\"]+)$",
+            "description": "New name for the presentation, up to 255 characters. Mandatory.",
+            "type": "string",
+            "maxLength": 255
+          }
+        },
+        "required": [
+          "file_name"
+        ]
+      },
+      "ShowError": {
+        "description": "Standard Zoho Show error response.",
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "details": {
+                "additionalProperties": true,
+                "type": "object",
+                "properties": {
+                  "error_code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "request_uri": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      },
+      "DuplicateDocumentParamsRequest": {
+        "type": "object",
+        "properties": {
+          "remove_comments": {
+            "description": "Whether to leave the source presentation's comments out of the duplicate. Comments are carried over when omitted.",
+            "type": "boolean"
+          },
+          "new_name": {
+            "pattern": "^(?:[0-9a-zA-Z_~`#%&\\^\\*\\(\\)\\{\\}\\[\\]\\+\\*\\|=\\-\\.\\$@\\?,:;>\\\\'\\/!\\u0080-\\uFFFF\\s<\"]+)$",
+            "description": "Name for the duplicate, up to 255 characters. The source presentation's name with a copy suffix is used when omitted.",
+            "type": "string",
+            "maxLength": 255
+          }
+        }
+      },
+      "ExportFileParamsRequest": {
+        "type": "object",
+        "properties": {
+          "password": {
+            "pattern": "^(?:password)$",
+            "description": "Password to protect the downloaded file with. Supported for pptx, ppsx and pdf only.",
+            "type": "string"
+          },
+          "format": {
+            "description": "Format to export to: pptx, ppsx, ppt, pps, odp or pdf. Mandatory.",
+            "type": "string",
+            "maxLength": 10,
+            "enum": [
+              "pptx",
+              "ppsx",
+              "ppt",
+              "pps",
+              "odp",
+              "pdf"
+            ]
+          },
+          "version_id": {
+            "pattern": "^(([0-9]*)|([a-zA-Z0-9_-]+)|unsaved)$",
+            "description": "Resource version of the presentation to export. The current version is exported when omitted.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "format"
+        ]
+      }
+    },
+    "responses": {
+      "SuccessfulResponse": {
+        "description": "Successful response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowEnvelope"
+            }
+          }
+        }
+      },
+      "InternalServerErrorTheRequestCouldNotBeC": {
+        "description": "Internal server error - the request could not be completed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      },
+      "RateLimitExceededThisOperationAllows100R": {
+        "description": "Rate limit exceeded - this operation allows 100 requests per 1M",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      },
+      "RateLimitExceededThisOperationAllows10Re": {
+        "description": "Rate limit exceeded - this operation allows 10 requests per 1M",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      },
+      "InvalidRequestValidationFailed": {
+        "description": "Invalid request - validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      },
+      "RateLimitExceededThisOperationAllows60Re": {
+        "description": "Rate limit exceeded - this operation allows 60 requests per 1M",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      },
+      "UnauthorizedMissingOrInvalidAccessToken": {
+        "description": "Unauthorized - missing or invalid access token",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      },
+      "NotFoundAResourceNamedInThePathDoesNotEx": {
+        "description": "Not found - a resource named in the path does not exist or is not visible",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "iam-oauth2-schema": {
+        "flows": {
+          "authorizationCode": {
+            "tokenUrl": "https://accounts.zoho.com/oauth/v2/token",
+            "authorizationUrl": "https://accounts.zoho.com/oauth/v2/auth",
+            "scopes": {
+              "ZohoShow.showdocslist.READ": "Read presentations, metadata, and document content",
+              "ZohoShow.showdocslist.UPDATE": "Update presentations, metadata, and document content",
+              "ZohoShow.fullaccess.ALL": "Create, read, update and delete presentations and presentation resources through Show MCP",
+              "ZohoShow.showdocslist.CREATE": "Create presentations and presentation resources",
+              "ZohoShow.showdocslist.DELETE": "Delete presentations and presentation resources"
+            }
+          }
+        },
+        "description": "OAuth 2.0 through Zoho Accounts. For a non-US edition, use the matching host from x-show-accounts-hosts; Canada uses accounts.zohocloud.ca.",
+        "type": "oauth2",
+        "x-show-accounts-hosts": {
+          "EU": "accounts.zoho.eu",
+          "LOCALZOHO": "accounts.localzoho.com",
+          "AU": "accounts.zoho.com.au",
+          "SG": "accounts.zoho.sg",
+          "IN": "accounts.zoho.in",
+          "JP": "accounts.zoho.jp",
+          "UK": "accounts.zoho.uk",
+          "UAE": "accounts.zoho.ae",
+          "CN": "accounts.zoho.com.cn",
+          "US": "accounts.zoho.com",
+          "CA": "accounts.zohocloud.ca",
+          "SA": "accounts.zoho.sa"
+        },
+        "x-show-data-centre": "US"
+      }
+    },
+    "parameters": {
+      "Fields": {
+        "schema": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "in": "query",
+        "name": "fields",
+        "description": "Comma-separated field names to include on each result; omit for all.",
+        "required": false
+      },
+      "From": {
+        "schema": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "in": "query",
+        "name": "from",
+        "description": "Zero-based index of the first item to return (default 0).",
+        "required": false
+      },
+      "PresentationId": {
+        "schema": {
+          "type": "string"
+        },
+        "in": "path",
+        "name": "presentation_id",
+        "description": "The unique identifier of the presentation",
+        "required": true
+      }
+    }
+  },
+  "servers": [
+    {
+      "description": "US DC",
+      "url": "https://show.zoho.com"
+    },
+    {
+      "description": "IN DC",
+      "url": "https://show.zoho.in"
+    },
+    {
+      "description": "CT1 DC",
+      "url": "https://show.localzoho.com"
+    },
+    {
+      "description": "AU DC",
+      "url": "https://show.zoho.com.au"
+    },
+    {
+      "description": "CA DC",
+      "url": "https://show.zohocloud.ca"
+    },
+    {
+      "description": "EU DC",
+      "url": "https://show.zoho.eu"
+    },
+    {
+      "description": "SA DC",
+      "url": "https://show.zoho.sa"
+    },
+    {
+      "description": "UAE DC",
+      "url": "https://show.zoho.ae"
+    },
+    {
+      "description": "CN DC",
+      "url": "https://show.zoho.com.cn"
+    },
+    {
+      "description": "JP DC",
+      "url": "https://show.zoho.jp"
+    },
+    {
+      "description": "SG DC",
+      "url": "https://show.zoho.sg"
+    },
+    {
+      "description": "UK DC",
+      "url": "https://show.zoho.uk"
+    }
+  ],
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v1/presentation/{presentation_id}/export": {
+      "post": {
+        "summary": "Export the presentation in the given format and return the file in the same response, optionally protected with a password (pptx, ppsx and pdf only)",
+        "security": [
+          {
+            "iam-oauth2-schema": [
+              "ZohoShow.showdocslist.READ"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExportFileParamsRequest"
+              }
+            }
+          }
+        },
+        "operationId": "createPresentationByPresentationIdExport",
+        "description": "Export the presentation in the given format and return the file in the same response, optionally protected with a password (pptx, ppsx and pdf only). version_id exports that resource version of the presentation and answers 400 when it is not a version of this presentation; without it the current version is exported, or the version another user holds locked.",
+        "responses": {
+          "200": {
+            "description": "The exported file, streamed as an attachment named \"<presentation name>.<format>\" (Content-Disposition). Errors are returned as JSON.",
+            "headers": {
+              "Content-Disposition": {
+                "description": "attachment; filename*=UTF-8''<presentation name>.<format>",
+                "schema": {
+                  "type": "string",
+                  "example": "attachment; filename*=UTF-8''Quarterly%20Review.pptx"
+                }
+              }
+            },
+            "content": {
+              "application/vnd.openxmlformats-officedocument.presentationml.presentation": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "application/vnd.openxmlformats-officedocument.presentationml.slideshow": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "application/vnd.ms-powerpoint": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "application/powerpoint": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "application/vnd.oasis.opendocument.presentation": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "application/pdf": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "invalid_format": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "message": "format must be one of pptx, ppsx, ppt, pps, odp, pdf",
+                          "code": 3805
+                        }
+                      },
+                      "request_uri": "/api/v1/presentation/cpnv3d0203ec89cba4207ba255d785dfe125c/export",
+                      "status": "error"
+                    },
+                    "summary": "Invalid format",
+                    "x-request-body": {
+                      "format": "docx"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedMissingOrInvalidAccessToken"
+          },
+          "403": {
+            "description": "Download not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "export_not_allowed": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "message": "Downloading this presentation is not allowed for the user",
+                          "code": 3708
+                        }
+                      },
+                      "request_uri": "/api/v1/presentation/cpnv3d0203ec89cba4207ba255d785dfe125c/export",
+                      "status": "error"
+                    },
+                    "summary": "Download not allowed",
+                    "x-request-body": {
+                      "format": "pptx"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundAResourceNamedInThePathDoesNotEx"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceededThisOperationAllows10Re"
+          },
+          "500": {
+            "description": "Export failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "export_failed": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "message": "The presentation could not be exported in this format",
+                          "code": 3714
+                        }
+                      },
+                      "request_uri": "/api/v1/presentation/cpnv3d0203ec89cba4207ba255d785dfe125c/export",
+                      "status": "error"
+                    },
+                    "summary": "Export failed",
+                    "x-request-body": {
+                      "format": "pptx"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PresentationId"
+          }
+        ],
+        "x-mcp-operation-type": "read",
+        "tags": [
+          "Presentation"
+        ]
+      }
+    },
+    "/api/v1/presentation": {
+      "post": {
+        "summary": "Create a new, empty presentation named file_name, optionally inside a team (team_id) and with a theme (theme_id, a numeric id from getthemes - resolve the user's theme choice there first). Every new presentation contains one default slide at index 0 whose placeholders inherit geometry and style from the theme; use it as the first slide with createSdkPresentationSlidesPopulate and insert further slides from index 1. Returns the resource id, which is the presentation_id every other tool takes. When the slide content is already known, createPresentationFromContent creates the deck and its slides in one call.",
+        "security": [
+          {
+            "iam-oauth2-schema": [
+              "ZohoShow.showdocslist.CREATE",
+              "ZohoShow.fullaccess.ALL"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDocumentParamsRequest"
+              }
+            }
+          }
+        },
+        "operationId": "createPresentation",
+        "description": "Create a new, empty presentation named file_name, optionally inside a team (team_id) and with a theme (theme_id, a numeric id from getthemes - resolve the user's theme choice there first). Every new presentation contains one default slide at index 0 whose placeholders inherit geometry and style from the theme; use it as the first slide with createSdkPresentationSlidesPopulate and insert further slides from index 1. Returns the resource id, which is the presentation_id every other tool takes. When the slide content is already known, createPresentationFromContent creates the deck and its slides in one call.",
+        "responses": {
+          "201": {
+            "description": "Presentation Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowEnvelope"
+                },
+                "examples": {
+                  "presentation_created": {
+                    "value": {
+                      "data": {
+                        "doc_info": {
+                          "author_name": "93601174",
+                          "document_name": "My Presentation",
+                          "last_modified_time": "1777024274398",
+                          "resource_id": "cpnv3d0203ec89cba4207ba255d785dfe125c",
+                          "description": "",
+                          "created_date": "1777024274398",
+                          "document_id": "106689000002311002",
+                          "last_author_name": "93600994"
+                        }
+                      },
+                      "message": "Presentation created",
+                      "request_uri": "/api/v1/presentation",
+                      "status": "success"
+                    },
+                    "summary": "Presentation Created",
+                    "x-request-body": {
+                      "team_id": "7345450240",
+                      "theme_id": "3501000353591774",
+                      "file_name": "My Presentation Strokes Theme"
+                    }
+                  },
+                  "presentation_created_2": {
+                    "value": {
+                      "data": {
+                        "doc_info": {
+                          "author_name": "47925876",
+                          "document_name": "UI Test Deck",
+                          "last_modified_time": "1782972675747",
+                          "resource_id": "8i4vvb2393b0af4764d3894752707ed7524b1",
+                          "description": "",
+                          "created_date": "1782972675747",
+                          "document_id": "5000000201067",
+                          "last_author_name": "31707077"
+                        }
+                      },
+                      "message": "Presentation created",
+                      "request_uri": "/api/v1/presentation",
+                      "status": "success"
+                    },
+                    "summary": "Presentation Created",
+                    "x-request-body": {
+                      "file_name": "UI Test Deck"
+                    }
+                  },
+                  "presentation_created__server_auto_named": {
+                    "value": {
+                      "data": {
+                        "doc_info": {
+                          "author_name": "47925876",
+                          "document_name": "UI Test Deck",
+                          "last_modified_time": "1782972675747",
+                          "resource_id": "8i4vvb2393b0af4764d3894752707ed7524b1",
+                          "description": "",
+                          "created_date": "1782972675747",
+                          "document_id": "5000000201067",
+                          "last_author_name": "31707077"
+                        }
+                      },
+                      "message": "Presentation created",
+                      "request_uri": "/api/v1/presentation",
+                      "status": "success"
+                    },
+                    "summary": "Presentation Created (server auto-named)",
+                    "x-request-body": {}
+                  }
+                }
+              }
+            },
+            "x-request-body": {
+              "team_id": "7345450240",
+              "theme_id": "3501000353591774",
+              "file_name": "My Presentation Strokes Theme"
+            }
+          },
+          "400": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "unauthorized": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3401,
+                          "message": "User does not have permission to perform this action"
+                        }
+                      },
+                      "request_uri": "/api/v1/presentation",
+                      "status": "error"
+                    },
+                    "summary": "Unauthorized",
+                    "x-request-body": {
+                      "file_name": "UI Test Deck"
+                    }
+                  }
+                }
+              }
+            },
+            "x-request-body": {
+              "file_name": "UI Test Deck"
+            }
+          },
+          "401": {
+            "description": "Invalid OAuth scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "example": {
+                  "error": {
+                    "details": {
+                      "code": 3421,
+                      "message": "The OAuth token does not have the required scope to access this resource or endpoint"
+                    }
+                  },
+                  "request_uri": "/show/restapi/v1/presentation",
+                  "status": "error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Invalid theme id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "invalid_theme_id": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "message": "The requested theme does not exist",
+                          "code": 3865
+                        }
+                      },
+                      "request_uri": "/api/v1/presentation",
+                      "status": "error"
+                    },
+                    "summary": "Invalid theme id",
+                    "x-request-body": {
+                      "team_id": "7345450240",
+                      "theme_id": "3501000353591774",
+                      "file_name": "My Presentation Strokes Theme"
+                    }
+                  }
+                }
+              }
+            },
+            "x-request-body": {
+              "team_id": "7345450240",
+              "theme_id": "3501000353591774",
+              "file_name": "My Presentation Strokes Theme"
+            }
+          },
+          "405": {
+            "description": "Invalid method",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "example": {
+                  "error": {
+                    "details": {
+                      "code": 3922,
+                      "message": "The HTTP method used is not allowed for this endpoint"
+                    }
+                  },
+                  "request_uri": "/show/restapi/v1/presentation",
+                  "status": "error"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceededThisOperationAllows60Re"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerErrorTheRequestCouldNotBeC"
+          }
+        },
+        "x-mcp-operation-type": "create",
+        "tags": [
+          "Presentation"
+        ]
+      },
+      "get": {
+        "summary": "List the caller's presentations: type 0 owned (default), 1 shared with me, 2 trashed; page with from (0-based, default 0) and count (0 to 50, default 20); sort with sort_by (0 created time, 1 last modified - the default, 2 last opened, 3 last modified) and ascending (default false). fields restricts the returned columns. Each entry's resource_id is the presentation_id for the other tools. An account with no storage yet returns an empty list with a message. Read-only.",
+        "security": [
+          {
+            "iam-oauth2-schema": [
+              "ZohoShow.showdocslist.READ",
+              "ZohoShow.fullaccess.ALL"
+            ]
+          }
+        ],
+        "operationId": "listPresentations",
+        "description": "List the caller's presentations: type 0 owned (default), 1 shared with me, 2 trashed; page with from (0-based, default 0) and count (0 to 50, default 20); sort with sort_by (0 created time, 1 last modified - the default, 2 last opened, 3 last modified) and ascending (default false). fields restricts the returned columns. Each entry's resource_id is the presentation_id for the other tools. An account with no storage yet returns an empty list with a message. Read-only.",
+        "responses": {
+          "200": {
+            "description": "Presentations Retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowEnvelope"
+                },
+                "examples": {
+                  "presentations_retrieved": {
+                    "value": {
+                      "data": {
+                        "total_count": "327",
+                        "resources": [
+                          {
+                            "document_name": "Meta Test Deck",
+                            "last_modified_time": "1793080537926",
+                            "theme_name": "128920000000169003",
+                            "description": "",
+                            "resource_id": "8i4vv3f345fcf907446a2bdc4e2c871fc585e",
+                            "document_id": "277979000000192459",
+                            "author_display_name": "Sample User",
+                            "document_url": "https://show.zoho.com/show/open/8i4vv3f345fcf907446a2bdc4e2c871fc585e",
+                            "last_author_name": "Sample User"
+                          },
+                          {
+                            "document_name": "Meta Test Deck",
+                            "last_modified_time": "1793080527897",
+                            "theme_name": "128920000000169003",
+                            "description": "",
+                            "resource_id": "i6b0q7d7c08e73e494feda86c30e660626925",
+                            "document_id": "277979000000192394",
+                            "author_display_name": "Sample User",
+                            "document_url": "https://show.zoho.com/show/open/i6b0q7d7c08e73e494feda86c30e660626925",
+                            "last_author_name": "Sample User"
+                          }
+                        ],
+                        "team_id": "131890738"
+                      },
+                      "message": "Getting presentation list",
+                      "request_uri": "/api/v1/presentation",
+                      "status": "success"
+                    },
+                    "summary": "Presentations Retrieved"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid Fields Parameter",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "invalid_fields_parameter": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3850,
+                          "attribute": "fields",
+                          "message": "Parameter value is not valid for the expected type"
+                        }
+                      },
+                      "request_uri": "/api/v1/presentation",
+                      "status": "error"
+                    },
+                    "summary": "Invalid Fields Parameter"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing OAuth Token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "missing_oauth_token": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3420,
+                          "message": "The OAuth token is missing, expired, or invalid"
+                        }
+                      },
+                      "request_uri": "/api/v1/presentation",
+                      "status": "error"
+                    },
+                    "summary": "Missing OAuth Token"
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceededThisOperationAllows60Re"
+          },
+          "500": {
+            "description": "Invalid TeamId",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "invalid_teamid": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "message": "Error retrieving presentation list: ZFSError:F000:null",
+                          "code": 3500
+                        }
+                      },
+                      "request_uri": "/api/v1/presentation",
+                      "status": "error"
+                    },
+                    "summary": "Invalid TeamId"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            },
+            "in": "query",
+            "name": "team_id",
+            "description": "Numeric team id to list a team's presentations instead of the personal space; omit for personal.",
+            "required": false
+          },
+          {
+            "schema": {
+              "format": "int32",
+              "type": "integer",
+              "enum": [
+                "0",
+                "1",
+                "2"
+              ]
+            },
+            "in": "query",
+            "name": "type",
+            "description": "0 owned by me (default), 1 shared with me, 2 in trash.",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string",
+              "maxLength": 1000
+            },
+            "in": "query",
+            "name": "fields",
+            "description": "Comma-separated subset of document_id, description, last_author_name, document_name, author_display_name, last_modified_time, resource_id, theme_name, document_url; omit for all.",
+            "required": false
+          },
+          {
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "in": "query",
+            "name": "from",
+            "description": "0-based offset of the first entry (default 0).",
+            "required": false
+          },
+          {
+            "schema": {
+              "format": "int32",
+              "maximum": 50,
+              "type": "integer",
+              "minimum": 0
+            },
+            "in": "query",
+            "name": "count",
+            "description": "Number of entries to return, 0 to 50 (default 20).",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "boolean"
+            },
+            "in": "query",
+            "name": "ascending",
+            "description": "true for ascending order; default false (newest first).",
+            "required": false
+          },
+          {
+            "schema": {
+              "format": "int32",
+              "type": "integer",
+              "enum": [
+                "0",
+                "1",
+                "2",
+                "3"
+              ]
+            },
+            "in": "query",
+            "name": "sort_by",
+            "description": "0 created time, 1 last modified (default), 2 last opened, 3 last modified.",
+            "required": false
+          }
+        ],
+        "x-mcp-operation-type": "read",
+        "tags": [
+          "Presentation"
+        ]
+      }
+    },
+    "/api/v1/presentation/import": {
+      "post": {
+        "summary": "Upload one presentation file into the default library, import it, and return the imported presentation in the same response",
+        "security": [
+          {
+            "iam-oauth2-schema": [
+              "ZohoShow.showdocslist.CREATE"
+            ]
+          }
+        ],
+        "operationId": "createPresentationImport",
+        "description": "Upload one presentation file into the default library, import it, and return the imported presentation in the same response. A password-protected file needs password: without it, or with a wrong one, the call answers 400 and the upload is discarded, so send the file again with its password. As on the web, an upload whose conversion fails stays in the library, and the error names its resource_id and import_id.",
+        "responses": {
+          "200": {
+            "description": "Presentation imported",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowEnvelope"
+                },
+                "examples": {
+                  "presentation_imported": {
+                    "value": {
+                      "data": {
+                        "resource_id": "i6b0q7d7c08e73e494feda86c30e660626925",
+                        "import_id": "106689000002313021",
+                        "import_status": "completed",
+                        "file_name": "Quarterly Review.pptx"
+                      },
+                      "message": "Presentation imported",
+                      "request_uri": "/api/v1/presentation/import",
+                      "status": "success"
+                    },
+                    "summary": "Presentation imported"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Password required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "import_password_required": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "message": "The presentation is password protected; send its password with the file",
+                          "code": 3717
+                        }
+                      },
+                      "request_uri": "/api/v1/presentation/import",
+                      "status": "error"
+                    },
+                    "summary": "Password required"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedMissingOrInvalidAccessToken"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceededThisOperationAllows10Re"
+          },
+          "500": {
+            "description": "Import failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "presentation_import_failed": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "message": "The presentation could not be imported or converted",
+                          "code": 3800
+                        }
+                      },
+                      "request_uri": "/api/v1/presentation/import",
+                      "status": "error"
+                    },
+                    "summary": "Import failed"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "maxLength": 20
+            },
+            "in": "query",
+            "name": "zsoid",
+            "description": "Org of the x-show-apikey key; needed only when the call is made with an API key, since an upload has no presentation to take the org from.",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "password",
+            "description": "Password of a password-protected file; required only when the file is protected.",
+            "required": false
+          }
+        ],
+        "x-mcp-operation-type": "create",
+        "tags": [
+          "Presentation"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Presentation file part. Limit: 1 file, max 500 MB. Allowed extensions: ppt, pps, odp, pptx, ppsx, potx, pptm, ppsm, potm. The file name (max 255 characters) becomes the presentation name.",
+                    "x-form-field-type": "file",
+                    "x-form-example": "presentation.pptx"
+                  }
+                },
+                "required": [
+                  "file"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/presentation/trash": {
+      "put": {
+        "summary": "Trash Document using restapi",
+        "security": [
+          {
+            "iam-oauth2-schema": [
+              "ZohoShow.showdocslist.DELETE"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResourceIdsParamsRequest"
+              }
+            }
+          }
+        },
+        "operationId": "updatePresentationTrash",
+        "description": "Trash Document using restapi",
+        "responses": {
+          "200": {
+            "description": "No permission to trash",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowEnvelope"
+                },
+                "examples": {
+                  "no_permission_to_trash": {
+                    "value": {
+                      "data": {
+                        "failed_resources": [
+                          {
+                            "resource_id": "gcxuu5e63b5d35661468a831744345012e1f4",
+                            "error_code": "3401",
+                            "message": "User does not have permission to trash this resource"
+                          }
+                        ]
+                      },
+                      "message": "Presentation has been trashed",
+                      "request_uri": "/api/v1/presentation/trash",
+                      "status": "success"
+                    },
+                    "summary": "No permission to trash",
+                    "x-request-body": {
+                      "resource_ids": "{{resource_ids}}"
+                    }
+                  },
+                  "presentations_moved_to_trash": {
+                    "value": {
+                      "data": {
+                        "trashed": [
+                          "cpnv3d0203ec89cba4207ba255d785dfe125c"
+                        ]
+                      },
+                      "message": "Presentation has been trashed",
+                      "request_uri": "/api/v1/presentation/trash",
+                      "status": "success"
+                    },
+                    "summary": "Presentations moved to trash",
+                    "x-request-body": {
+                      "resource_ids": "{{resource_ids}}"
+                    }
+                  },
+                  "partially_applied": {
+                    "value": {
+                      "data": {
+                        "failed_resources": [
+                          {
+                            "message": "User does not have permission to trash this resource",
+                            "resource_id": "brvikf87ad61127984a9097ffa3cfbb9c23c5",
+                            "error_code": 3401
+                          }
+                        ],
+                        "trashed": [
+                          "brvikef837a861bfa4fc59bdc46a9bef305f3"
+                        ]
+                      },
+                      "message": "Presentation has been trashed",
+                      "request_uri": "/api/v1/presentation/trash",
+                      "status": "success"
+                    },
+                    "summary": "Partially applied",
+                    "x-request-body": {
+                      "resource_ids": "{{resource_ids}}"
+                    }
+                  }
+                }
+              }
+            },
+            "x-request-body": {
+              "resource_ids": "{{resource_ids}}"
+            }
+          },
+          "400": {
+            "description": "Shared Document",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "shared_document": {
+                    "value": {
+                      "data": {
+                        "failed_resources": [
+                          {
+                            "message": "User does not have permission to trash this resource",
+                            "resource_id": "7fgg637ac6060b3f24b368cafcbd2652f292c",
+                            "error_code": 3401
+                          }
+                        ]
+                      },
+                      "message": "Failed to trash the requested resources",
+                      "request_uri": "/api/v1/presentation/trash",
+                      "status": "error"
+                    },
+                    "summary": "Shared Document",
+                    "x-request-body": {
+                      "resource_ids": "{{resource_ids}}"
+                    }
+                  }
+                }
+              }
+            },
+            "x-request-body": {
+              "resource_ids": "{{resource_ids}}"
+            }
+          },
+          "401": {
+            "description": "Missing OAuth Token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "missing_oauth_token": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3420,
+                          "message": "The OAuth token is missing, expired, or invalid"
+                        }
+                      },
+                      "request_uri": "/api/v1/presentation/trash",
+                      "status": "error"
+                    },
+                    "summary": "Missing OAuth Token",
+                    "x-request-body": {
+                      "resource_ids": "{{resource_ids}}"
+                    }
+                  }
+                }
+              }
+            },
+            "x-request-body": {
+              "resource_ids": "{{resource_ids}}"
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceededThisOperationAllows60Re"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerErrorTheRequestCouldNotBeC"
+          }
+        },
+        "x-mcp-operation-type": "delete",
+        "tags": [
+          "Presentation"
+        ]
+      }
+    },
+    "/api/v1/presentation/{presentation_id}/duplicate": {
+      "post": {
+        "summary": "Duplicate the document using restapi",
+        "security": [
+          {
+            "iam-oauth2-schema": [
+              "ZohoShow.showdocslist.CREATE"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DuplicateDocumentParamsRequest"
+              }
+            }
+          }
+        },
+        "operationId": "createPresentationByPresentationIdDuplicate",
+        "description": "Duplicate the document using restapi",
+        "responses": {
+          "201": {
+            "description": "Presentation Duplicated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowEnvelope"
+                },
+                "examples": {
+                  "presentation_duplicated": {
+                    "value": {
+                      "data": {
+                        "resources": {
+                          "author_name": "93601174",
+                          "document_name": "My Presentation Copy",
+                          "last_modified_time": "1777286183446",
+                          "resource_id": "i6b0q7d7c08e73e494feda86c30e660626925",
+                          "description": " ",
+                          "created_date": "1777286183446",
+                          "document_id": "106689000002313003",
+                          "last_author_name": "93600994"
+                        },
+                        "action": "duplicate",
+                        "status": "success"
+                      },
+                      "message": "Presentation has been duplicated",
+                      "request_uri": "/api/v1/presentation/cpnv3d0203ec89cba4207ba255d785dfe125c/duplicate",
+                      "status": "success"
+                    },
+                    "summary": "Presentation Duplicated",
+                    "x-request-body": {
+                      "new_name": "My Presentation Copy",
+                      "remove_comments": false
+                    }
+                  },
+                  "removed_comment": {
+                    "value": {
+                      "data": {
+                        "resources": {
+                          "author_name": "93601174",
+                          "document_name": "My Presentation Copy",
+                          "last_modified_time": "1779261258163",
+                          "resource_id": "1bpt2fa5c295e38e443d988c286ec7dac0c2d",
+                          "description": " ",
+                          "created_date": "1779261258163",
+                          "document_id": "106689000002327056",
+                          "last_author_name": "93600994"
+                        },
+                        "action": "duplicate",
+                        "status": "success"
+                      },
+                      "message": "Presentation has been duplicated",
+                      "request_uri": "/api/v1/presentation/1bpt269f6a3cf20684f49b2c9926526401fbd/duplicate",
+                      "status": "success"
+                    },
+                    "summary": "Removed comment",
+                    "x-request-body": {
+                      "new_name": "My Presentation Copy",
+                      "remove_comments": false
+                    }
+                  },
+                  "presentation_shared": {
+                    "value": {
+                      "data": {
+                        "resources": {
+                          "author_name": "93601174",
+                          "document_name": "My Presentation Copy",
+                          "last_modified_time": "1779261663559",
+                          "resource_id": "1bpt27f6c816bced14b22a9bbed6ad6addd5e",
+                          "description": " ",
+                          "created_date": "1779261663559",
+                          "document_id": "106689000002327104",
+                          "last_author_name": "93600994"
+                        },
+                        "action": "duplicate",
+                        "status": "success"
+                      },
+                      "message": "Presentation has been duplicated",
+                      "request_uri": "/api/v1/presentation/gcxuu5e63b5d35661468a831744345012e1f4/duplicate",
+                      "status": "success"
+                    },
+                    "summary": "Presentation shared",
+                    "x-request-body": {
+                      "new_name": "My Presentation Copy",
+                      "remove_comments": false
+                    }
+                  }
+                }
+              }
+            },
+            "x-request-body": {
+              "new_name": "My Presentation Copy",
+              "remove_comments": false
+            }
+          },
+          "400": {
+            "description": "Document name not provided",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "document_name_not_provided": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "message": "Document name cannot be empty",
+                          "code": 3806
+                        }
+                      },
+                      "request_uri": "/api/v1/presentation/brvik8ca7e732cfd6432b91b123dba750e2e6/duplicate",
+                      "status": "error"
+                    },
+                    "summary": "Document name not provided",
+                    "x-request-body": {
+                      "new_name": "My Presentation Copy",
+                      "remove_comments": false
+                    }
+                  }
+                }
+              }
+            },
+            "x-request-body": {
+              "new_name": "My Presentation Copy",
+              "remove_comments": false
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedMissingOrInvalidAccessToken"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundAResourceNamedInThePathDoesNotEx"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceededThisOperationAllows60Re"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerErrorTheRequestCouldNotBeC"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PresentationId"
+          }
+        ],
+        "x-mcp-operation-type": "create",
+        "tags": [
+          "Presentation"
+        ]
+      }
+    },
+    "/api/v1/presentation/restore": {
+      "put": {
+        "summary": "Restore Document using restapi",
+        "security": [
+          {
+            "iam-oauth2-schema": [
+              "ZohoShow.showdocslist.UPDATE"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResourceIdsParamsRequest"
+              }
+            }
+          }
+        },
+        "operationId": "updatePresentationRestore",
+        "description": "Restore Document using restapi",
+        "responses": {
+          "200": {
+            "description": "Presentations restored",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowEnvelope"
+                },
+                "examples": {
+                  "presentations_restored": {
+                    "value": {
+                      "data": {
+                        "restored": [
+                          "cpnv3d0203ec89cba4207ba255d785dfe125c"
+                        ]
+                      },
+                      "message": "Presentation has been restored",
+                      "request_uri": "/api/v1/presentation/restore",
+                      "status": "success"
+                    },
+                    "summary": "Presentations restored",
+                    "x-request-body": {
+                      "resource_ids": "{{resource_ids}}"
+                    }
+                  },
+                  "partially_applied": {
+                    "value": {
+                      "data": {
+                        "restored": [
+                          "brvikef837a861bfa4fc59bdc46a9bef305f3"
+                        ],
+                        "failed_resources": [
+                          {
+                            "message": "Resource is not in trash",
+                            "resource_id": "brvikf87ad61127984a9097ffa3cfbb9c23c5",
+                            "error_code": 3856
+                          }
+                        ]
+                      },
+                      "message": "Presentation has been restored",
+                      "request_uri": "/api/v1/presentation/restore",
+                      "status": "success"
+                    },
+                    "summary": "Partially applied",
+                    "x-request-body": {
+                      "resource_ids": "{{resource_ids}}"
+                    }
+                  }
+                }
+              }
+            },
+            "x-request-body": {
+              "resource_ids": "{{resource_ids}}"
+            }
+          },
+          "400": {
+            "description": "Already Restored Document",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "already_restored_document": {
+                    "value": {
+                      "data": {
+                        "failed_resources": [
+                          {
+                            "message": "Resource is not in trash",
+                            "resource_id": "gcxuu7c032aee7a6348cd96c775136fd2dcd2",
+                            "error_code": 3856
+                          },
+                          {
+                            "message": "Resource is not in trash",
+                            "resource_id": "bov7m95f78dc788b9425c9530fafbb24d2668",
+                            "error_code": 3856
+                          }
+                        ]
+                      },
+                      "message": "Failed to restore the requested resources",
+                      "request_uri": "/api/v1/presentation/restore",
+                      "status": "error"
+                    },
+                    "summary": "Already Restored Document",
+                    "x-request-body": {
+                      "resource_ids": "{{resource_ids}}"
+                    }
+                  }
+                }
+              }
+            },
+            "x-request-body": {
+              "resource_ids": "{{resource_ids}}"
+            }
+          },
+          "401": {
+            "description": "Missing OAuth Token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "missing_oauth_token": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3420,
+                          "message": "The OAuth token is missing, expired, or invalid"
+                        }
+                      },
+                      "request_uri": "/api/v1/presentation/restore",
+                      "status": "error"
+                    },
+                    "summary": "Missing OAuth Token",
+                    "x-request-body": {
+                      "resource_ids": "{{resource_ids}}"
+                    }
+                  }
+                }
+              }
+            },
+            "x-request-body": {
+              "resource_ids": "{{resource_ids}}"
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceededThisOperationAllows60Re"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerErrorTheRequestCouldNotBeC"
+          }
+        },
+        "x-mcp-operation-type": "update",
+        "tags": [
+          "Presentation"
+        ]
+      }
+    },
+    "/api/v1/presentation/search": {
+      "get": {
+        "summary": "search all presentation",
+        "security": [
+          {
+            "iam-oauth2-schema": [
+              "ZohoShow.showdocslist.READ"
+            ]
+          }
+        ],
+        "operationId": "getPresentationSearch",
+        "description": "search all presentation",
+        "responses": {
+          "200": {
+            "description": "Search results retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowEnvelope"
+                },
+                "examples": {
+                  "search_results_retrieved": {
+                    "value": {
+                      "data": {
+                        "resources": [
+                          {
+                            "document_name": "Meta Test Deck",
+                            "description": "",
+                            "resource_id": "m71vz5f46c9524f8744aa8a9c1083ac843713",
+                            "author_display_name": "Sample User",
+                            "document_url": "https://show.zoho.com/show/open/m71vz5f46c9524f8744aa8a9c1083ac843713",
+                            "last_author_name": "Sample User"
+                          },
+                          {
+                            "document_name": "Meta Test Deck",
+                            "description": "",
+                            "resource_id": "i6b0q7d7c08e73e494feda86c30e660626925",
+                            "author_display_name": "Sample User",
+                            "document_url": "https://show.zoho.com/show/open/i6b0q7d7c08e73e494feda86c30e660626925",
+                            "last_author_name": "Sample User"
+                          }
+                        ]
+                      },
+                      "message": "Search results retrieved",
+                      "request_uri": "/api/v1/presentation/search",
+                      "status": "success"
+                    },
+                    "summary": "Search results retrieved"
+                  },
+                  "filtered_field_response": {
+                    "value": {
+                      "data": {
+                        "resources": [
+                          {
+                            "resource_id": "cpnv3d0203ec89cba4207ba255d785dfe125c",
+                            "document_name": "Presentation Name Renamed",
+                            "created_date": "1777024272518"
+                          },
+                          {
+                            "resource_id": "i6b0q7d7c08e73e494feda86c30e660626925",
+                            "document_name": "My Presentation Copy",
+                            "created_date": "1777286182928"
+                          },
+                          {
+                            "resource_id": "m71vz5f46c9524f8744aa8a9c1083ac843713",
+                            "document_name": "Untitled Presentation",
+                            "created_date": "1776707763757"
+                          },
+                          {
+                            "resource_id": "m71vz549eee48dd24408c8d3cf2cf2eeff434",
+                            "document_name": "Untitled Presentation",
+                            "created_date": "1776707586007"
+                          },
+                          {
+                            "resource_id": "m71vzd1ad7cc34b9442488efb33ebf769e400",
+                            "document_name": "Untitled Presentation",
+                            "created_date": "1776706578610"
+                          },
+                          {
+                            "resource_id": "m71vz28084ace0c844daa9299748808d2819e",
+                            "document_name": "Test Presentation",
+                            "created_date": "1776691771243"
+                          },
+                          {
+                            "resource_id": "m71vz56504cb8341146948c5fc05d529a9092",
+                            "document_name": "Test Presentation",
+                            "created_date": "1776684913815"
+                          },
+                          {
+                            "resource_id": "m71vz7575645183bf48e1820b988a61d214b1",
+                            "document_name": "Test Presentation",
+                            "created_date": "1776680916929"
+                          },
+                          {
+                            "resource_id": "me0fd91fdfdbc23fd4c84a801b5c3ea6a2fbc",
+                            "document_name": "Untitled Presentation 20-04-2026 15:16:25:541",
+                            "created_date": "1775655122457"
+                          },
+                          {
+                            "resource_id": "7fgg637ac6060b3f24b368cafcbd2652f292c",
+                            "document_name": "Untitled Presentation",
+                            "created_date": "1774937762562"
+                          },
+                          {
+                            "resource_id": "me0fd2cd4464e5b6e470f9cc658836e854683",
+                            "document_name": "Untitled Presentation",
+                            "created_date": "1775654986490"
+                          },
+                          {
+                            "resource_id": "7ef51687e05fb0247456bbc8445b52c2876c9",
+                            "document_name": "Untitled Presentation",
+                            "created_date": "1774674493347"
+                          },
+                          {
+                            "resource_id": "u1fxsecddfaaf28bf4d9aaad610403816ceed",
+                            "document_name": "Untitled Presentation",
+                            "created_date": "1772629160889"
+                          },
+                          {
+                            "resource_id": "yhq6g72f74c464ad1407c82945f034f9df546",
+                            "document_name": "Untitled Presentation",
+                            "created_date": "1772438442628"
+                          },
+                          {
+                            "resource_id": "hxtc11163034783f443c18826cf305c85b025",
+                            "document_name": "Untitled Presentation",
+                            "created_date": "1772085439479"
+                          },
+                          {
+                            "resource_id": "hxtc19dcd1d0efce1415b96719f600ddad087",
+                            "document_name": "Untitled Presentation",
+                            "created_date": "1772089832549"
+                          },
+                          {
+                            "resource_id": "4bult71a13406ad6b4ac19db35544745b9755",
+                            "document_name": "Untitled Presentation",
+                            "created_date": "1768217604276"
+                          },
+                          {
+                            "resource_id": "hxtc17aa3dc1a525e4e6a813c01ffc3beeb40",
+                            "document_name": "Untitled Presentation",
+                            "created_date": "1772083997711"
+                          },
+                          {
+                            "resource_id": "yox4pca65bbb2945148a59b063b5754eb916f",
+                            "document_name": "Untitled Presentation",
+                            "created_date": "1771999061560"
+                          },
+                          {
+                            "resource_id": "hxtc15fcd992c6a5c4ecaa34426806ac3a39f",
+                            "document_name": "Untitled Presentation",
+                            "created_date": "1772046122086"
+                          }
+                        ]
+                      },
+                      "message": "Search results retrieved",
+                      "request_uri": "/api/v1/presentation/search",
+                      "status": "success"
+                    },
+                    "summary": "Filtered field response"
+                  },
+                  "search_all_fields_requested": {
+                    "value": {
+                      "data": {
+                        "resources": [
+                          {
+                            "author_name": "Sample User",
+                            "owner": "Sample User",
+                            "creator": "Sample User",
+                            "capabilities": "",
+                            "is_favorite": "",
+                            "description": "",
+                            "team_id": "",
+                            "thumbnail_url": "",
+                            "last_author_name": "Sample User",
+                            "document_name": "Meta Test Deck",
+                            "modified_time": "",
+                            "product_type": "",
+                            "scope": "",
+                            "resource_id": "8i4vv3f345fcf907446a2bdc4e2c871fc585e",
+                            "created_date": "",
+                            "document_url": "https://show.zoho.com/show/open/8i4vv3f345fcf907446a2bdc4e2c871fc585e",
+                            "team_uid": "",
+                            "status": ""
+                          },
+                          {
+                            "author_name": "Sample User",
+                            "owner": "Sample User",
+                            "creator": "Sample User",
+                            "capabilities": "",
+                            "is_favorite": "",
+                            "description": "",
+                            "team_id": "",
+                            "thumbnail_url": "",
+                            "last_author_name": "Sample User",
+                            "document_name": "Meta Test Deck",
+                            "modified_time": "",
+                            "product_type": "",
+                            "scope": "",
+                            "resource_id": "i6b0q7d7c08e73e494feda86c30e660626925",
+                            "created_date": "",
+                            "document_url": "https://show.zoho.com/show/open/i6b0q7d7c08e73e494feda86c30e660626925",
+                            "team_uid": "",
+                            "status": ""
+                          }
+                        ]
+                      },
+                      "message": "Search results retrieved",
+                      "request_uri": "/api/v1/presentation/search",
+                      "status": "success"
+                    },
+                    "summary": "All fields requested (fields=...)"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid Fields Parameter",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "invalid_fields_parameter": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3850,
+                          "attribute": "fields",
+                          "message": "Parameter value is not valid for the expected type"
+                        }
+                      },
+                      "request_uri": "/api/v1/presentation/search",
+                      "status": "error"
+                    },
+                    "summary": "Invalid Fields Parameter"
+                  },
+                  "invalid_count": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3850,
+                          "attribute": "count",
+                          "message": "Parameter value is not valid for the expected type"
+                        }
+                      },
+                      "request_uri": "/api/v1/presentation/search",
+                      "status": "error"
+                    },
+                    "summary": "Invalid Count"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing OAuth Token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "missing_oauth_token": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3420,
+                          "message": "The OAuth token is missing, expired, or invalid"
+                        }
+                      },
+                      "request_uri": "/api/v1/presentation/search",
+                      "status": "error"
+                    },
+                    "summary": "Missing OAuth Token"
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceededThisOperationAllows60Re"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerErrorTheRequestCouldNotBeC"
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            },
+            "in": "query",
+            "name": "team_id",
+            "description": "Restrict the results to presentations in this team.",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "search_str",
+            "description": "Text to match against presentation names.",
+            "required": true
+          },
+          {
+            "$ref": "#/components/parameters/Fields"
+          },
+          {
+            "$ref": "#/components/parameters/From"
+          },
+          {
+            "schema": {
+              "format": "int32",
+              "maximum": 50,
+              "type": "integer",
+              "minimum": 0
+            },
+            "in": "query",
+            "name": "limit",
+            "description": "Maximum number of results to return (default 20).",
+            "required": false
+          },
+          {
+            "schema": {
+              "format": "int32",
+              "type": "integer",
+              "enum": [
+                "1",
+                "2"
+              ]
+            },
+            "in": "query",
+            "name": "published_type",
+            "description": "Restrict the results to presentations published a given way: 1 within the org, 2 to the external world.",
+            "required": false
+          },
+          {
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            },
+            "in": "query",
+            "name": "created_by",
+            "description": "Restrict the results to presentations created by this user id.",
+            "required": false
+          },
+          {
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "in": "query",
+            "name": "sort_by",
+            "description": "Order the results: 1 last modified (default), 2 last modified (last-opened is not supported by the search backend), 3 date created, 4 name, 5 relevance.",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "boolean"
+            },
+            "in": "query",
+            "name": "ascending",
+            "description": "Order ascending when true, descending when false.",
+            "required": false
+          }
+        ],
+        "x-mcp-operation-type": "read",
+        "tags": [
+          "Presentation"
+        ]
+      }
+    },
+    "/api/v1/presentation/{presentation_id}/meta": {
+      "get": {
+        "summary": "Get presentation data (meta + masters + slides)",
+        "security": [
+          {
+            "iam-oauth2-schema": [
+              "ZohoShow.showdocslist.READ"
+            ]
+          }
+        ],
+        "operationId": "getPresentationByPresentationIdMeta",
+        "description": "Get presentation data (meta + masters + slides)",
+        "responses": {
+          "200": {
+            "description": "Presentation Meta Retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowEnvelope"
+                },
+                "examples": {
+                  "presentation_meta_retrieved": {
+                    "value": {
+                      "data": {
+                        "slide_ids": [
+                          "241de766-5a42-4492-a5d8-eb801fd8f189"
+                        ],
+                        "master_ids": [
+                          "e8f90363-905a-4d13-840f-504efd08c626"
+                        ],
+                        "meta": {
+                          "name": "Meta Test Deck"
+                        },
+                        "document_url": "https://show.zoho.com/show/open/m71vz5f46c9524f8744aa8a9c1083ac843713"
+                      },
+                      "message": "Presentation data retrieved",
+                      "request_uri": "/api/v1/presentation/m71vz5f46c9524f8744aa8a9c1083ac843713/meta",
+                      "status": "success"
+                    },
+                    "summary": "Presentation Meta Retrieved"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Permission Denied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "permission_denied": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3401,
+                          "message": "The user doesn't have permission to perform this action"
+                        }
+                      },
+                      "request_uri": "/api/v1/presentation/8i4vv3f345fcf907446a2bdc4e2c871fc585e/meta",
+                      "status": "error"
+                    },
+                    "summary": "Permission Denied"
+                  },
+                  "invalid_resource_id": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3920,
+                          "message": "The resource ID is invalid"
+                        }
+                      },
+                      "request_uri": "/api/v1/presentation/nonexistentrid000000000000000000/meta",
+                      "status": "error"
+                    },
+                    "summary": "Invalid Resource ID"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or Missing OAuth Token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "invalid_or_missing_oauth_token": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3404,
+                          "message": "The OAuth token is missing, expired, or invalid"
+                        }
+                      },
+                      "request_uri": "/api/v1/presentation/8i4vv3f345fcf907446a2bdc4e2c871fc585e/meta",
+                      "status": "error"
+                    },
+                    "summary": "Invalid or Missing OAuth Token"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Permission Denied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "example": {
+                  "error": {
+                    "details": {
+                      "code": 3401,
+                      "message": "The user doesn't have permission to perform this action"
+                    }
+                  },
+                  "request_uri": "/show/restapi/v1/presentation/8i4vv3f345fcf907446a2bdc4e2c871fc585e/meta",
+                  "status": "error"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundAResourceNamedInThePathDoesNotEx"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceededThisOperationAllows100R"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerErrorTheRequestCouldNotBeC"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PresentationId"
+          }
+        ],
+        "x-mcp-operation-type": "read",
+        "tags": [
+          "Presentation"
+        ]
+      },
+      "put": {
+        "summary": "Rename Document using restapi",
+        "security": [
+          {
+            "iam-oauth2-schema": [
+              "ZohoShow.showdocslist.UPDATE"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DocumentMetaRequest"
+              }
+            }
+          }
+        },
+        "operationId": "updatePresentationByPresentationIdMeta",
+        "description": "Rename Document using restapi",
+        "responses": {
+          "200": {
+            "description": "Presentation renamed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowEnvelope"
+                },
+                "examples": {
+                  "presentation_renamed": {
+                    "value": {
+                      "data": {
+                        "resource_id": "cpnv3d0203ec89cba4207ba255d785dfe125c",
+                        "new_name": "Presentation Name Renamed"
+                      },
+                      "message": "Presentation Meta has been updated",
+                      "request_uri": "/api/v1/presentation/cpnv3d0203ec89cba4207ba255d785dfe125c/meta",
+                      "status": "success"
+                    },
+                    "summary": "Presentation renamed",
+                    "x-request-body": {
+                      "file_name": "Presentation Name Renamed"
+                    }
+                  }
+                }
+              }
+            },
+            "x-request-body": {
+              "file_name": "Presentation Name Renamed"
+            }
+          },
+          "400": {
+            "description": "Invalid Resource ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "invalid_resource_id": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3850,
+                          "message": "The resource ID is invalid"
+                        }
+                      },
+                      "request_uri": "/api/v1/presentation/sample_id/meta",
+                      "status": "error"
+                    },
+                    "summary": "Invalid Resource ID",
+                    "x-request-body": {
+                      "file_name": "Presentation Name Renamed"
+                    }
+                  }
+                }
+              }
+            },
+            "x-request-body": {
+              "file_name": "Presentation Name Renamed"
+            }
+          },
+          "401": {
+            "description": "Missing OAuth Token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "missing_oauth_token": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3420,
+                          "message": "The OAuth token is missing, expired, or invalid"
+                        }
+                      },
+                      "request_uri": "/api/v1/presentation/sample_id/meta",
+                      "status": "error"
+                    },
+                    "summary": "Missing OAuth Token",
+                    "x-request-body": {
+                      "file_name": "Presentation Name Renamed"
+                    }
+                  }
+                }
+              }
+            },
+            "x-request-body": {
+              "file_name": "Presentation Name Renamed"
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundAResourceNamedInThePathDoesNotEx"
+          },
+          "405": {
+            "description": "Invalid Method",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "example": {
+                  "error": {
+                    "details": {
+                      "code": 3922,
+                      "message": "The HTTP method used is not allowed for this endpoint"
+                    }
+                  },
+                  "request_uri": "/show/restapi/v1/presentation/7fgg637ac6060b3f24b368cafcbd2652f292c/meta",
+                  "status": "error"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceededThisOperationAllows60Re"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerErrorTheRequestCouldNotBeC"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PresentationId"
+          }
+        ],
+        "x-mcp-operation-type": "update",
+        "tags": [
+          "Presentation"
+        ]
+      }
+    }
+  },
+  "info": {
+    "description": "Create, read and manage presentations.",
+    "title": "Presentation",
+    "version": "1.0.0"
+  },
+  "tags": [
+    {
+      "name": "Presentation",
+      "description": "Create, read and manage presentations."
+    }
+  ]
+}

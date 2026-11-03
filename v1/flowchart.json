@@ -1,0 +1,666 @@
+{
+  "components": {
+    "schemas": {
+      "FlatCreateFlowchartRequest": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "description": "The flowchart to create, with its nodes and the connections between them. Mandatory.",
+            "type": "object",
+            "properties": {
+              "nodes": {
+                "minItems": 1,
+                "maxItems": 50,
+                "description": "1 to 50 nodes; positions are computed by the server, never supplied.",
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "preferred_shape": {
+                      "description": "Flowchart symbol, for example TERMINATOR for start/end, PROCESS, DECISION, DATA, DOCUMENT; default PROCESS.",
+                      "type": "string",
+                      "maxLength": 40,
+                      "enum": [
+                        "PREDEFINED_PROCESS",
+                        "INTERNAL_STORAGE",
+                        "DOCUMENT",
+                        "PROCESS",
+                        "ALTERNATE_PROCESS",
+                        "DECISION",
+                        "DATA",
+                        "MULTI_DOCUMENT",
+                        "TERMINATOR",
+                        "PREPARATION",
+                        "MANUAL_INPUT",
+                        "MANUAL_OPERATION",
+                        "CONNECTOR",
+                        "OFFPAGE_CONNECTOR",
+                        "PUNCHED_CARD",
+                        "PUNCHED_TAPE",
+                        "SUMMING_JUNCTION",
+                        "OR",
+                        "COLLATE",
+                        "SORT",
+                        "EXTRACT",
+                        "MERGE",
+                        "STORED_DATA",
+                        "DELAY",
+                        "SEQUENTIAL_ACCESS_STORAGE",
+                        "MAGNETIC_DISK",
+                        "DIRECT_ACCESS_STORAGE",
+                        "DISPLAY"
+                      ]
+                    },
+                    "text": {
+                      "description": "Label shown inside the node.",
+                      "type": "string",
+                      "maxLength": 5000
+                    },
+                    "node_id": {
+                      "description": "Stable client-chosen id, unique within the payload; edges reference it.",
+                      "type": "string",
+                      "maxLength": 200
+                    }
+                  },
+                  "required": [
+                    "node_id"
+                  ]
+                }
+              },
+              "max_depth": {
+                "format": "int32",
+                "description": "Maximum number of layers (longest root-to-leaf chain), 1 to 5; default 5. Deeper graphs are rejected.",
+                "type": "integer"
+              },
+              "edges": {
+                "minItems": 1,
+                "maxItems": 100,
+                "description": "Directed edges between node ids (up to 100); when empty the server may chain the nodes linearly.",
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "from_node_id": {
+                      "description": "node_id of the edge's source node.",
+                      "type": "string",
+                      "maxLength": 200
+                    },
+                    "start_marker": {
+                      "description": "Arrowhead at the source end: NONE, OPEN, BLOCK, CLASSIC, DIAMOND or OVAL; default none.",
+                      "type": "string",
+                      "maxLength": 20,
+                      "enum": [
+                        "DEF_MARKER_TYPE",
+                        "NONE",
+                        "OPEN",
+                        "BLOCK",
+                        "CLASSIC",
+                        "DIAMOND",
+                        "OVAL"
+                      ]
+                    },
+                    "connector_type": {
+                      "description": "LINE (straight), ELBOW or CURVE (the zoho.graphikos.Connector.ConnectorType names; there is no STRAIGHT); default chosen by the router.",
+                      "type": "string",
+                      "maxLength": 10,
+                      "enum": [
+                        "LINE",
+                        "ELBOW",
+                        "CURVE"
+                      ]
+                    },
+                    "label": {
+                      "description": "Optional text on the connector, for example Yes or No after a DECISION.",
+                      "type": "string",
+                      "maxLength": 5000
+                    },
+                    "end_marker": {
+                      "description": "Arrowhead at the target end: NONE, OPEN, BLOCK, CLASSIC, DIAMOND or OVAL; default an arrow.",
+                      "type": "string",
+                      "maxLength": 20,
+                      "enum": [
+                        "DEF_MARKER_TYPE",
+                        "NONE",
+                        "OPEN",
+                        "BLOCK",
+                        "CLASSIC",
+                        "DIAMOND",
+                        "OVAL"
+                      ]
+                    },
+                    "to_node_id": {
+                      "description": "node_id of the edge's target node.",
+                      "type": "string",
+                      "maxLength": 200
+                    }
+                  },
+                  "required": [
+                    "from_node_id",
+                    "to_node_id"
+                  ]
+                }
+              },
+              "layout_direction": {
+                "description": "TOP_DOWN (default) or LEFT_RIGHT flow of the layered layout.",
+                "type": "string",
+                "maxLength": 20,
+                "enum": [
+                  "TOP_DOWN",
+                  "LEFT_RIGHT"
+                ]
+              },
+              "title": {
+                "description": "Optional diagram title rendered above the chart.",
+                "type": "string",
+                "maxLength": 1000
+              }
+            },
+            "required": [
+              "nodes"
+            ]
+          },
+          "absolute_bounds": {
+            "description": "Position and size on the slide the generated flowchart is fitted into. The server chooses a placement when omitted.",
+            "type": "object",
+            "properties": {
+              "x": {
+                "format": "float",
+                "description": "Left edge in slide px.",
+                "type": "number"
+              },
+              "width": {
+                "format": "float",
+                "description": "Width in slide px.",
+                "type": "number"
+              },
+              "y": {
+                "format": "float",
+                "description": "Top edge in slide px.",
+                "type": "number"
+              },
+              "height": {
+                "format": "float",
+                "description": "Height in slide px.",
+                "type": "number"
+              }
+            }
+          }
+        },
+        "required": [
+          "payload"
+        ]
+      },
+      "ShowEnvelope": {
+        "description": "Standard Zoho Show response envelope.",
+        "type": "object",
+        "properties": {
+          "data": {
+            "description": "Operation payload; endpoint-specific schemas narrow this where available.",
+            "type": "object"
+          },
+          "message": {
+            "type": "string"
+          },
+          "request_uri": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      },
+      "ShowError": {
+        "description": "Standard Zoho Show error response.",
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "details": {
+                "additionalProperties": true,
+                "type": "object",
+                "properties": {
+                  "error_code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "request_uri": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "responses": {
+      "RateLimitExceededThisOperationAllows30Re": {
+        "description": "Rate limit exceeded - this operation allows 30 requests per 1M",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      },
+      "SuccessfulResponse": {
+        "description": "Successful response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowEnvelope"
+            }
+          }
+        }
+      },
+      "InternalServerErrorTheRequestCouldNotBeC": {
+        "description": "Internal server error - the request could not be completed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      },
+      "InvalidRequestValidationFailed": {
+        "description": "Invalid request - validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      },
+      "UnauthorizedMissingOrInvalidAccessToken": {
+        "description": "Unauthorized - missing or invalid access token",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      },
+      "NotFoundAResourceNamedInThePathDoesNotEx": {
+        "description": "Not found - a resource named in the path does not exist or is not visible",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "iam-oauth2-schema": {
+        "flows": {
+          "authorizationCode": {
+            "tokenUrl": "https://accounts.zoho.com/oauth/v2/token",
+            "authorizationUrl": "https://accounts.zoho.com/oauth/v2/auth",
+            "scopes": {
+              "ZohoShow.showdocslist.READ": "Read presentations, metadata, and document content",
+              "ZohoShow.showdocslist.UPDATE": "Update presentations, metadata, and document content",
+              "ZohoShow.fullaccess.ALL": "Create, read, update and delete presentations and presentation resources through Show MCP",
+              "ZohoShow.showdocslist.CREATE": "Create presentations and presentation resources",
+              "ZohoShow.showdocslist.DELETE": "Delete presentations and presentation resources"
+            }
+          }
+        },
+        "description": "OAuth 2.0 through Zoho Accounts. For a non-US edition, use the matching host from x-show-accounts-hosts; Canada uses accounts.zohocloud.ca.",
+        "type": "oauth2",
+        "x-show-accounts-hosts": {
+          "EU": "accounts.zoho.eu",
+          "LOCALZOHO": "accounts.localzoho.com",
+          "AU": "accounts.zoho.com.au",
+          "SG": "accounts.zoho.sg",
+          "IN": "accounts.zoho.in",
+          "JP": "accounts.zoho.jp",
+          "UK": "accounts.zoho.uk",
+          "UAE": "accounts.zoho.ae",
+          "CN": "accounts.zoho.com.cn",
+          "US": "accounts.zoho.com",
+          "CA": "accounts.zohocloud.ca",
+          "SA": "accounts.zoho.sa"
+        },
+        "x-show-data-centre": "US"
+      }
+    },
+    "parameters": {
+      "PresentationId": {
+        "schema": {
+          "type": "string"
+        },
+        "in": "path",
+        "name": "presentation_id",
+        "description": "The unique identifier of the presentation",
+        "required": true
+      },
+      "SlideId": {
+        "schema": {
+          "type": "string"
+        },
+        "in": "path",
+        "name": "slide_id",
+        "description": "The unique identifier of the slide",
+        "required": true
+      }
+    }
+  },
+  "servers": [
+    {
+      "description": "US DC",
+      "url": "https://show.zoho.com"
+    },
+    {
+      "description": "IN DC",
+      "url": "https://show.zoho.in"
+    },
+    {
+      "description": "CT1 DC",
+      "url": "https://show.localzoho.com"
+    },
+    {
+      "description": "AU DC",
+      "url": "https://show.zoho.com.au"
+    },
+    {
+      "description": "CA DC",
+      "url": "https://show.zohocloud.ca"
+    },
+    {
+      "description": "EU DC",
+      "url": "https://show.zoho.eu"
+    },
+    {
+      "description": "SA DC",
+      "url": "https://show.zoho.sa"
+    },
+    {
+      "description": "UAE DC",
+      "url": "https://show.zoho.ae"
+    },
+    {
+      "description": "CN DC",
+      "url": "https://show.zoho.com.cn"
+    },
+    {
+      "description": "JP DC",
+      "url": "https://show.zoho.jp"
+    },
+    {
+      "description": "SG DC",
+      "url": "https://show.zoho.sg"
+    },
+    {
+      "description": "UK DC",
+      "url": "https://show.zoho.uk"
+    }
+  ],
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v1/presentation/{presentation_id}/slides/{slide_id}/flowchart": {
+      "post": {
+        "summary": "Create a flowchart on a slide from structured node/edge data",
+        "security": [
+          {
+            "iam-oauth2-schema": [
+              "ZohoShow.showdocslist.CREATE"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FlatCreateFlowchartRequest"
+              }
+            }
+          }
+        },
+        "operationId": "createPresentationByPresentationIdSlides566da945",
+        "description": "Create a flowchart on a slide from structured node/edge data",
+        "responses": {
+          "201": {
+            "description": "Flowchart Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowEnvelope"
+                },
+                "examples": {
+                  "flowchart_created": {
+                    "value": {
+                      "data": {
+                        "nodes_created": "1",
+                        "connectors_created": "0",
+                        "inserted_shape_ids": [
+                          "f6d102d6-dbec-40fb-8191-836346d465cf"
+                        ],
+                        "slide_id": "54ca442b-63d1-43df-bda9-9f8cd2654e70",
+                        "message": "Flowchart created"
+                      },
+                      "message": "Flowchart created successfully",
+                      "request_uri": "/api/v1/sdk/presentation/8i4vv3f345fcf907446a2bdc4e2c871fc585e/slides/54ca442b-63d1-43df-bda9-9f8cd2654e70/flowchart",
+                      "status": "success"
+                    },
+                    "summary": "Flowchart Created",
+                    "x-request-body": {
+                      "payload": {
+                        "nodes": [
+                          {
+                            "node_id": "start"
+                          },
+                          {
+                            "node_id": "end"
+                          }
+                        ],
+                        "edges": [
+                          {
+                            "from_node_id": "start",
+                            "to_node_id": "end"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "x-request-body": {
+              "payload": {
+                "nodes": [
+                  {
+                    "node_id": "start"
+                  },
+                  {
+                    "node_id": "end"
+                  }
+                ],
+                "edges": [
+                  {
+                    "from_node_id": "start",
+                    "to_node_id": "end"
+                  }
+                ]
+              }
+            }
+          },
+          "400": {
+            "description": "Missing Flowchart Spec",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "missing_flowchart_spec": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 1000,
+                          "rid": "8i4vv3f345fcf907446a2bdc4e2c871fc585e",
+                          "slide_id": "54ca442b-63d1-43df-bda9-9f8cd2654e70",
+                          "sdk_error_code": "1000",
+                          "message": "flowchart_spec is required"
+                        }
+                      },
+                      "request_uri": "/api/v1/sdk/presentation/8i4vv3f345fcf907446a2bdc4e2c871fc585e/slides/54ca442b-63d1-43df-bda9-9f8cd2654e70/flowchart",
+                      "status": "error"
+                    },
+                    "summary": "Missing Flowchart Spec",
+                    "x-request-body": {
+                      "payload": {
+                        "nodes": [
+                          {
+                            "node_id": "start"
+                          },
+                          {
+                            "node_id": "end"
+                          }
+                        ],
+                        "edges": [
+                          {
+                            "from_node_id": "start",
+                            "to_node_id": "end"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "missing_nodes": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3830,
+                          "attribute": "zoho-inputstream : nodes",
+                          "message": "Required parameter is missing or has fewer occurrences than required"
+                        }
+                      },
+                      "request_uri": "/api/v1/sdk/presentation/8i4vv3f345fcf907446a2bdc4e2c871fc585e/slides/54ca442b-63d1-43df-bda9-9f8cd2654e70/flowchart",
+                      "status": "error"
+                    },
+                    "summary": "Missing Nodes",
+                    "x-request-body": {
+                      "payload": {
+                        "nodes": [
+                          {
+                            "node_id": "start"
+                          },
+                          {
+                            "node_id": "end"
+                          }
+                        ],
+                        "edges": [
+                          {
+                            "from_node_id": "start",
+                            "to_node_id": "end"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "missing_node_id": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3830,
+                          "attribute": "zoho-inputstream : node_id",
+                          "message": "Required parameter is missing or has fewer occurrences than required"
+                        }
+                      },
+                      "request_uri": "/api/v1/sdk/presentation/8i4vv3f345fcf907446a2bdc4e2c871fc585e/slides/54ca442b-63d1-43df-bda9-9f8cd2654e70/flowchart",
+                      "status": "error"
+                    },
+                    "summary": "Missing Node Id",
+                    "x-request-body": {
+                      "payload": {
+                        "nodes": [
+                          {
+                            "node_id": "start"
+                          },
+                          {
+                            "node_id": "end"
+                          }
+                        ],
+                        "edges": [
+                          {
+                            "from_node_id": "start",
+                            "to_node_id": "end"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "x-request-body": {
+              "payload": {
+                "nodes": [
+                  {
+                    "node_id": "start"
+                  },
+                  {
+                    "node_id": "end"
+                  }
+                ],
+                "edges": [
+                  {
+                    "from_node_id": "start",
+                    "to_node_id": "end"
+                  }
+                ]
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedMissingOrInvalidAccessToken"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundAResourceNamedInThePathDoesNotEx"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceededThisOperationAllows30Re"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerErrorTheRequestCouldNotBeC"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PresentationId"
+          },
+          {
+            "$ref": "#/components/parameters/SlideId"
+          }
+        ],
+        "x-mcp-operation-type": "create",
+        "tags": [
+          "Flowchart"
+        ]
+      }
+    }
+  },
+  "info": {
+    "description": "Create flowcharts on a slide.",
+    "title": "Flowchart",
+    "version": "1.0.0"
+  },
+  "tags": [
+    {
+      "name": "Flowchart",
+      "description": "Create flowcharts on a slide."
+    }
+  ]
+}

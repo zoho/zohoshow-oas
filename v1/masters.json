@@ -1,0 +1,813 @@
+{
+  "components": {
+    "schemas": {
+      "ShowEnvelope": {
+        "description": "Standard Zoho Show response envelope.",
+        "type": "object",
+        "properties": {
+          "data": {
+            "description": "Operation payload; endpoint-specific schemas narrow this where available.",
+            "type": "object"
+          },
+          "message": {
+            "type": "string"
+          },
+          "request_uri": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      },
+      "ShowError": {
+        "description": "Standard Zoho Show error response.",
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "details": {
+                "additionalProperties": true,
+                "type": "object",
+                "properties": {
+                  "error_code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "request_uri": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "responses": {
+      "SuccessfulResponse": {
+        "description": "Successful response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowEnvelope"
+            }
+          }
+        }
+      },
+      "InternalServerErrorTheRequestCouldNotBeC": {
+        "description": "Internal server error - the request could not be completed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      },
+      "RateLimitExceededThisOperationAllows100R": {
+        "description": "Rate limit exceeded - this operation allows 100 requests per 1M",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      },
+      "InvalidRequestValidationFailed": {
+        "description": "Invalid request - validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      },
+      "UnauthorizedMissingOrInvalidAccessToken": {
+        "description": "Unauthorized - missing or invalid access token",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      },
+      "NotFoundAResourceNamedInThePathDoesNotEx": {
+        "description": "Not found - a resource named in the path does not exist or is not visible",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "iam-oauth2-schema": {
+        "flows": {
+          "authorizationCode": {
+            "tokenUrl": "https://accounts.zoho.com/oauth/v2/token",
+            "authorizationUrl": "https://accounts.zoho.com/oauth/v2/auth",
+            "scopes": {
+              "ZohoShow.showdocslist.READ": "Read presentations, metadata, and document content",
+              "ZohoShow.showdocslist.UPDATE": "Update presentations, metadata, and document content",
+              "ZohoShow.fullaccess.ALL": "Create, read, update and delete presentations and presentation resources through Show MCP",
+              "ZohoShow.showdocslist.CREATE": "Create presentations and presentation resources",
+              "ZohoShow.showdocslist.DELETE": "Delete presentations and presentation resources"
+            }
+          }
+        },
+        "description": "OAuth 2.0 through Zoho Accounts. For a non-US edition, use the matching host from x-show-accounts-hosts; Canada uses accounts.zohocloud.ca.",
+        "type": "oauth2",
+        "x-show-accounts-hosts": {
+          "EU": "accounts.zoho.eu",
+          "LOCALZOHO": "accounts.localzoho.com",
+          "AU": "accounts.zoho.com.au",
+          "SG": "accounts.zoho.sg",
+          "IN": "accounts.zoho.in",
+          "JP": "accounts.zoho.jp",
+          "UK": "accounts.zoho.uk",
+          "UAE": "accounts.zoho.ae",
+          "CN": "accounts.zoho.com.cn",
+          "US": "accounts.zoho.com",
+          "CA": "accounts.zohocloud.ca",
+          "SA": "accounts.zoho.sa"
+        },
+        "x-show-data-centre": "US"
+      }
+    },
+    "parameters": {
+      "Ids2": {
+        "schema": {
+          "type": "string",
+          "maxLength": 5000
+        },
+        "in": "query",
+        "name": "ids",
+        "description": "Comma-separated ids to return; omit to list every item in the container.",
+        "required": false
+      },
+      "Count": {
+        "schema": {
+          "format": "int32",
+          "maximum": 99,
+          "type": "integer",
+          "minimum": 1
+        },
+        "in": "query",
+        "name": "count",
+        "description": "Maximum number of items to return; pages with 'from'.",
+        "required": false
+      },
+      "From": {
+        "schema": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "in": "query",
+        "name": "from",
+        "description": "Zero-based index of the first item to return (default 0).",
+        "required": false
+      },
+      "PresentationId": {
+        "schema": {
+          "type": "string"
+        },
+        "in": "path",
+        "name": "presentation_id",
+        "description": "The unique identifier of the presentation",
+        "required": true
+      }
+    }
+  },
+  "servers": [
+    {
+      "description": "US DC",
+      "url": "https://show.zoho.com"
+    },
+    {
+      "description": "IN DC",
+      "url": "https://show.zoho.in"
+    },
+    {
+      "description": "CT1 DC",
+      "url": "https://show.localzoho.com"
+    },
+    {
+      "description": "AU DC",
+      "url": "https://show.zoho.com.au"
+    },
+    {
+      "description": "CA DC",
+      "url": "https://show.zohocloud.ca"
+    },
+    {
+      "description": "EU DC",
+      "url": "https://show.zoho.eu"
+    },
+    {
+      "description": "SA DC",
+      "url": "https://show.zoho.sa"
+    },
+    {
+      "description": "UAE DC",
+      "url": "https://show.zoho.ae"
+    },
+    {
+      "description": "CN DC",
+      "url": "https://show.zoho.com.cn"
+    },
+    {
+      "description": "JP DC",
+      "url": "https://show.zoho.jp"
+    },
+    {
+      "description": "SG DC",
+      "url": "https://show.zoho.sg"
+    },
+    {
+      "description": "UK DC",
+      "url": "https://show.zoho.uk"
+    }
+  ],
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v1/presentation/{presentation_id}/masters": {
+      "get": {
+        "summary": "List masters",
+        "security": [
+          {
+            "iam-oauth2-schema": [
+              "ZohoShow.showdocslist.READ"
+            ]
+          }
+        ],
+        "operationId": "getPresentationByPresentationIdMasters",
+        "description": "List masters",
+        "responses": {
+          "200": {
+            "description": "Masters Retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowEnvelope"
+                },
+                "examples": {
+                  "masters_retrieved": {
+                    "value": {
+                      "data": {
+                        "masters": [
+                          {
+                            "master_id": "e8f90363-905a-4d13-840f-504efd08c626",
+                            "theme_data": {
+                              "stroke_scheme": {
+                                "simple": {
+                                  "captype": "FLAT",
+                                  "jointype": "MITER",
+                                  "width": 1,
+                                  "type": "SOLID",
+                                  "fill": {
+                                    "opacity": 1
+                                  }
+                                },
+                                "moderate": {
+                                  "captype": "FLAT",
+                                  "jointype": "MITER",
+                                  "width": 2,
+                                  "type": "SOLID",
+                                  "fill": {
+                                    "opacity": 1
+                                  }
+                                },
+                                "heavy": {
+                                  "captype": "FLAT",
+                                  "jointype": "MITER",
+                                  "width": 2.6666667,
+                                  "type": "SOLID",
+                                  "fill": {
+                                    "opacity": 1
+                                  }
+                                }
+                              },
+                              "background_fill_scheme": {
+                                "simple": {
+                                  "opacity": 1
+                                },
+                                "moderate": {
+                                  "gradient": {
+                                    "linear": {
+                                      "start": {
+                                        "x": 0.45625567
+                                      },
+                                      "end": {
+                                        "x": 0.5437443,
+                                        "y": 1
+                                      }
+                                    },
+                                    "stops": [
+                                      {
+                                        "position": 1
+                                      }
+                                    ]
+                                  },
+                                  "opacity": 1
+                                },
+                                "heavy": {
+                                  "gradient": {
+                                    "radial": {
+                                      "center": {
+                                        "x": 0.5,
+                                        "y": 0.5
+                                      },
+                                      "spread_x": 0,
+                                      "spread_y": 0
+                                    },
+                                    "stops": [
+                                      {
+                                        "position": 1
+                                      }
+                                    ]
+                                  },
+                                  "opacity": 1
+                                }
+                              },
+                              "color_scheme": {
+                                "background_color4": {
+                                  "hex": {
+                                    "value": "#213437"
+                                  }
+                                },
+                                "accent_color1": {
+                                  "hex": {
+                                    "value": "#91CC4B"
+                                  }
+                                },
+                                "background_color2": {
+                                  "hex": {
+                                    "value": "#000000"
+                                  }
+                                },
+                                "background_color3": {
+                                  "hex": {
+                                    "value": "#EAE8DF"
+                                  }
+                                },
+                                "accent_color3": {
+                                  "hex": {
+                                    "value": "#EA7E62"
+                                  }
+                                },
+                                "accent_color2": {
+                                  "hex": {
+                                    "value": "#85D1DD"
+                                  }
+                                },
+                                "accent_color5": {
+                                  "hex": {
+                                    "value": "#F4A247"
+                                  }
+                                },
+                                "accent_color4": {
+                                  "hex": {
+                                    "value": "#F0D059"
+                                  }
+                                },
+                                "accent_color6": {
+                                  "hex": {
+                                    "value": "#A27384"
+                                  }
+                                },
+                                "background_color1": {
+                                  "hex": {
+                                    "value": "#FFFFFF"
+                                  }
+                                }
+                              },
+                              "fill_scheme": {
+                                "simple": {
+                                  "opacity": 1
+                                },
+                                "moderate": {
+                                  "gradient": {
+                                    "linear": {
+                                      "start": {
+                                        "x": 0.5,
+                                        "y": 1
+                                      },
+                                      "end": {
+                                        "x": 0.5
+                                      }
+                                    },
+                                    "stops": [
+                                      {
+                                        "position": 0.35
+                                      }
+                                    ]
+                                  },
+                                  "opacity": 1
+                                },
+                                "heavy": {
+                                  "gradient": {
+                                    "linear": {
+                                      "start": {
+                                        "x": 0.5,
+                                        "y": 1
+                                      },
+                                      "end": {
+                                        "x": 0.5
+                                      }
+                                    },
+                                    "stops": [
+                                      {
+                                        "position": 1
+                                      }
+                                    ]
+                                  },
+                                  "opacity": 1
+                                }
+                              },
+                              "font_scheme": {
+                                "major_font": {
+                                  "typeface": {
+                                    "family": "OSP DIN"
+                                  }
+                                },
+                                "minor_font": {
+                                  "typeface": {
+                                    "family": "Georgia"
+                                  }
+                                }
+                              }
+                            },
+                            "theme_id": "Bold",
+                            "layouts": [
+                              {
+                                "layout": "{\n  \"titleSubTitle\": {\n    \"stack\": {\n      \"type\": \"STACK_VERTICAL_TITLE_SUBTITLE\"\n    }\n  }\n}",
+                                "layout_id": "10bd9a76-0b72-4f5a-8afe-b3beec80db3e",
+                                "kind": "TITLE_SUBTITLE",
+                                "content": {
+                                  "background": {
+                                    "solid": {
+                                      "color": {
+                                        "rgb": {
+                                          "red": 234,
+                                          "green": 232,
+                                          "blue": 223
+                                        }
+                                      }
+                                    },
+                                    "alpha": 0
+                                  },
+                                  "meta": {
+                                    "name": "Title Slide",
+                                    "id": "10bd9a76-0b72-4f5a-8afe-b3beec80db3e"
+                                  },
+                                  "graphic_objects": [
+                                    {
+                                      "shape": {
+                                        "text": {
+                                          "paragraphs": [
+                                            {
+                                              "style": {
+                                                "level": 1,
+                                                "halign": "CENTER"
+                                              },
+                                              "portions": [
+                                                {
+                                                  "style": {
+                                                    "fontweight": "NORMAL",
+                                                    "size": 18,
+                                                    "color": {
+                                                      "rgb": {
+                                                        "red": 255,
+                                                        "green": 255,
+                                                        "blue": 255
+                                                      }
+                                                    },
+                                                    "font_name": {
+                                                      "name": "Georgia"
+                                                    }
+                                                  }
+                                                }
+                                              ]
+                                            }
+                                          ],
+                                          "properties": {
+                                            "valign": "MIDDLE"
+                                          }
+                                        },
+                                        "basic": {
+                                          "snip_rectangle": {
+                                            "type": "SNIP_SINGLE"
+                                          },
+                                          "type": "SNIP_RECTANGLE"
+                                        },
+                                        "properties": {
+                                          "layout": {
+                                            "top": 69,
+                                            "left": 52.444622,
+                                            "width": 854.2216,
+                                            "flipv": true,
+                                            "height": 597.4444
+                                          },
+                                          "strokes": [
+                                            {
+                                              "captype": "FLAT",
+                                              "jointype": "MITER",
+                                              "width": 1,
+                                              "type": "SOLID",
+                                              "fill": {
+                                                "alpha": 0
+                                              }
+                                            }
+                                          ],
+                                          "fills": [
+                                            {
+                                              "solid": {
+                                                "color": {
+                                                  "rgb": {
+                                                    "red": 255,
+                                                    "green": 255,
+                                                    "blue": 255
+                                                  }
+                                                }
+                                              },
+                                              "alpha": 0
+                                            }
+                                          ]
+                                        }
+                                      },
+                                      "name": "Snip Single Corner Rectangle 32",
+                                      "id": "6ef5579e-1b5f-4777-9662-8726c2dc481a"
+                                    }
+                                  ]
+                                }
+                              }
+                            ],
+                            "content": {
+                              "background": {
+                                "solid": {
+                                  "color": {
+                                    "rgb": {
+                                      "red": 234,
+                                      "green": 232,
+                                      "blue": 223
+                                    }
+                                  }
+                                },
+                                "alpha": 0
+                              },
+                              "meta": {
+                                "name": "slideMaster1",
+                                "id": "e8f90363-905a-4d13-840f-504efd08c626"
+                              },
+                              "graphic_objects": [
+                                {
+                                  "shape": {
+                                    "text": {
+                                      "paragraphs": [
+                                        {
+                                          "style": {
+                                            "level": 1,
+                                            "halign": "CENTER"
+                                          },
+                                          "portions": [
+                                            {
+                                              "style": {
+                                                "fontweight": "NORMAL",
+                                                "size": 18,
+                                                "color": {
+                                                  "rgb": {
+                                                    "red": 255,
+                                                    "green": 255,
+                                                    "blue": 255
+                                                  }
+                                                },
+                                                "font_name": {
+                                                  "name": "Georgia"
+                                                }
+                                              }
+                                            }
+                                          ]
+                                        }
+                                      ],
+                                      "properties": {
+                                        "inset": {
+                                          "top": 4.8,
+                                          "left": 9.6,
+                                          "bottom": 4.8,
+                                          "right": 9.6
+                                        },
+                                        "valign": "MIDDLE"
+                                      }
+                                    },
+                                    "basic": {
+                                      "snip_rectangle": {
+                                        "type": "SNIP_SINGLE"
+                                      },
+                                      "type": "SNIP_RECTANGLE"
+                                    },
+                                    "properties": {
+                                      "layout": {
+                                        "top": 15.9994755,
+                                        "left": 16.000105,
+                                        "width": 928.3332,
+                                        "flipv": true,
+                                        "height": 689.0002
+                                      },
+                                      "strokes": [
+                                        {
+                                          "captype": "FLAT",
+                                          "jointype": "MITER",
+                                          "width": 1,
+                                          "type": "SOLID",
+                                          "fill": {
+                                            "alpha": 0
+                                          }
+                                        }
+                                      ],
+                                      "fills": [
+                                        {
+                                          "solid": {
+                                            "color": {
+                                              "rgb": {
+                                                "red": 255,
+                                                "green": 255,
+                                                "blue": 255
+                                              }
+                                            }
+                                          },
+                                          "alpha": 0
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  "name": "Snip Single Corner Rectangle 43",
+                                  "id": "5252c258-8685-488d-b6d1-c57475f81038"
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      },
+                      "message": "Master content retrieved successfully",
+                      "request_uri": "/api/v1/presentation/8i4vv3f345fcf907446a2bdc4e2c871fc585e/masters",
+                      "status": "success"
+                    },
+                    "summary": "Masters Retrieved"
+                  },
+                  "masters_listed": {
+                    "value": {
+                      "data": {
+                        "masters": [
+                          {
+                            "master_id": "e8f90363-905a-4d13-840f-504efd08c626",
+                            "theme_id": "Bold",
+                            "content": {
+                              "meta": {
+                                "name": "slideMaster1",
+                                "id": "e8f90363-905a-4d13-840f-504efd08c626"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "message": "Master content retrieved successfully",
+                      "request_uri": "/api/v1/presentation/8i4vv3f345fcf907446a2bdc4e2c871fc585e/masters",
+                      "status": "success"
+                    },
+                    "summary": "List all (summary per master)"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid Count",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "invalid_count": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3850,
+                          "attribute": "count",
+                          "message": "Parameter value is not valid for the expected type"
+                        }
+                      },
+                      "request_uri": "/api/v1/sdk/presentation/8i4vv3f345fcf907446a2bdc4e2c871fc585e/masters",
+                      "status": "error"
+                    },
+                    "summary": "Invalid Count"
+                  },
+                  "invalid_ids": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3832,
+                          "attribute": "ids",
+                          "message": "Parameter value does not match the required pattern"
+                        }
+                      },
+                      "request_uri": "/api/v1/sdk/presentation/8i4vv3f345fcf907446a2bdc4e2c871fc585e/masters",
+                      "status": "error"
+                    },
+                    "summary": "Invalid Ids"
+                  },
+                  "permission_denied": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3401,
+                          "message": "The user doesn't have permission to perform this action"
+                        }
+                      },
+                      "request_uri": "/api/v1/sdk/presentation/8i4vv3f345fcf907446a2bdc4e2c871fc585e/masters",
+                      "status": "error"
+                    },
+                    "summary": "Permission Denied"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedMissingOrInvalidAccessToken"
+          },
+          "403": {
+            "description": "Permission Denied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "example": {
+                  "error": {
+                    "details": {
+                      "code": 3401,
+                      "message": "The user doesn't have permission to perform this action"
+                    }
+                  },
+                  "request_uri": "/show/restapi/v1/presentation/8i4vv3f345fcf907446a2bdc4e2c871fc585e/masters",
+                  "status": "error"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundAResourceNamedInThePathDoesNotEx"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceededThisOperationAllows100R"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerErrorTheRequestCouldNotBeC"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PresentationId"
+          },
+          {
+            "$ref": "#/components/parameters/Ids2"
+          },
+          {
+            "$ref": "#/components/parameters/From"
+          },
+          {
+            "$ref": "#/components/parameters/Count"
+          }
+        ],
+        "x-mcp-operation-type": "read",
+        "tags": [
+          "Masters"
+        ]
+      }
+    }
+  },
+  "info": {
+    "description": "Read the slide masters of a presentation.",
+    "title": "Masters",
+    "version": "1.0.0"
+  },
+  "tags": [
+    {
+      "name": "Masters",
+      "description": "Read the slide masters of a presentation."
+    }
+  ]
+}

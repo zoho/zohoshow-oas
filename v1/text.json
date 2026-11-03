@@ -1,0 +1,443 @@
+{
+  "components": {
+    "schemas": {
+      "ShowEnvelope": {
+        "description": "Standard Zoho Show response envelope.",
+        "type": "object",
+        "properties": {
+          "data": {
+            "description": "Operation payload; endpoint-specific schemas narrow this where available.",
+            "type": "object"
+          },
+          "message": {
+            "type": "string"
+          },
+          "request_uri": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      },
+      "ShowError": {
+        "description": "Standard Zoho Show error response.",
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "details": {
+                "additionalProperties": true,
+                "type": "object",
+                "properties": {
+                  "error_code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "request_uri": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "responses": {
+      "SuccessfulResponse": {
+        "description": "Successful response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowEnvelope"
+            }
+          }
+        }
+      },
+      "InternalServerErrorTheRequestCouldNotBeC": {
+        "description": "Internal server error - the request could not be completed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      },
+      "RateLimitExceededThisOperationAllows100R": {
+        "description": "Rate limit exceeded - this operation allows 100 requests per 1M",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      },
+      "InvalidRequestValidationFailed": {
+        "description": "Invalid request - validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      },
+      "UnauthorizedMissingOrInvalidAccessToken": {
+        "description": "Unauthorized - missing or invalid access token",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      },
+      "NotFoundAResourceNamedInThePathDoesNotEx": {
+        "description": "Not found - a resource named in the path does not exist or is not visible",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "iam-oauth2-schema": {
+        "flows": {
+          "authorizationCode": {
+            "tokenUrl": "https://accounts.zoho.com/oauth/v2/token",
+            "authorizationUrl": "https://accounts.zoho.com/oauth/v2/auth",
+            "scopes": {
+              "ZohoShow.showdocslist.READ": "Read presentations, metadata, and document content",
+              "ZohoShow.showdocslist.UPDATE": "Update presentations, metadata, and document content",
+              "ZohoShow.fullaccess.ALL": "Create, read, update and delete presentations and presentation resources through Show MCP",
+              "ZohoShow.showdocslist.CREATE": "Create presentations and presentation resources",
+              "ZohoShow.showdocslist.DELETE": "Delete presentations and presentation resources"
+            }
+          }
+        },
+        "description": "OAuth 2.0 through Zoho Accounts. For a non-US edition, use the matching host from x-show-accounts-hosts; Canada uses accounts.zohocloud.ca.",
+        "type": "oauth2",
+        "x-show-accounts-hosts": {
+          "EU": "accounts.zoho.eu",
+          "LOCALZOHO": "accounts.localzoho.com",
+          "AU": "accounts.zoho.com.au",
+          "SG": "accounts.zoho.sg",
+          "IN": "accounts.zoho.in",
+          "JP": "accounts.zoho.jp",
+          "UK": "accounts.zoho.uk",
+          "UAE": "accounts.zoho.ae",
+          "CN": "accounts.zoho.com.cn",
+          "US": "accounts.zoho.com",
+          "CA": "accounts.zohocloud.ca",
+          "SA": "accounts.zoho.sa"
+        },
+        "x-show-data-centre": "US"
+      }
+    },
+    "parameters": {
+      "ContainerId": {
+        "schema": {
+          "type": "string"
+        },
+        "in": "path",
+        "name": "container_id",
+        "description": "The unique identifier of the container",
+        "required": true
+      },
+      "ContainerType": {
+        "schema": {
+          "type": "string"
+        },
+        "in": "path",
+        "name": "container_type",
+        "description": "The unique identifier of the container_type",
+        "required": true
+      },
+      "PresentationId": {
+        "schema": {
+          "type": "string"
+        },
+        "in": "path",
+        "name": "presentation_id",
+        "description": "The unique identifier of the presentation",
+        "required": true
+      }
+    }
+  },
+  "servers": [
+    {
+      "description": "US DC",
+      "url": "https://show.zoho.com"
+    },
+    {
+      "description": "IN DC",
+      "url": "https://show.zoho.in"
+    },
+    {
+      "description": "CT1 DC",
+      "url": "https://show.localzoho.com"
+    },
+    {
+      "description": "AU DC",
+      "url": "https://show.zoho.com.au"
+    },
+    {
+      "description": "CA DC",
+      "url": "https://show.zohocloud.ca"
+    },
+    {
+      "description": "EU DC",
+      "url": "https://show.zoho.eu"
+    },
+    {
+      "description": "SA DC",
+      "url": "https://show.zoho.sa"
+    },
+    {
+      "description": "UAE DC",
+      "url": "https://show.zoho.ae"
+    },
+    {
+      "description": "CN DC",
+      "url": "https://show.zoho.com.cn"
+    },
+    {
+      "description": "JP DC",
+      "url": "https://show.zoho.jp"
+    },
+    {
+      "description": "SG DC",
+      "url": "https://show.zoho.sg"
+    },
+    {
+      "description": "UK DC",
+      "url": "https://show.zoho.uk"
+    }
+  ],
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v1/presentation/{presentation_id}/{container_type}/{container_id}/text/{text_id}": {
+      "get": {
+        "summary": "Get text of a text-bearing object in a slide (fetch_type: text | length | paragraph_count | paragraph_text)",
+        "security": [
+          {
+            "iam-oauth2-schema": [
+              "ZohoShow.showdocslist.READ"
+            ]
+          }
+        ],
+        "operationId": "getPresentationByPresentationIdByContain06865ee9",
+        "description": "Get text of a text-bearing object in a slide (fetch_type: text | length | paragraph_count | paragraph_text)",
+        "responses": {
+          "200": {
+            "description": "Text Content Retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowEnvelope"
+                },
+                "examples": {
+                  "text_content_retrieved": {
+                    "value": {
+                      "data": {
+                        "text": "Hello World Sample"
+                      },
+                      "message": "Text retrieved successfully",
+                      "request_uri": "/api/v1/presentation/8i4vv3f345fcf907446a2bdc4e2c871fc585e/slides/68a483f2-06e3-488d-a53c-bbe7d4f69998/text/c7538ec8-cdeb-42fb-9a10-2bcd9995dd1c",
+                      "status": "success"
+                    },
+                    "summary": "Text Content Retrieved"
+                  },
+                  "text_length_retrieved": {
+                    "value": {
+                      "data": {
+                        "length": 18
+                      },
+                      "message": "Text retrieved successfully",
+                      "request_uri": "/api/v1/presentation/8i4vv3f345fcf907446a2bdc4e2c871fc585e/slides/68a483f2-06e3-488d-a53c-bbe7d4f69998/text/3d672ca2-f80e-428b-9fc5-b3e416791719",
+                      "status": "success"
+                    },
+                    "summary": "fetch_type=length"
+                  },
+                  "paragraph_count_retrieved": {
+                    "value": {
+                      "data": {
+                        "paragraph_count": 1
+                      },
+                      "message": "Text retrieved successfully",
+                      "request_uri": "/api/v1/presentation/8i4vv3f345fcf907446a2bdc4e2c871fc585e/slides/68a483f2-06e3-488d-a53c-bbe7d4f69998/text/7aacfb47-e5a7-47d4-b5d6-5203727efb6b",
+                      "status": "success"
+                    },
+                    "summary": "fetch_type=paragraph_count"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid Text Range",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "invalid_text_range": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 1000,
+                          "rid": "8i4vv3f345fcf907446a2bdc4e2c871fc585e",
+                          "slide_id": "54ca442b-63d1-43df-bda9-9f8cd2654e70",
+                          "sdk_error_code": "1000",
+                          "message": "range_end (10) exceeds text length (0)"
+                        }
+                      },
+                      "request_uri": "/api/v1/sdk/presentation/8i4vv3f345fcf907446a2bdc4e2c871fc585e/slides/54ca442b-63d1-43df-bda9-9f8cd2654e70/text/28f4b1b9-923d-47de-b5f7-5bc7ca05aba2",
+                      "status": "error"
+                    },
+                    "summary": "Invalid Text Range"
+                  },
+                  "missing_paragraph_range": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 1000,
+                          "rid": "8i4vv3f345fcf907446a2bdc4e2c871fc585e",
+                          "slide_id": "54ca442b-63d1-43df-bda9-9f8cd2654e70",
+                          "sdk_error_code": "1000",
+                          "message": "getParagraphText requires 'payload.range' to be set"
+                        }
+                      },
+                      "request_uri": "/api/v1/sdk/presentation/8i4vv3f345fcf907446a2bdc4e2c871fc585e/slides/54ca442b-63d1-43df-bda9-9f8cd2654e70/text/28f4b1b9-923d-47de-b5f7-5bc7ca05aba2",
+                      "status": "error"
+                    },
+                    "summary": "Missing Paragraph Range"
+                  },
+                  "invalid_fetch_type": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3832,
+                          "attribute": "fetch_type",
+                          "message": "Parameter value does not match the required pattern"
+                        }
+                      },
+                      "request_uri": "/api/v1/sdk/presentation/8i4vv3f345fcf907446a2bdc4e2c871fc585e/slides/54ca442b-63d1-43df-bda9-9f8cd2654e70/text/28f4b1b9-923d-47de-b5f7-5bc7ca05aba2",
+                      "status": "error"
+                    },
+                    "summary": "Invalid Fetch Type"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedMissingOrInvalidAccessToken"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundAResourceNamedInThePathDoesNotEx"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceededThisOperationAllows100R"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerErrorTheRequestCouldNotBeC"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PresentationId"
+          },
+          {
+            "$ref": "#/components/parameters/ContainerType"
+          },
+          {
+            "$ref": "#/components/parameters/ContainerId"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "text_id",
+            "description": "The unique identifier of the text",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "maxLength": 50,
+              "enum": [
+                "text",
+                "length",
+                "paragraph_count",
+                "paragraph_text"
+              ]
+            },
+            "in": "query",
+            "name": "fetch_type",
+            "description": "What to fetch for the text object: text, length, paragraph_count or paragraph_text.",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "boolean"
+            },
+            "in": "query",
+            "name": "all_text",
+            "description": "When true, return all text content (default for fetch_type=text)",
+            "required": false
+          },
+          {
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "in": "query",
+            "name": "range_start",
+            "description": "Start index for text range (requires range_end)",
+            "required": false
+          },
+          {
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "in": "query",
+            "name": "range_end",
+            "description": "End index for text range (requires range_start)",
+            "required": false
+          }
+        ],
+        "x-mcp-operation-type": "read",
+        "tags": [
+          "Text"
+        ]
+      }
+    }
+  },
+  "info": {
+    "description": "Read and edit text content of an object.",
+    "title": "Text",
+    "version": "1.0.0"
+  },
+  "tags": [
+    {
+      "name": "Text",
+      "description": "Read and edit text content of an object."
+    }
+  ]
+}

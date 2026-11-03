@@ -1,0 +1,198 @@
+{
+  "openapi": "3.1.0",
+  "files": [
+    {
+      "file": "bundled/show-api.json",
+      "operations": 67,
+      "role": "bundled",
+      "paths": 35,
+      "schemas": 58,
+      "description": "Published OpenAPI specification for Zoho Show REST and SDK APIs\n\nThis document contains every Zoho Show API operation. The per-resource documents beside it (presentations, slides, data operations, media, and tables, and the rest) are subsets of this one. Generate a client from this file OR from the per-resource files, not both: they describe the same operations, so generating from both produces duplicate types.",
+      "title": "Zoho Show API",
+      "tags": [
+        "Presentation",
+        "Members",
+        "Publish",
+        "Workspace",
+        "Themes",
+        "Slides",
+        "Masters",
+        "Layouts",
+        "Tables",
+        "Media",
+        "Flowchart",
+        "Shapes",
+        "Connectors",
+        "Group Shapes",
+        "Text"
+      ]
+    },
+    {
+      "file": "presentation.json",
+      "operations": 10,
+      "role": "resource",
+      "surface": "rest",
+      "paths": 8,
+      "schemas": 7,
+      "description": "Create, read and manage presentations.",
+      "title": "Presentation",
+      "tags": ["Presentation"]
+    },
+    {
+      "file": "members-sharing.json",
+      "operations": 4,
+      "role": "resource",
+      "surface": "rest",
+      "paths": 1,
+      "schemas": 5,
+      "description": "Share presentations and manage member roles.",
+      "title": "Members (Sharing)",
+      "tags": ["Members"]
+    },
+    {
+      "file": "publish.json",
+      "operations": 4,
+      "role": "resource",
+      "surface": "rest",
+      "paths": 1,
+      "schemas": 4,
+      "description": "Publish presentations and manage publish settings.",
+      "title": "Publish",
+      "tags": ["Publish"]
+    },
+    {
+      "file": "workspace.json",
+      "operations": 1,
+      "role": "resource",
+      "surface": "rest",
+      "paths": 1,
+      "schemas": 2,
+      "description": "List Show workspaces available to the caller.",
+      "title": "Workspace",
+      "tags": ["Workspace"]
+    },
+    {
+      "file": "themes.json",
+      "operations": 1,
+      "role": "resource",
+      "surface": "rest",
+      "paths": 1,
+      "schemas": 2,
+      "description": "Discover themes and templates.",
+      "title": "Themes",
+      "tags": ["Themes"]
+    },
+    {
+      "file": "slides.json",
+      "operations": 7,
+      "role": "resource",
+      "surface": "rest",
+      "paths": 4,
+      "schemas": 7,
+      "description": "Insert, update, reorder and remove slides.",
+      "title": "Slides",
+      "tags": ["Slides"]
+    },
+    {
+      "file": "masters.json",
+      "operations": 1,
+      "role": "resource",
+      "surface": "rest",
+      "paths": 1,
+      "schemas": 2,
+      "description": "Read the slide masters of a presentation.",
+      "title": "Masters",
+      "tags": ["Masters"]
+    },
+    {
+      "file": "layouts.json",
+      "operations": 4,
+      "role": "resource",
+      "surface": "rest",
+      "paths": 1,
+      "schemas": 4,
+      "description": "Insert, update and remove master layouts.",
+      "title": "Layouts",
+      "tags": ["Layouts"]
+    },
+    {
+      "file": "tables.json",
+      "operations": 11,
+      "role": "resource",
+      "surface": "rest",
+      "paths": 8,
+      "schemas": 11,
+      "description": "Create and modify presentation tables, rows, columns and cells.",
+      "title": "Tables",
+      "tags": ["Tables"]
+    },
+    {
+      "file": "media.json",
+      "operations": 10,
+      "role": "resource",
+      "surface": "rest",
+      "paths": 4,
+      "schemas": 25,
+      "description": "Insert and manage pictures, videos and audio on a slide.",
+      "title": "Media",
+      "tags": ["Media"]
+    },
+    {
+      "file": "flowchart.json",
+      "operations": 1,
+      "role": "resource",
+      "surface": "rest",
+      "paths": 1,
+      "schemas": 3,
+      "description": "Create flowcharts on a slide.",
+      "title": "Flowchart",
+      "tags": ["Flowchart"]
+    },
+    {
+      "file": "shapes.json",
+      "operations": 4,
+      "role": "resource",
+      "surface": "rest",
+      "paths": 1,
+      "schemas": 4,
+      "description": "Insert, update and remove shapes in a slide, master or layout.",
+      "title": "Shapes",
+      "tags": ["Shapes"]
+    },
+    {
+      "file": "connectors.json",
+      "operations": 4,
+      "role": "resource",
+      "surface": "rest",
+      "paths": 1,
+      "schemas": 4,
+      "description": "Insert, update and remove connectors between objects.",
+      "title": "Connectors",
+      "tags": ["Connectors"]
+    },
+    {
+      "file": "group-shapes.json",
+      "operations": 4,
+      "role": "resource",
+      "surface": "rest",
+      "paths": 1,
+      "schemas": 4,
+      "description": "Group, ungroup and manage grouped shapes.",
+      "title": "Group Shapes",
+      "tags": ["Group Shapes"]
+    },
+    {
+      "file": "text.json",
+      "operations": 1,
+      "role": "resource",
+      "surface": "rest",
+      "paths": 1,
+      "schemas": 2,
+      "description": "Read and edit text content of an object.",
+      "title": "Text",
+      "tags": ["Text"]
+    }
+  ],
+  "title": "Zoho Show API",
+  "version": "1.0.0"
+}

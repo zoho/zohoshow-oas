@@ -1,0 +1,780 @@
+{
+  "components": {
+    "schemas": {
+      "ShowEnvelope": {
+        "description": "Standard Zoho Show response envelope.",
+        "type": "object",
+        "properties": {
+          "data": {
+            "description": "Operation payload; endpoint-specific schemas narrow this where available.",
+            "type": "object"
+          },
+          "message": {
+            "type": "string"
+          },
+          "request_uri": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      },
+      "ShowError": {
+        "description": "Standard Zoho Show error response.",
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "details": {
+                "additionalProperties": true,
+                "type": "object",
+                "properties": {
+                  "error_code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "request_uri": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "responses": {
+      "SuccessfulResponse": {
+        "description": "Successful response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowEnvelope"
+            }
+          }
+        }
+      },
+      "InternalServerErrorTheRequestCouldNotBeC": {
+        "description": "Internal server error - the request could not be completed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      },
+      "InvalidRequestValidationFailed": {
+        "description": "Invalid request - validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      },
+      "RateLimitExceededThisOperationAllows60Re": {
+        "description": "Rate limit exceeded - this operation allows 60 requests per 1M",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "iam-oauth2-schema": {
+        "flows": {
+          "authorizationCode": {
+            "tokenUrl": "https://accounts.zoho.com/oauth/v2/token",
+            "authorizationUrl": "https://accounts.zoho.com/oauth/v2/auth",
+            "scopes": {
+              "ZohoShow.showdocslist.READ": "Read presentations, metadata, and document content",
+              "ZohoShow.showdocslist.UPDATE": "Update presentations, metadata, and document content",
+              "ZohoShow.fullaccess.ALL": "Create, read, update and delete presentations and presentation resources through Show MCP",
+              "ZohoShow.showdocslist.CREATE": "Create presentations and presentation resources",
+              "ZohoShow.showdocslist.DELETE": "Delete presentations and presentation resources"
+            }
+          }
+        },
+        "description": "OAuth 2.0 through Zoho Accounts. For a non-US edition, use the matching host from x-show-accounts-hosts; Canada uses accounts.zohocloud.ca.",
+        "type": "oauth2",
+        "x-show-accounts-hosts": {
+          "EU": "accounts.zoho.eu",
+          "LOCALZOHO": "accounts.localzoho.com",
+          "AU": "accounts.zoho.com.au",
+          "SG": "accounts.zoho.sg",
+          "IN": "accounts.zoho.in",
+          "JP": "accounts.zoho.jp",
+          "UK": "accounts.zoho.uk",
+          "UAE": "accounts.zoho.ae",
+          "CN": "accounts.zoho.com.cn",
+          "US": "accounts.zoho.com",
+          "CA": "accounts.zohocloud.ca",
+          "SA": "accounts.zoho.sa"
+        },
+        "x-show-data-centre": "US"
+      }
+    }
+  },
+  "servers": [
+    {
+      "description": "US DC",
+      "url": "https://show.zoho.com"
+    },
+    {
+      "description": "IN DC",
+      "url": "https://show.zoho.in"
+    },
+    {
+      "description": "CT1 DC",
+      "url": "https://show.localzoho.com"
+    },
+    {
+      "description": "AU DC",
+      "url": "https://show.zoho.com.au"
+    },
+    {
+      "description": "CA DC",
+      "url": "https://show.zohocloud.ca"
+    },
+    {
+      "description": "EU DC",
+      "url": "https://show.zoho.eu"
+    },
+    {
+      "description": "SA DC",
+      "url": "https://show.zoho.sa"
+    },
+    {
+      "description": "UAE DC",
+      "url": "https://show.zoho.ae"
+    },
+    {
+      "description": "CN DC",
+      "url": "https://show.zoho.com.cn"
+    },
+    {
+      "description": "JP DC",
+      "url": "https://show.zoho.jp"
+    },
+    {
+      "description": "SG DC",
+      "url": "https://show.zoho.sg"
+    },
+    {
+      "description": "UK DC",
+      "url": "https://show.zoho.uk"
+    }
+  ],
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v1/themes": {
+      "get": {
+        "summary": "Return the catalogue of bundled Show themes (theme_id, theme_name, description, slide_setup); restrict the columns with fields. Resolve a user's theme name to its numeric theme_id here before createPresentation or createPresentationFromContent. Read-only.",
+        "security": [
+          {
+            "iam-oauth2-schema": [
+              "ZohoShow.showdocslist.READ",
+              "ZohoShow.fullaccess.ALL"
+            ]
+          }
+        ],
+        "operationId": "getthemes",
+        "description": "Return the catalogue of bundled Show themes (theme_id, theme_name, description, slide_setup); restrict the columns with fields. Resolve a user's theme name to its numeric theme_id here before createPresentation or createPresentationFromContent. Read-only.",
+        "responses": {
+          "200": {
+            "description": "Themes retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowEnvelope"
+                },
+                "examples": {
+                  "themes_retrieved": {
+                    "value": {
+                      "data": {
+                        "themes": [
+                          {
+                            "theme_id": "128920000000169003",
+                            "theme_name": "Bold",
+                            "description": "This crisp modern theme has a cutting-edge look and feel that is perfect for making a statement in style. Stylized type over a minimalist background and contemporary design elements add subtle visual interest to your display.",
+                            "slide_setup": "{\"screen_type\":\"FOUR_BY_THREE\",\"orient\":\"LANDSCAPE\",\"size\":{\"width\":960,\"height\":720}}"
+                          },
+                          {
+                            "theme_id": "61536000000575003",
+                            "theme_name": "Royal",
+                            "description": "Royal",
+                            "slide_setup": "{\"screen_type\":\"SIXTEEN_BY_NINE\",\"orient\":\"LANDSCAPE\",\"size\":{\"width\":960,\"height\":540}}"
+                          }
+                        ]
+                      },
+                      "message": "Getting themes list",
+                      "request_uri": "/api/v1/themes",
+                      "status": "success"
+                    },
+                    "summary": "Themes retrieved"
+                  },
+                  "field_specific_response": {
+                    "value": {
+                      "data": {
+                        "themes": [
+                          {
+                            "theme_id": "128920000000169003",
+                            "theme_name": "Bold"
+                          },
+                          {
+                            "theme_id": "3500271000286327609",
+                            "theme_name": "Eccentric"
+                          },
+                          {
+                            "theme_id": "3500271000286332122",
+                            "theme_name": "Patterns"
+                          },
+                          {
+                            "theme_id": "3500271000286532132",
+                            "theme_name": "Sunny"
+                          },
+                          {
+                            "theme_id": "128920000000174277",
+                            "theme_name": "Lightbox"
+                          },
+                          {
+                            "theme_id": "128920000000199733",
+                            "theme_name": "Watercolor"
+                          },
+                          {
+                            "theme_id": "1231313000225683206",
+                            "theme_name": "StellarAI"
+                          },
+                          {
+                            "theme_id": "3500271000286325541",
+                            "theme_name": "Chalkboard"
+                          },
+                          {
+                            "theme_id": "3500271000285744039",
+                            "theme_name": "Stardust"
+                          },
+                          {
+                            "theme_id": "8114000000822361",
+                            "theme_name": "Monochrome"
+                          },
+                          {
+                            "theme_id": "3500271000285800109",
+                            "theme_name": "Folklore"
+                          },
+                          {
+                            "theme_id": "8114000000822480",
+                            "theme_name": "Geometric"
+                          },
+                          {
+                            "theme_id": "128920000000181003",
+                            "theme_name": "Orbit"
+                          },
+                          {
+                            "theme_id": "3500271000285371473",
+                            "theme_name": "Corporate"
+                          },
+                          {
+                            "theme_id": "3500271000353591774",
+                            "theme_name": "Canine"
+                          },
+                          {
+                            "theme_id": "128920000000169134",
+                            "theme_name": "Bulletin"
+                          },
+                          {
+                            "theme_id": "3500271000714261086",
+                            "theme_name": "Sage"
+                          },
+                          {
+                            "theme_id": "3500271000286535236",
+                            "theme_name": "Foliage"
+                          },
+                          {
+                            "theme_id": "3500271000652109014",
+                            "theme_name": "Retro"
+                          },
+                          {
+                            "theme_id": "8114000000832732",
+                            "theme_name": "Whitepaper"
+                          },
+                          {
+                            "theme_id": "3500271000286108742",
+                            "theme_name": "Edgy"
+                          },
+                          {
+                            "theme_id": "3500271000286187507",
+                            "theme_name": "Abstract"
+                          },
+                          {
+                            "theme_id": "3500271000286275379",
+                            "theme_name": "Radiant"
+                          },
+                          {
+                            "theme_id": "3500271000285363343",
+                            "theme_name": "Wavy"
+                          },
+                          {
+                            "theme_id": "128920000000199192",
+                            "theme_name": "Brushstrokes"
+                          },
+                          {
+                            "theme_id": "3500271000353232246",
+                            "theme_name": "Interlinks"
+                          },
+                          {
+                            "theme_id": "8114000000817505",
+                            "theme_name": "Cultural"
+                          },
+                          {
+                            "theme_id": "3500271000464430997",
+                            "theme_name": "Honeycomb"
+                          },
+                          {
+                            "theme_id": "3500271000285802237",
+                            "theme_name": "Comics"
+                          },
+                          {
+                            "theme_id": "8114000000832607",
+                            "theme_name": "Celestial"
+                          },
+                          {
+                            "theme_id": "8114000000831655",
+                            "theme_name": "Evolutionary"
+                          },
+                          {
+                            "theme_id": "3500271000286464066",
+                            "theme_name": "Ideation"
+                          },
+                          {
+                            "theme_id": "8114000000827439",
+                            "theme_name": "Strokes"
+                          },
+                          {
+                            "theme_id": "128920000000199311",
+                            "theme_name": "Bubbles"
+                          },
+                          {
+                            "theme_id": "3500271000353732559",
+                            "theme_name": "Pet"
+                          },
+                          {
+                            "theme_id": "1231313000312308052",
+                            "theme_name": "VibranceAI"
+                          },
+                          {
+                            "theme_id": "3500271000711781545",
+                            "theme_name": "Sapphire"
+                          },
+                          {
+                            "theme_id": "3500271000628931122",
+                            "theme_name": "Stellar"
+                          },
+                          {
+                            "theme_id": "8114000000829865",
+                            "theme_name": "Radiant"
+                          },
+                          {
+                            "theme_id": "128920000000199608",
+                            "theme_name": "Oblique"
+                          },
+                          {
+                            "theme_id": "128920000000175539",
+                            "theme_name": "Universal"
+                          },
+                          {
+                            "theme_id": "3500271000285799385",
+                            "theme_name": "Chemist"
+                          },
+                          {
+                            "theme_id": "8114000000831260",
+                            "theme_name": "Doodles"
+                          },
+                          {
+                            "theme_id": "3500271000285376593",
+                            "theme_name": "Halloween"
+                          },
+                          {
+                            "theme_id": "128920000000174051",
+                            "theme_name": "Essential"
+                          },
+                          {
+                            "theme_id": "9114000000832832",
+                            "theme_name": "Enlighten"
+                          },
+                          {
+                            "theme_id": "3500271000286217641",
+                            "theme_name": "Coders"
+                          },
+                          {
+                            "theme_id": "128920000000169307",
+                            "theme_name": "Chalkboard"
+                          },
+                          {
+                            "theme_id": "60123000003350053",
+                            "theme_name": "Cybermesh"
+                          },
+                          {
+                            "theme_id": "3500271000286283171",
+                            "theme_name": "Polygon"
+                          },
+                          {
+                            "theme_id": "60123000003787003",
+                            "theme_name": "WhitepaperAI"
+                          },
+                          {
+                            "theme_id": "3500271000637304755",
+                            "theme_name": "Neon"
+                          },
+                          {
+                            "theme_id": "1231313000316264293",
+                            "theme_name": "ColorfulAI"
+                          },
+                          {
+                            "theme_id": "8114000000177000",
+                            "theme_name": "Elemental"
+                          },
+                          {
+                            "theme_id": "8114000000827971",
+                            "theme_name": "Brainstorm"
+                          },
+                          {
+                            "theme_id": "8114000000828666",
+                            "theme_name": "Serene"
+                          },
+                          {
+                            "theme_id": "3500271000614546556",
+                            "theme_name": "Whimsy"
+                          },
+                          {
+                            "theme_id": "3500271000286493685",
+                            "theme_name": "Floral"
+                          },
+                          {
+                            "theme_id": "3500271000286094980",
+                            "theme_name": "Mechanics"
+                          },
+                          {
+                            "theme_id": "120420000000063003",
+                            "theme_name": "Cosmo"
+                          },
+                          {
+                            "theme_id": "3500271000286515036",
+                            "theme_name": "Blot"
+                          },
+                          {
+                            "theme_id": "128920000000199412",
+                            "theme_name": "Dormitory"
+                          },
+                          {
+                            "theme_id": "3500271000286331114",
+                            "theme_name": "Aviation"
+                          },
+                          {
+                            "theme_id": "3500271000285084330",
+                            "theme_name": "Savings"
+                          },
+                          {
+                            "theme_id": "8114000000817378",
+                            "theme_name": "Theatrical"
+                          },
+                          {
+                            "theme_id": "3500271000285800142",
+                            "theme_name": "Puppets"
+                          },
+                          {
+                            "theme_id": "3500271000286283980",
+                            "theme_name": "Frames"
+                          },
+                          {
+                            "theme_id": "8114000000827570",
+                            "theme_name": "Beehive"
+                          },
+                          {
+                            "theme_id": "3500271000286286901",
+                            "theme_name": "Contrast"
+                          },
+                          {
+                            "theme_id": "8114000000826894",
+                            "theme_name": "Experimental"
+                          },
+                          {
+                            "theme_id": "3500271000286313870",
+                            "theme_name": "Splash"
+                          },
+                          {
+                            "theme_id": "3500271000286108547",
+                            "theme_name": "Grids"
+                          },
+                          {
+                            "theme_id": "3500271000285071521",
+                            "theme_name": "Notebook"
+                          },
+                          {
+                            "theme_id": "128920000000175396",
+                            "theme_name": "Treasury"
+                          },
+                          {
+                            "theme_id": "3500271000285730185",
+                            "theme_name": "Aquatic"
+                          },
+                          {
+                            "theme_id": "3500271000285717823",
+                            "theme_name": "Art"
+                          },
+                          {
+                            "theme_id": "128920000000175283",
+                            "theme_name": "Tradition"
+                          },
+                          {
+                            "theme_id": "8114000000817942",
+                            "theme_name": "Elegance"
+                          },
+                          {
+                            "theme_id": "128920000000174509",
+                            "theme_name": "Motion"
+                          },
+                          {
+                            "theme_id": "3500271000286199635",
+                            "theme_name": "Executive"
+                          },
+                          {
+                            "theme_id": "8114000000829259",
+                            "theme_name": "Origami"
+                          },
+                          {
+                            "theme_id": "3500271000284825418",
+                            "theme_name": "Flora"
+                          },
+                          {
+                            "theme_id": "3500271000286440297",
+                            "theme_name": "Starry"
+                          },
+                          {
+                            "theme_id": "3500271000286332067",
+                            "theme_name": "Colorful"
+                          },
+                          {
+                            "theme_id": "128920000000174378",
+                            "theme_name": "Luxury"
+                          },
+                          {
+                            "theme_id": "128920000000199513",
+                            "theme_name": "Guidebook"
+                          },
+                          {
+                            "theme_id": "36481000000374005",
+                            "theme_name": "Playgrid"
+                          },
+                          {
+                            "theme_id": "128920000000169617",
+                            "theme_name": "Community"
+                          },
+                          {
+                            "theme_id": "3500271000286219752",
+                            "theme_name": "Wildlife"
+                          },
+                          {
+                            "theme_id": "3500271000285405284",
+                            "theme_name": "Memories"
+                          },
+                          {
+                            "theme_id": "1231313000211638536",
+                            "theme_name": "GreeneryAI"
+                          },
+                          {
+                            "theme_id": "8114000000829542",
+                            "theme_name": "Splash"
+                          },
+                          {
+                            "theme_id": "1231313000277712211",
+                            "theme_name": "FloraAI"
+                          },
+                          {
+                            "theme_id": "128920000000174765",
+                            "theme_name": "Perspective"
+                          },
+                          {
+                            "theme_id": "3500271000285709626",
+                            "theme_name": "Picnic"
+                          },
+                          {
+                            "theme_id": "3500271000285802140",
+                            "theme_name": "Cardboard"
+                          },
+                          {
+                            "theme_id": "128920000000175176",
+                            "theme_name": "Sheer"
+                          },
+                          {
+                            "theme_id": "128920000000174884",
+                            "theme_name": "Pinstripes"
+                          },
+                          {
+                            "theme_id": "3500271000286447932",
+                            "theme_name": "Greenery"
+                          },
+                          {
+                            "theme_id": "128920000000199007",
+                            "theme_name": "Architecture"
+                          },
+                          {
+                            "theme_id": "3500271000286273570",
+                            "theme_name": "Sharpex"
+                          },
+                          {
+                            "theme_id": "3500271000286275352",
+                            "theme_name": "Blossom"
+                          },
+                          {
+                            "theme_id": "3500271000286408012",
+                            "theme_name": "Ellipse"
+                          },
+                          {
+                            "theme_id": "3500271000285709192",
+                            "theme_name": "Candy"
+                          },
+                          {
+                            "theme_id": "8114000000822755",
+                            "theme_name": "Breezy"
+                          },
+                          {
+                            "theme_id": "128920000000188003",
+                            "theme_name": "Pulp"
+                          },
+                          {
+                            "theme_id": "3500271000286283096",
+                            "theme_name": "Classic"
+                          },
+                          {
+                            "theme_id": "3500271000285746501",
+                            "theme_name": "Scatter"
+                          },
+                          {
+                            "theme_id": "128920000000169504",
+                            "theme_name": "Civil"
+                          },
+                          {
+                            "theme_id": "3500271000285595087",
+                            "theme_name": "Kitty"
+                          },
+                          {
+                            "theme_id": "128920000000181334",
+                            "theme_name": "Executive"
+                          },
+                          {
+                            "theme_id": "3500271000285376156",
+                            "theme_name": "Vibrance"
+                          }
+                        ]
+                      },
+                      "message": "Getting themes list",
+                      "request_uri": "/api/v1/themes",
+                      "status": "success"
+                    },
+                    "summary": "Field Specific Response"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid Fields Parameter",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "invalid_fields_parameter": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3850,
+                          "attribute": "fields",
+                          "message": "Parameter value is not valid for the expected type"
+                        }
+                      },
+                      "request_uri": "/api/v1/themes",
+                      "status": "error"
+                    },
+                    "summary": "Invalid Fields Parameter"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing OAuth Token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "missing_oauth_token": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3420,
+                          "message": "The OAuth token is missing, expired, or invalid"
+                        }
+                      },
+                      "request_uri": "/api/v1/themes",
+                      "status": "error"
+                    },
+                    "summary": "Missing OAuth Token"
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceededThisOperationAllows60Re"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerErrorTheRequestCouldNotBeC"
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "maxLength": 1000
+            },
+            "in": "query",
+            "name": "fields",
+            "description": "Comma-separated subset of theme_id, theme_name, description, slide_setup; omit for all.",
+            "required": false
+          }
+        ],
+        "x-mcp-operation-type": "read",
+        "tags": [
+          "Themes"
+        ]
+      }
+    }
+  },
+  "info": {
+    "description": "Discover themes and templates.",
+    "title": "Themes",
+    "version": "1.0.0"
+  },
+  "tags": [
+    {
+      "name": "Themes",
+      "description": "Discover themes and templates."
+    }
+  ]
+}

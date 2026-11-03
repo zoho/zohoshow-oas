@@ -1,0 +1,1166 @@
+{
+  "components": {
+    "schemas": {
+      "ShowEnvelope": {
+        "description": "Standard Zoho Show response envelope.",
+        "type": "object",
+        "properties": {
+          "data": {
+            "description": "Operation payload; endpoint-specific schemas narrow this where available.",
+            "type": "object"
+          },
+          "message": {
+            "type": "string"
+          },
+          "request_uri": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      },
+      "PublishParamsRequest": {
+        "type": "object",
+        "properties": {
+          "allow_download": {
+            "description": "Whether visitors to the published page may download the presentation.",
+            "type": "boolean"
+          },
+          "auto_republish": {
+            "description": "Keep the published copy in step with the presentation automatically, so later edits reach visitors without another publish call.",
+            "type": "boolean"
+          },
+          "update_show_explainer": {
+            "description": "Whether the published page displays the explainer panel shown alongside the slides.",
+            "type": "boolean"
+          },
+          "bg_color": {
+            "pattern": "^(?:(?:#|0x)(?:[a-f0-9]{3}|[a-f0-9]{6})\\b|(?:rgb|hsl)a?\\([^\\)]*\\))$",
+            "description": "Background color of the published page, given as a CSS color: a 3- or 6-digit hex value prefixed with # or 0x, or an rgb(), rgba(), hsl() or hsla() function.",
+            "type": "string"
+          },
+          "allow_share": {
+            "description": "Whether visitors to the published page may share its link onward.",
+            "type": "boolean"
+          },
+          "update_show_logo": {
+            "description": "Whether the Zoho Show logo is displayed on the published page.",
+            "type": "boolean"
+          },
+          "update_public_type": {
+            "description": "Changes who the publication is visible to: 1 restricts it to the owner's organization, 2 opens it to the external world.",
+            "type": "string",
+            "enum": [
+              "1",
+              "2"
+            ]
+          },
+          "republish": {
+            "description": "Push the presentation's current content to the already-published copy, replacing what visitors currently see. Use this after editing a presentation that is already published.",
+            "type": "boolean"
+          },
+          "allow_translate": {
+            "description": "Whether the published page offers visitors a translation of the slide text.",
+            "type": "boolean"
+          },
+          "viewtype": {
+            "format": "int32",
+            "description": "Layout used to render the published presentation, an integer from 1 to 12. Defaults to 1 when omitted or when the value is not recognized; several of the higher layouts add a slide-thumbnail strip.",
+            "type": "integer"
+          },
+          "update_user_pic": {
+            "description": "Whether the publisher's profile picture is displayed on the published page.",
+            "type": "boolean"
+          },
+          "loop_show": {
+            "description": "Whether the slideshow returns to the first slide when it reaches the end instead of stopping.",
+            "type": "boolean"
+          }
+        }
+      },
+      "ShowError": {
+        "description": "Standard Zoho Show error response.",
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "details": {
+                "additionalProperties": true,
+                "type": "object",
+                "properties": {
+                  "error_code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "request_uri": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      },
+      "PublishTypeParamsRequest": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Audience the publication is aimed at: ORG_PUBLISH makes it visible only inside the owner's organization, EXTERNAL_WORLD opens it to anyone holding the link. Mandatory.",
+            "type": "string",
+            "enum": [
+              "ORG_PUBLISH",
+              "EXTERNAL_WORLD"
+            ]
+          }
+        },
+        "required": [
+          "type"
+        ]
+      }
+    },
+    "responses": {
+      "SuccessfulResponse": {
+        "description": "Successful response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowEnvelope"
+            }
+          }
+        }
+      },
+      "InternalServerErrorTheRequestCouldNotBeC": {
+        "description": "Internal server error - the request could not be completed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      },
+      "RateLimitExceededThisOperationAllows100R": {
+        "description": "Rate limit exceeded - this operation allows 100 requests per 1M",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      },
+      "InvalidRequestValidationFailed": {
+        "description": "Invalid request - validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      },
+      "UnauthorizedMissingOrInvalidAccessToken": {
+        "description": "Unauthorized - missing or invalid access token",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      },
+      "NotFoundAResourceNamedInThePathDoesNotEx": {
+        "description": "Not found - a resource named in the path does not exist or is not visible",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "iam-oauth2-schema": {
+        "flows": {
+          "authorizationCode": {
+            "tokenUrl": "https://accounts.zoho.com/oauth/v2/token",
+            "authorizationUrl": "https://accounts.zoho.com/oauth/v2/auth",
+            "scopes": {
+              "ZohoShow.showdocslist.READ": "Read presentations, metadata, and document content",
+              "ZohoShow.showdocslist.UPDATE": "Update presentations, metadata, and document content",
+              "ZohoShow.fullaccess.ALL": "Create, read, update and delete presentations and presentation resources through Show MCP",
+              "ZohoShow.showdocslist.CREATE": "Create presentations and presentation resources",
+              "ZohoShow.showdocslist.DELETE": "Delete presentations and presentation resources"
+            }
+          }
+        },
+        "description": "OAuth 2.0 through Zoho Accounts. For a non-US edition, use the matching host from x-show-accounts-hosts; Canada uses accounts.zohocloud.ca.",
+        "type": "oauth2",
+        "x-show-accounts-hosts": {
+          "EU": "accounts.zoho.eu",
+          "LOCALZOHO": "accounts.localzoho.com",
+          "AU": "accounts.zoho.com.au",
+          "SG": "accounts.zoho.sg",
+          "IN": "accounts.zoho.in",
+          "JP": "accounts.zoho.jp",
+          "UK": "accounts.zoho.uk",
+          "UAE": "accounts.zoho.ae",
+          "CN": "accounts.zoho.com.cn",
+          "US": "accounts.zoho.com",
+          "CA": "accounts.zohocloud.ca",
+          "SA": "accounts.zoho.sa"
+        },
+        "x-show-data-centre": "US"
+      }
+    },
+    "parameters": {
+      "Fields": {
+        "schema": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "in": "query",
+        "name": "fields",
+        "description": "Comma-separated field names to include on each result; omit for all.",
+        "required": false
+      },
+      "PresentationId": {
+        "schema": {
+          "type": "string"
+        },
+        "in": "path",
+        "name": "presentation_id",
+        "description": "The unique identifier of the presentation",
+        "required": true
+      }
+    }
+  },
+  "servers": [
+    {
+      "description": "US DC",
+      "url": "https://show.zoho.com"
+    },
+    {
+      "description": "IN DC",
+      "url": "https://show.zoho.in"
+    },
+    {
+      "description": "CT1 DC",
+      "url": "https://show.localzoho.com"
+    },
+    {
+      "description": "AU DC",
+      "url": "https://show.zoho.com.au"
+    },
+    {
+      "description": "CA DC",
+      "url": "https://show.zohocloud.ca"
+    },
+    {
+      "description": "EU DC",
+      "url": "https://show.zoho.eu"
+    },
+    {
+      "description": "SA DC",
+      "url": "https://show.zoho.sa"
+    },
+    {
+      "description": "UAE DC",
+      "url": "https://show.zoho.ae"
+    },
+    {
+      "description": "CN DC",
+      "url": "https://show.zoho.com.cn"
+    },
+    {
+      "description": "JP DC",
+      "url": "https://show.zoho.jp"
+    },
+    {
+      "description": "SG DC",
+      "url": "https://show.zoho.sg"
+    },
+    {
+      "description": "UK DC",
+      "url": "https://show.zoho.uk"
+    }
+  ],
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v1/presentation/{presentation_id}/publish": {
+      "post": {
+        "summary": "make publish to the document",
+        "security": [
+          {
+            "iam-oauth2-schema": [
+              "ZohoShow.showdocslist.CREATE"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PublishTypeParamsRequest"
+              }
+            }
+          }
+        },
+        "operationId": "createPresentationByPresentationIdPublish",
+        "description": "make publish to the document",
+        "responses": {
+          "201": {
+            "description": "Published to organization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowEnvelope"
+                },
+                "examples": {
+                  "published_to_organization": {
+                    "value": {
+                      "data": {
+                        "published_type": "internalPublish"
+                      },
+                      "message": "Presentation published",
+                      "request_uri": "/api/v1/presentation/cpnv3d0203ec89cba4207ba255d785dfe125c/publish",
+                      "status": "success"
+                    },
+                    "summary": "Published to organization",
+                    "x-request-body": {
+                      "type": "ORG_PUBLISH"
+                    }
+                  },
+                  "published_to_the_public_web": {
+                    "value": {
+                      "data": {
+                        "published_type": "externalPublish"
+                      },
+                      "message": "Presentation published",
+                      "request_uri": "/api/v1/presentation/1bpt269f6a3cf20684f49b2c9926526401fbd/publish",
+                      "status": "success"
+                    },
+                    "summary": "Published to the public web",
+                    "x-request-body": {
+                      "type": "ORG_PUBLISH"
+                    }
+                  }
+                }
+              }
+            },
+            "x-request-body": {
+              "type": "ORG_PUBLISH"
+            }
+          },
+          "400": {
+            "description": "Invalid Resource ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "invalid_resource_id": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3850,
+                          "message": "The resource ID is invalid"
+                        }
+                      },
+                      "request_uri": "/api/v1/presentation/sample_id/publish",
+                      "status": "error"
+                    },
+                    "summary": "Invalid Resource ID",
+                    "x-request-body": {
+                      "type": "ORG_PUBLISH"
+                    }
+                  }
+                }
+              }
+            },
+            "x-request-body": {
+              "type": "ORG_PUBLISH"
+            }
+          },
+          "401": {
+            "description": "Missing OAuth Token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "missing_oauth_token": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3420,
+                          "message": "The OAuth token is missing, expired, or invalid"
+                        }
+                      },
+                      "request_uri": "/api/v1/presentation/sample_id/publish",
+                      "status": "error"
+                    },
+                    "summary": "Missing OAuth Token",
+                    "x-request-body": {
+                      "type": "ORG_PUBLISH"
+                    }
+                  }
+                }
+              }
+            },
+            "x-request-body": {
+              "type": "ORG_PUBLISH"
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundAResourceNamedInThePathDoesNotEx"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceededThisOperationAllows100R"
+          },
+          "500": {
+            "description": "Already Published Document",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "already_published_document": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "message": "Presentation already internally published",
+                          "code": 3857
+                        }
+                      },
+                      "request_uri": "/api/v1/presentation/7fgg637ac6060b3f24b368cafcbd2652f292c/publish",
+                      "status": "error"
+                    },
+                    "summary": "Already Published Document",
+                    "x-request-body": {
+                      "type": "ORG_PUBLISH"
+                    }
+                  }
+                }
+              }
+            },
+            "x-request-body": {
+              "type": "ORG_PUBLISH"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PresentationId"
+          }
+        ],
+        "x-mcp-operation-type": "create",
+        "tags": [
+          "Publish"
+        ]
+      },
+      "get": {
+        "summary": "gets the published document data",
+        "security": [
+          {
+            "iam-oauth2-schema": [
+              "ZohoShow.showdocslist.READ"
+            ]
+          }
+        ],
+        "operationId": "getPresentationByPresentationIdPublish",
+        "description": "gets the published document data",
+        "responses": {
+          "200": {
+            "description": "Published Document Retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowEnvelope"
+                },
+                "examples": {
+                  "published_document_retrieved": {
+                    "value": {
+                      "data": {
+                        "document_info": {
+                          "file_path": "iy2x3cb54b1c9e95d46839c92d735d56fdc2d",
+                          "last_applied_version": "3",
+                          "document_name_url": "",
+                          "formatted_created_date": "Tue 03/31/26",
+                          "version_number": 0,
+                          "type": "1",
+                          "document_id": "106689000002283003",
+                          "is_new_publish": false,
+                          "last_author_name": "93600994",
+                          "encrypted_description": "",
+                          "status_change_time": "1779883473976",
+                          "fromsync": "",
+                          "state": "1",
+                          "created_time": "1774937762562",
+                          "extra_prop": {
+                            "is_spam": "0",
+                            "img_conv_status": "2",
+                            "retry_count": "0",
+                            "collab_id": "1828996484438803238",
+                            "spam_via": "{\"content_check\":0}"
+                          },
+                          "resource_type": "2201",
+                          "last_opened_time": "1774937762562",
+                          "child_index": "0",
+                          "parent_id": "iy2x3cb54b1c9e95d46839c92d735d56fdc2d",
+                          "name": "Untitled Presentation",
+                          "zs_creator": "93703623",
+                          "deleted_time": "-1",
+                          "favorite": "0",
+                          "status": "1",
+                          "author_name": "93601174",
+                          "extension": "zslides",
+                          "encrypted_document_name_url": "Untitled Presentation",
+                          "formatted_last_modified_time": "19 hours ago",
+                          "description": "",
+                          "document_name": "",
+                          "last_downloaded_version_id": "0",
+                          "modified_time": "-1",
+                          "document_status": "1",
+                          "encrypted_document_name": "Untitled Presentation",
+                          "scope": "0",
+                          "last_author_display_name": "Sample User",
+                          "author_display_name": "",
+                          "base_parent_id": "iy2x3cb54b1c9e95d46839c92d735d56fdc2d",
+                          "document_type": "2",
+                          "owner": "93601174",
+                          "creator": "93703623",
+                          "last_modified_time": "1779883473957",
+                          "perma_link": "https://show.zoho.com/file/7fgg637ac6060b3f24b368cafcbd2652f292c",
+                          "migration_status": "1",
+                          "version_id": "106689000002347011",
+                          "file_size": "14331",
+                          "download_count": "0",
+                          "uploaded_time": "1774937762562",
+                          "service_type": "3",
+                          "unique_key_id": "106689000002283001",
+                          "theme_name": "8114000000832732",
+                          "modified_by": "93600994",
+                          "is_public": true,
+                          "resource_id": "7fgg637ac6060b3f24b368cafcbd2652f292c",
+                          "created_date": "1774937762562",
+                          "space_id": "93601174"
+                        }
+                      },
+                      "message": "Published document retrieved",
+                      "request_uri": "/api/v1/presentation/7fgg637ac6060b3f24b368cafcbd2652f292c/publish",
+                      "status": "success"
+                    },
+                    "summary": "Published Document Retrieved"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid Resource ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "invalid_resource_id": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3850,
+                          "message": "The resource ID is invalid"
+                        }
+                      },
+                      "request_uri": "/api/v1/presentation/sample_id/publish",
+                      "status": "error"
+                    },
+                    "summary": "Invalid Resource ID"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing OAuth Token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "missing_oauth_token": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3420,
+                          "message": "The OAuth token is missing, expired, or invalid"
+                        }
+                      },
+                      "request_uri": "/api/v1/presentation/sample_id/publish",
+                      "status": "error"
+                    },
+                    "summary": "Missing OAuth Token"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Document Not Published",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "document_not_published": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "message": "Document is not published yet",
+                          "code": 3500
+                        }
+                      },
+                      "request_uri": "/api/v1/presentation/cpnv3d0203ec89cba4207ba255d785dfe125c/publish",
+                      "status": "error"
+                    },
+                    "summary": "Document Not Published"
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Invalid Method",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "invalid_method": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3922,
+                          "message": "The HTTP method used is not allowed for this endpoint"
+                        }
+                      },
+                      "request_uri": "/api/v1/presentation/sample_id/publish",
+                      "status": "error"
+                    },
+                    "summary": "Invalid Method"
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceededThisOperationAllows100R"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerErrorTheRequestCouldNotBeC"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PresentationId"
+          },
+          {
+            "$ref": "#/components/parameters/Fields"
+          }
+        ],
+        "x-mcp-operation-type": "read",
+        "tags": [
+          "Publish"
+        ]
+      },
+      "delete": {
+        "summary": "remove publish",
+        "security": [
+          {
+            "iam-oauth2-schema": [
+              "ZohoShow.showdocslist.DELETE"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PublishTypeParamsRequest"
+              }
+            }
+          }
+        },
+        "operationId": "deletePresentationByPresentationIdPublish",
+        "description": "remove publish",
+        "responses": {
+          "200": {
+            "description": "Presentation Unpublished",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowEnvelope"
+                },
+                "examples": {
+                  "presentation_unpublished": {
+                    "value": {
+                      "message": "Presentation unpublished",
+                      "request_uri": "/api/v1/presentation/cpnv3d0203ec89cba4207ba255d785dfe125c/publish",
+                      "status": "success"
+                    },
+                    "summary": "Presentation Unpublished",
+                    "x-request-body": {
+                      "type": "ORG_PUBLISH"
+                    }
+                  }
+                }
+              }
+            },
+            "x-request-body": {
+              "type": "ORG_PUBLISH"
+            }
+          },
+          "400": {
+            "description": "Invalid Resource ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "invalid_resource_id": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3850,
+                          "message": "The resource ID is invalid"
+                        }
+                      },
+                      "request_uri": "/api/v1/presentation/sample_id/publish",
+                      "status": "error"
+                    },
+                    "summary": "Invalid Resource ID"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing OAuth Token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "missing_oauth_token": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3420,
+                          "message": "The OAuth token is missing, expired, or invalid"
+                        }
+                      },
+                      "request_uri": "/api/v1/presentation/sample_id/publish",
+                      "status": "error"
+                    },
+                    "summary": "Missing OAuth Token"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Document Not Published",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "document_not_published": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3885,
+                          "message": "The presentation is not published"
+                        }
+                      },
+                      "request_uri": "/api/v1/presentation/sample_id/publish",
+                      "status": "error"
+                    },
+                    "summary": "Document Not Published"
+                  }
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Presentation already in trash",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "example": {
+                  "error": {
+                    "details": {
+                      "code": 3880,
+                      "message": "The presentation is already in trash"
+                    }
+                  },
+                  "request_uri": "/show/restapi/v1/presentation/58wgz0df923ca605c48d095ee2f8dfe90ab8b/publish",
+                  "status": "error"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceededThisOperationAllows100R"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerErrorTheRequestCouldNotBeC"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PresentationId"
+          }
+        ],
+        "x-mcp-operation-type": "delete",
+        "tags": [
+          "Publish"
+        ]
+      },
+      "put": {
+        "summary": "update publish settings to the document",
+        "security": [
+          {
+            "iam-oauth2-schema": [
+              "ZohoShow.showdocslist.UPDATE"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PublishParamsRequest"
+              }
+            }
+          }
+        },
+        "operationId": "updatePresentationByPresentationIdPublish",
+        "description": "update publish settings to the document",
+        "responses": {
+          "200": {
+            "description": "Publish Settings Updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowEnvelope"
+                },
+                "examples": {
+                  "publish_settings_updated": {
+                    "value": {
+                      "data": {
+                        "resource_id": "cpnv3d0203ec89cba4207ba255d785dfe125c",
+                        "updated_fields": {
+                          "allow_download": true,
+                          "update_show_explainer": true,
+                          "bg_color": "#ffffff",
+                          "allow_share": true,
+                          "update_show_logo": true,
+                          "update_public_type": 1,
+                          "republish": true,
+                          "allow_translate": false,
+                          "viewtype": 1,
+                          "update_user_pic": true,
+                          "loop_show": false
+                        },
+                        "status": "success"
+                      },
+                      "message": "Published document meta updated",
+                      "request_uri": "/api/v1/presentation/cpnv3d0203ec89cba4207ba255d785dfe125c/publish",
+                      "status": "success"
+                    },
+                    "summary": "Publish Settings Updated",
+                    "x-request-body": {
+                      "republish": false,
+                      "auto_republish": false,
+                      "allow_share": true,
+                      "allow_download": true,
+                      "allow_translate": false,
+                      "update_show_explainer": true,
+                      "update_show_logo": true,
+                      "update_user_pic": true,
+                      "loop_show": false,
+                      "bg_color": "#ffffff",
+                      "viewtype": 1,
+                      "update_public_type": 1
+                    }
+                  },
+                  "auto_republish_updated": {
+                    "value": {
+                      "data": {
+                        "updated_fields": {
+                          "auto_republish": "true"
+                        },
+                        "resource_id": "m71vz5f46c9524f8744aa8a9c1083ac843713",
+                        "status": "success"
+                      },
+                      "message": "Published document meta updated",
+                      "request_uri": "/api/v1/presentation/m71vz5f46c9524f8744aa8a9c1083ac843713/publish",
+                      "status": "success"
+                    },
+                    "summary": "auto_republish updated",
+                    "x-request-body": {
+                      "auto_republish": true
+                    }
+                  }
+                }
+              }
+            },
+            "x-request-body": {
+              "republish": false,
+              "auto_republish": false,
+              "allow_share": true,
+              "allow_download": true,
+              "allow_translate": false,
+              "update_show_explainer": true,
+              "update_show_logo": true,
+              "update_user_pic": true,
+              "loop_show": false,
+              "bg_color": "#ffffff",
+              "viewtype": 1,
+              "update_public_type": 1
+            }
+          },
+          "400": {
+            "description": "Invalid Resource ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "invalid_resource_id": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3850,
+                          "message": "The resource ID is invalid"
+                        }
+                      },
+                      "request_uri": "/api/v1/presentation/sample_id/publish",
+                      "status": "error"
+                    },
+                    "summary": "Invalid Resource ID",
+                    "x-request-body": {
+                      "republish": false,
+                      "auto_republish": false,
+                      "allow_share": true,
+                      "allow_download": true,
+                      "allow_translate": false,
+                      "update_show_explainer": true,
+                      "update_show_logo": true,
+                      "update_user_pic": true,
+                      "loop_show": false,
+                      "bg_color": "#ffffff",
+                      "viewtype": 1,
+                      "update_public_type": 1
+                    }
+                  }
+                }
+              }
+            },
+            "x-request-body": {
+              "republish": false,
+              "auto_republish": false,
+              "allow_share": true,
+              "allow_download": true,
+              "allow_translate": false,
+              "update_show_explainer": true,
+              "update_show_logo": true,
+              "update_user_pic": true,
+              "loop_show": false,
+              "bg_color": "#ffffff",
+              "viewtype": 1,
+              "update_public_type": 1
+            }
+          },
+          "401": {
+            "description": "Missing OAuth Token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "missing_oauth_token": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "code": 3420,
+                          "message": "The OAuth token is missing, expired, or invalid"
+                        }
+                      },
+                      "request_uri": "/api/v1/presentation/sample_id/publish",
+                      "status": "error"
+                    },
+                    "summary": "Missing OAuth Token",
+                    "x-request-body": {
+                      "republish": false,
+                      "auto_republish": false,
+                      "allow_share": true,
+                      "allow_download": true,
+                      "allow_translate": false,
+                      "update_show_explainer": true,
+                      "update_show_logo": true,
+                      "update_user_pic": true,
+                      "loop_show": false,
+                      "bg_color": "#ffffff",
+                      "viewtype": 1,
+                      "update_public_type": 1
+                    }
+                  }
+                }
+              }
+            },
+            "x-request-body": {
+              "republish": false,
+              "auto_republish": false,
+              "allow_share": true,
+              "allow_download": true,
+              "allow_translate": false,
+              "update_show_explainer": true,
+              "update_show_logo": true,
+              "update_user_pic": true,
+              "loop_show": false,
+              "bg_color": "#ffffff",
+              "viewtype": 1,
+              "update_public_type": 1
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundAResourceNamedInThePathDoesNotEx"
+          },
+          "410": {
+            "description": "Presentation already in trash",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "example": {
+                  "error": {
+                    "details": {
+                      "code": 3880,
+                      "message": "The presentation is already in trash"
+                    }
+                  },
+                  "request_uri": "/show/restapi/v1/presentation/58wgz0df923ca605c48d095ee2f8dfe90ab8b/publish",
+                  "status": "error"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceededThisOperationAllows100R"
+          },
+          "500": {
+            "description": "Unpublished Document",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowError"
+                },
+                "examples": {
+                  "unpublished_document": {
+                    "value": {
+                      "error": {
+                        "details": {
+                          "message": "PUBLISH_NOT_ALLOWED",
+                          "code": 3858
+                        }
+                      },
+                      "request_uri": "/api/v1/presentation/7fgg637ac6060b3f24b368cafcbd2652f292c/publish",
+                      "status": "error"
+                    },
+                    "summary": "Unpublished Document",
+                    "x-request-body": {
+                      "republish": false,
+                      "auto_republish": false,
+                      "allow_share": true,
+                      "allow_download": true,
+                      "allow_translate": false,
+                      "update_show_explainer": true,
+                      "update_show_logo": true,
+                      "update_user_pic": true,
+                      "loop_show": false,
+                      "bg_color": "#ffffff",
+                      "viewtype": 1,
+                      "update_public_type": 1
+                    }
+                  }
+                }
+              }
+            },
+            "x-request-body": {
+              "republish": false,
+              "auto_republish": false,
+              "allow_share": true,
+              "allow_download": true,
+              "allow_translate": false,
+              "update_show_explainer": true,
+              "update_show_logo": true,
+              "update_user_pic": true,
+              "loop_show": false,
+              "bg_color": "#ffffff",
+              "viewtype": 1,
+              "update_public_type": 1
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PresentationId"
+          }
+        ],
+        "x-mcp-operation-type": "update",
+        "tags": [
+          "Publish"
+        ]
+      }
+    }
+  },
+  "info": {
+    "description": "Publish presentations and manage publish settings.",
+    "title": "Publish",
+    "version": "1.0.0"
+  },
+  "tags": [
+    {
+      "name": "Publish",
+      "description": "Publish presentations and manage publish settings."
+    }
+  ]
+}

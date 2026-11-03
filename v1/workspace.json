@@ -1,0 +1,536 @@
+{
+  "components": {
+    "schemas": {
+      "ShowEnvelope": {
+        "description": "Standard Zoho Show response envelope.",
+        "type": "object",
+        "properties": {
+          "data": {
+            "description": "Operation payload; endpoint-specific schemas narrow this where available.",
+            "type": "object"
+          },
+          "message": {
+            "type": "string"
+          },
+          "request_uri": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      },
+      "ShowError": {
+        "description": "Standard Zoho Show error response.",
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "details": {
+                "additionalProperties": true,
+                "type": "object",
+                "properties": {
+                  "error_code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "request_uri": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "responses": {
+      "SuccessfulResponse": {
+        "description": "Successful response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowEnvelope"
+            }
+          }
+        }
+      },
+      "InternalServerErrorTheRequestCouldNotBeC": {
+        "description": "Internal server error - the request could not be completed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      },
+      "InvalidRequestValidationFailed": {
+        "description": "Invalid request - validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      },
+      "RateLimitExceededThisOperationAllows60Re": {
+        "description": "Rate limit exceeded - this operation allows 60 requests per 1M",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ShowError"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "iam-oauth2-schema": {
+        "flows": {
+          "authorizationCode": {
+            "tokenUrl": "https://accounts.zoho.com/oauth/v2/token",
+            "authorizationUrl": "https://accounts.zoho.com/oauth/v2/auth",
+            "scopes": {
+              "ZohoShow.showdocslist.READ": "Read presentations, metadata, and document content",
+              "ZohoShow.showdocslist.UPDATE": "Update presentations, metadata, and document content",
+              "ZohoShow.fullaccess.ALL": "Create, read, update and delete presentations and presentation resources through Show MCP",
+              "ZohoShow.showdocslist.CREATE": "Create presentations and presentation resources",
+              "ZohoShow.showdocslist.DELETE": "Delete presentations and presentation resources"
+            }
+          }
+        },
+        "description": "OAuth 2.0 through Zoho Accounts. For a non-US edition, use the matching host from x-show-accounts-hosts; Canada uses accounts.zohocloud.ca.",
+        "type": "oauth2",
+        "x-show-accounts-hosts": {
+          "EU": "accounts.zoho.eu",
+          "LOCALZOHO": "accounts.localzoho.com",
+          "AU": "accounts.zoho.com.au",
+          "SG": "accounts.zoho.sg",
+          "IN": "accounts.zoho.in",
+          "JP": "accounts.zoho.jp",
+          "UK": "accounts.zoho.uk",
+          "UAE": "accounts.zoho.ae",
+          "CN": "accounts.zoho.com.cn",
+          "US": "accounts.zoho.com",
+          "CA": "accounts.zohocloud.ca",
+          "SA": "accounts.zoho.sa"
+        },
+        "x-show-data-centre": "US"
+      }
+    },
+    "parameters": {
+      "Fields": {
+        "schema": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "in": "query",
+        "name": "fields",
+        "description": "Comma-separated field names to include on each result; omit for all.",
+        "required": false
+      }
+    }
+  },
+  "servers": [
+    {
+      "description": "US DC",
+      "url": "https://show.zoho.com"
+    },
+    {
+      "description": "IN DC",
+      "url": "https://show.zoho.in"
+    },
+    {
+      "description": "CT1 DC",
+      "url": "https://show.localzoho.com"
+    },
+    {
+      "description": "AU DC",
+      "url": "https://show.zoho.com.au"
+    },
+    {
+      "description": "CA DC",
+      "url": "https://show.zohocloud.ca"
+    },
+    {
+      "description": "EU DC",
+      "url": "https://show.zoho.eu"
+    },
+    {
+      "description": "SA DC",
+      "url": "https://show.zoho.sa"
+    },
+    {
+      "description": "UAE DC",
+      "url": "https://show.zoho.ae"
+    },
+    {
+      "description": "CN DC",
+      "url": "https://show.zoho.com.cn"
+    },
+    {
+      "description": "JP DC",
+      "url": "https://show.zoho.jp"
+    },
+    {
+      "description": "SG DC",
+      "url": "https://show.zoho.sg"
+    },
+    {
+      "description": "UK DC",
+      "url": "https://show.zoho.uk"
+    }
+  ],
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v1/workspace": {
+      "get": {
+        "summary": "List workspaces for the current user. Pass is_default=true to return only the current workspace.",
+        "security": [
+          {
+            "iam-oauth2-schema": [
+              "ZohoShow.showdocslist.READ"
+            ]
+          }
+        ],
+        "operationId": "getWorkspace",
+        "description": "List workspaces for the current user. Pass is_default=true to return only the current workspace.",
+        "responses": {
+          "200": {
+            "description": "Get All Workspaces (Fields)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShowEnvelope"
+                },
+                "examples": {
+                  "get_all_workspaces__fields": {
+                    "value": {
+                      "data": {
+                        "workspaces": [
+                          {
+                            "name": "Zoho Show",
+                            "team_id": "93601174"
+                          },
+                          {
+                            "name": "Notify-Team",
+                            "team_id": "94019985"
+                          }
+                        ]
+                      },
+                      "message": "Getting workspace list",
+                      "request_uri": "/api/v1/workspace",
+                      "status": "success"
+                    },
+                    "summary": "Get All Workspaces (Fields)"
+                  },
+                  "get_current_workspace": {
+                    "value": {
+                      "data": {
+                        "current_workspace": {
+                          "product": "TEAMDRIVE",
+                          "has_library": true,
+                          "library_sid": "93607026",
+                          "product_domain": "workdrive.zoho.com",
+                          "data_retention_info": {
+                            "can_view_data_retention": "true",
+                            "delete_to_purge_days": "90",
+                            "trash_to_retention_days": "-1"
+                          },
+                          "client_type": "3",
+                          "team_id": "93601174",
+                          "type": "1",
+                          "is_current_user_admin": true,
+                          "product_type": "1",
+                          "supported_libraries": [
+                            "ORG_LIBRARY"
+                          ],
+                          "client_zsoid": "20zea57dcfde08aae417faf9296501dd17a82",
+                          "bundle_id": "-1",
+                          "name": "Zoho Show",
+                          "integration": "WORKDRIVE",
+                          "is_family_premium_edition": false,
+                          "superadmin_contact": "user@example.com",
+                          "team_uid": "20zea57dcfde08aae417faf9296501dd17a82",
+                          "display_status": "ACTIVE",
+                          "org_library": {
+                            "user_role": "SUPER_ADMIN",
+                            "is_font_library_enabled": true,
+                            "library_id": "107004000000005001",
+                            "client_display_name": "Zoho Show",
+                            "library_type": "1"
+                          },
+                          "is_current_user_super_admin": true
+                        }
+                      },
+                      "message": "Getting current workspace",
+                      "request_uri": "/api/v1/workspace",
+                      "status": "success"
+                    },
+                    "summary": "Get Current Workspace"
+                  },
+                  "get_all_workspaces": {
+                    "value": {
+                      "data": {
+                        "workspaces": [
+                          {
+                            "product": "TEAMDRIVE",
+                            "has_library": true,
+                            "library_sid": "93607026",
+                            "product_domain": "workdrive.zoho.com",
+                            "edition": "TEAM",
+                            "client_type": "3",
+                            "team_id": "93601174",
+                            "is_default": true,
+                            "is_current_user_admin": true,
+                            "product_type": "1",
+                            "supported_libraries": [
+                              "ORG_LIBRARY"
+                            ],
+                            "client_zsoid": "20zea57dcfde08aae417faf9296501dd17a82",
+                            "bundle_id": "-1",
+                            "name": "Zoho Show",
+                            "integration": "WORKDRIVE",
+                            "is_family_premium_edition": false,
+                            "superadmin_contact": "user@example.com",
+                            "team_uid": "20zea57dcfde08aae417faf9296501dd17a82",
+                            "org_library": {
+                              "user_role": "SUPER_ADMIN",
+                              "is_font_library_enabled": true,
+                              "library_id": "107004000000005001",
+                              "client_display_name": "Zoho Show",
+                              "library_type": "1"
+                            },
+                            "is_current_user_super_admin": true
+                          },
+                          {
+                            "product": "TEAMDRIVE",
+                            "has_library": true,
+                            "library_sid": "105588816",
+                            "product_domain": "workdrive.zoho.com",
+                            "edition": "TEAM",
+                            "client_type": "3",
+                            "team_id": "94019985",
+                            "is_default": false,
+                            "is_current_user_admin": false,
+                            "product_type": "1",
+                            "supported_libraries": [
+                              "ORG_LIBRARY"
+                            ],
+                            "client_zsoid": "yn4zb37bb45b2dc6d4966a9136b332198d681",
+                            "bundle_id": "-1",
+                            "name": "Notify-Team",
+                            "integration": "WORKDRIVE",
+                            "is_family_premium_edition": false,
+                            "superadmin_contact": "user@example.com",
+                            "team_uid": "yn4zb37bb45b2dc6d4966a9136b332198d681",
+                            "org_library": {
+                              "user_role": "VIEWER",
+                              "is_font_library_enabled": false,
+                              "library_id": "130054000000005001",
+                              "client_display_name": "Notify-Team",
+                              "library_type": "1"
+                            },
+                            "is_current_user_super_admin": false
+                          }
+                        ]
+                      },
+                      "message": "Getting workspace list",
+                      "request_uri": "/api/v1/workspace",
+                      "status": "success"
+                    },
+                    "summary": "Get All Workspaces"
+                  },
+                  "get_all_workspaces__full_response": {
+                    "value": {
+                      "data": {
+                        "workspaces": [
+                          {
+                            "product": "TEAMDRIVE",
+                            "has_library": true,
+                            "library_sid": "93607026",
+                            "product_domain": "workdrive.zoho.com",
+                            "edition": "TEAM",
+                            "client_type": "3",
+                            "team_id": "93601174",
+                            "is_default": true,
+                            "is_current_user_admin": true,
+                            "product_type": "1",
+                            "supported_libraries": [
+                              "ORG_LIBRARY"
+                            ],
+                            "client_zsoid": "20zea57dcfde08aae417faf9296501dd17a82",
+                            "bundle_id": "-1",
+                            "name": "Zoho Show",
+                            "integration": "WORKDRIVE",
+                            "is_family_premium_edition": false,
+                            "superadmin_contact": "user@example.com",
+                            "team_uid": "20zea57dcfde08aae417faf9296501dd17a82",
+                            "org_library": {
+                              "user_role": "SUPER_ADMIN",
+                              "is_font_library_enabled": true,
+                              "library_id": "107004000000005001",
+                              "client_display_name": "Zoho Show",
+                              "library_type": "1"
+                            },
+                            "is_current_user_super_admin": true
+                          },
+                          {
+                            "product": "TEAMDRIVE",
+                            "has_library": true,
+                            "library_sid": "105588816",
+                            "product_domain": "workdrive.zoho.com",
+                            "edition": "TEAM",
+                            "client_type": "3",
+                            "team_id": "94019985",
+                            "is_default": false,
+                            "is_current_user_admin": false,
+                            "product_type": "1",
+                            "supported_libraries": [
+                              "ORG_LIBRARY"
+                            ],
+                            "client_zsoid": "yn4zb37bb45b2dc6d4966a9136b332198d681",
+                            "bundle_id": "-1",
+                            "name": "Notify-Team",
+                            "integration": "WORKDRIVE",
+                            "is_family_premium_edition": false,
+                            "superadmin_contact": "user@example.com",
+                            "team_uid": "yn4zb37bb45b2dc6d4966a9136b332198d681",
+                            "org_library": {
+                              "user_role": "VIEWER",
+                              "is_font_library_enabled": false,
+                              "library_id": "130054000000005001",
+                              "client_display_name": "Notify-Team",
+                              "library_type": "1"
+                            },
+                            "is_current_user_super_admin": false
+                          }
+                        ]
+                      },
+                      "message": "Getting workspace list",
+                      "request_uri": "/api/v1/workspace",
+                      "status": "success"
+                    },
+                    "summary": "Get All Workspaces (Full Response)"
+                  },
+                  "get_current_workspace__fields": {
+                    "value": {
+                      "data": {
+                        "current_workspace": {
+                          "name": "Zoho Show",
+                          "team_id": "93601174"
+                        }
+                      },
+                      "message": "Getting current workspace",
+                      "request_uri": "/api/v1/workspace",
+                      "status": "success"
+                    },
+                    "summary": "Get Current Workspace (Fields)"
+                  },
+                  "get_all_workspaces__all_fields_requested": {
+                    "value": {
+                      "data": {
+                        "workspaces": [
+                          {
+                            "product": "TEAMDRIVE",
+                            "super_admin_contact": "",
+                            "has_library": "true",
+                            "product_domain": "workdrive.localzoho.com",
+                            "wd_edition": "",
+                            "team_id": "131890370",
+                            "type": "",
+                            "library_client_type": "",
+                            "product_type": "1",
+                            "client_zsoid": "of4uy7b868c29ebe346c1b8248f240e98d559",
+                            "bundle_id": "-1",
+                            "name": "Sample Workspace",
+                            "integration": "WORKDRIVE",
+                            "is_family_premium_edition": "false",
+                            "is_current_user_wd_admin": "",
+                            "team_uid": "of4uy7b868c29ebe346c1b8248f240e98d559",
+                            "display_status": "",
+                            "is_current_user_super_admin": "false"
+                          },
+                          {
+                            "product": "TEAMDRIVE",
+                            "super_admin_contact": "",
+                            "has_library": "false",
+                            "product_domain": "workdrive.localzoho.com",
+                            "wd_edition": "",
+                            "team_id": "131896100",
+                            "type": "",
+                            "library_client_type": "",
+                            "product_type": "1",
+                            "client_zsoid": "of4uya13b2a1640ae4874a69876f86e1a8e11",
+                            "bundle_id": "-1",
+                            "name": "Sample Workspace",
+                            "integration": "WORKDRIVE",
+                            "is_family_premium_edition": "false",
+                            "is_current_user_wd_admin": "",
+                            "team_uid": "of4uya13b2a1640ae4874a69876f86e1a8e11",
+                            "display_status": "",
+                            "is_current_user_super_admin": "false"
+                          }
+                        ]
+                      },
+                      "message": "Getting workspace list",
+                      "request_uri": "/api/v1/workspace",
+                      "status": "success"
+                    },
+                    "summary": "All fields requested (fields=...)"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequestValidationFailed"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimitExceededThisOperationAllows60Re"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerErrorTheRequestCouldNotBeC"
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "boolean"
+            },
+            "in": "query",
+            "name": "is_default",
+            "description": "Return only the current workspace when true.",
+            "required": false
+          },
+          {
+            "$ref": "#/components/parameters/Fields"
+          }
+        ],
+        "x-mcp-operation-type": "read",
+        "tags": [
+          "Workspace"
+        ]
+      }
+    }
+  },
+  "info": {
+    "description": "List Show workspaces available to the caller.",
+    "title": "Workspace",
+    "version": "1.0.0"
+  },
+  "tags": [
+    {
+      "name": "Workspace",
+      "description": "List Show workspaces available to the caller."
+    }
+  ]
+}
