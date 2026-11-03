@@ -1,16 +1,6 @@
 {
   "components": {
     "schemas": {
-      "ShareParamsRequest": {
-        "type": "object",
-        "properties": {
-          "email_id": {
-            "pattern": "^(?:[a-zA-Z0-9 ._@+\\-,]*)$",
-            "description": "Email address or Zoho username identifying a single member of the presentation.",
-            "type": "string"
-          }
-        }
-      },
       "ShareDocumentParamsRequest": {
         "type": "object",
         "properties": {
@@ -38,6 +28,16 @@
         "required": [
           "role"
         ]
+      },
+      "ShareParamsRequest": {
+        "type": "object",
+        "properties": {
+          "email_id": {
+            "pattern": "^(?:[a-zA-Z0-9 ._@+\\-,]*)$",
+            "description": "Email address or Zoho username identifying a single member of the presentation.",
+            "type": "string"
+          }
+        }
       },
       "ShowEnvelope": {
         "description": "Standard Zoho Show response envelope.",

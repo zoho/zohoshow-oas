@@ -26,38 +26,6 @@
           "file_name"
         ]
       },
-      "ResourceIdsParamsRequest": {
-        "type": "object",
-        "properties": {
-          "resource_ids": {
-            "pattern": "^(?:([a-zA-Z0-9]{37},?)+)$",
-            "description": "Comma-separated ids of the presentations to act on, each a 37-character alphanumeric string. Mandatory.",
-            "type": "string"
-          }
-        },
-        "required": [
-          "resource_ids"
-        ]
-      },
-      "ShowEnvelope": {
-        "description": "Standard Zoho Show response envelope.",
-        "type": "object",
-        "properties": {
-          "data": {
-            "description": "Operation payload; endpoint-specific schemas narrow this where available.",
-            "type": "object"
-          },
-          "message": {
-            "type": "string"
-          },
-          "request_uri": {
-            "type": "string"
-          },
-          "status": {
-            "type": "string"
-          }
-        }
-      },
       "DocumentMetaRequest": {
         "type": "object",
         "properties": {
@@ -71,35 +39,6 @@
         "required": [
           "file_name"
         ]
-      },
-      "ShowError": {
-        "description": "Standard Zoho Show error response.",
-        "type": "object",
-        "properties": {
-          "error": {
-            "type": "object",
-            "properties": {
-              "details": {
-                "additionalProperties": true,
-                "type": "object",
-                "properties": {
-                  "error_code": {
-                    "type": "string"
-                  },
-                  "message": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          },
-          "request_uri": {
-            "type": "string"
-          },
-          "status": {
-            "type": "string"
-          }
-        }
       },
       "DuplicateDocumentParamsRequest": {
         "type": "object",
@@ -146,6 +85,67 @@
         "required": [
           "format"
         ]
+      },
+      "ResourceIdsParamsRequest": {
+        "type": "object",
+        "properties": {
+          "resource_ids": {
+            "pattern": "^(?:([a-zA-Z0-9]{37},?)+)$",
+            "description": "Comma-separated ids of the presentations to act on, each a 37-character alphanumeric string. Mandatory.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "resource_ids"
+        ]
+      },
+      "ShowEnvelope": {
+        "description": "Standard Zoho Show response envelope.",
+        "type": "object",
+        "properties": {
+          "data": {
+            "description": "Operation payload; endpoint-specific schemas narrow this where available.",
+            "type": "object"
+          },
+          "message": {
+            "type": "string"
+          },
+          "request_uri": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      },
+      "ShowError": {
+        "description": "Standard Zoho Show error response.",
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "details": {
+                "additionalProperties": true,
+                "type": "object",
+                "properties": {
+                  "error_code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "request_uri": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
       }
     },
     "responses": {

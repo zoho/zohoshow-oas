@@ -1,202 +1,7 @@
 {
   "components": {
     "schemas": {
-      "ShowGroupOpRequest": {
-        "type": "object",
-        "properties": {
-          "op": {
-            "description": "Which operation to run: group combines objects into a new group, ungroup breaks existing groups apart. Mandatory.",
-            "type": "string",
-            "maxLength": 50,
-            "enum": [
-              "group",
-              "ungroup"
-            ]
-          },
-          "nested_groups": {
-            "minItems": 1,
-            "maxItems": 10000,
-            "description": "Ids of the objects to combine, given as one array per new group so several groups can be formed in a single call. Required when op is group.",
-            "type": "array",
-            "items": {
-              "type": "array"
-            }
-          },
-          "groups": {
-            "minItems": 1,
-            "maxItems": 10000,
-            "description": "Ids of the groups to break apart, from 1 to 10000. Required when op is ungroup.",
-            "type": "array",
-            "items": {
-              "pattern": "^[a-f0-9A-F]{8}-[a-f0-9A-F]{4}-[a-f0-9A-F]{4}-[a-f0-9A-F]{4}-[a-f0-9A-F]{12}$",
-              "type": "string",
-              "maxLength": 100
-            }
-          }
-        },
-        "required": [
-          "op"
-        ]
-      },
       "FlatPutGroupShapesRequest": {
-        "$defs": {
-          "protoRGBColor": {
-            "type": "object",
-            "properties": {
-              "red": {
-                "format": "int32",
-                "description": "Red channel intensity, an integer from 0 to 255. Mandatory.",
-                "type": "integer"
-              },
-              "green": {
-                "format": "int32",
-                "description": "Green channel intensity, an integer from 0 to 255. Mandatory.",
-                "type": "integer"
-              },
-              "blue": {
-                "format": "int32",
-                "description": "Blue channel intensity, an integer from 0 to 255. Mandatory.",
-                "type": "integer"
-              }
-            },
-            "required": [
-              "red",
-              "green",
-              "blue"
-            ]
-          },
-          "protoColor": {
-            "allOf": [
-              {
-                "not": {
-                  "anyOf": [
-                    {
-                      "required": [
-                        "rgb",
-                        "hsb"
-                      ]
-                    },
-                    {
-                      "required": [
-                        "rgb",
-                        "hex"
-                      ]
-                    },
-                    {
-                      "required": [
-                        "hsb",
-                        "hex"
-                      ]
-                    }
-                  ]
-                }
-              }
-            ],
-            "type": "object",
-            "properties": {
-              "hsb": {
-                "description": "Color expressed as hue, saturation and brightness. Set exactly one of rgb, hsb or hex.",
-                "type": "object",
-                "$ref": "#/$defs/protoHSBColor"
-              },
-              "hex": {
-                "description": "Color expressed as a hex string such as #4A90D9. Set exactly one of rgb, hsb or hex.",
-                "type": "object",
-                "$ref": "#/$defs/protoHexColor"
-              },
-              "rgb": {
-                "description": "Color expressed as red, green and blue channel values. Set exactly one of rgb, hsb or hex.",
-                "type": "object",
-                "$ref": "#/$defs/protoRGBColor"
-              }
-            }
-          },
-          "protoSolidFill": {
-            "type": "object",
-            "properties": {
-              "color": {
-                "description": "The single flat color painted across the whole filled area. Mandatory.",
-                "type": "object",
-                "$ref": "#/$defs/protoColor"
-              }
-            },
-            "required": [
-              "color"
-            ]
-          },
-          "protoHSBColor": {
-            "type": "object",
-            "properties": {
-              "saturation": {
-                "format": "float",
-                "description": "Intensity of the hue, from 0 for a fully desaturated gray to 1 for the pure color. Mandatory.",
-                "type": "number"
-              },
-              "brightness": {
-                "format": "float",
-                "description": "Brightness of the color, from 0 for black to 1 for the fully lit hue. Mandatory.",
-                "type": "number"
-              },
-              "hue": {
-                "format": "float",
-                "description": "Position on the color wheel in degrees, from 0 to 360, where 0 is red, 120 green and 240 blue. Mandatory.",
-                "type": "number"
-              }
-            },
-            "required": [
-              "hue",
-              "saturation",
-              "brightness"
-            ]
-          },
-          "protoPoint": {
-            "type": "object",
-            "properties": {
-              "x": {
-                "format": "float",
-                "description": "Horizontal position in canvas units, measured rightward from the left edge of the viewbox.",
-                "type": "number"
-              },
-              "y": {
-                "format": "float",
-                "description": "Vertical position in canvas units, measured downward from the top edge of the viewbox.",
-                "type": "number"
-              }
-            }
-          },
-          "showTextRange": {
-            "type": "object",
-            "properties": {
-              "start_index": {
-                "format": "int32",
-                "description": "Inclusive start character index on the flattened text (0-based).",
-                "type": "integer"
-              },
-              "end_index": {
-                "format": "int32",
-                "description": "Exclusive end character index; must be greater than start_index.",
-                "type": "integer"
-              }
-            },
-            "required": [
-              "start_index",
-              "end_index"
-            ]
-          },
-          "protoHexColor": {
-            "type": "object",
-            "properties": {
-              "value": {
-                "description": "Color written as a hex string, for example #4A90D9. Up to 20 characters. Mandatory.",
-                "type": "string",
-                "maxLength": 20
-              }
-            },
-            "required": [
-              "value"
-            ]
-          }
-        },
         "type": "object",
         "properties": {
           "elements": {
@@ -319,7 +124,7 @@
                                     "range": {
                                       "description": "Half-open character range {start_index, end_index} of the flattened text to act on.",
                                       "type": "object",
-                                      "$ref": "#/$defs/showTextRange"
+                                      "$ref": "#/components/schemas/showTextRange"
                                     },
                                     "operation": {
                                       "description": "RANGE_TEXT_OPERATION_REPLACE replaces the range with replacement_text; RANGE_TEXT_OPERATION_DELETE removes it.",
@@ -393,7 +198,7 @@
                                     "color": {
                                       "description": "Color the text of this run is drawn in.",
                                       "type": "object",
-                                      "$ref": "#/$defs/protoColor"
+                                      "$ref": "#/components/schemas/protoColor"
                                     },
                                     "underline": {
                                       "description": "Whether this run of text carries an underline.",
@@ -497,7 +302,7 @@
                                 "range": {
                                   "description": "The span of characters the style applies to. Set either range or all_text, never both.",
                                   "type": "object",
-                                  "$ref": "#/$defs/showTextRange"
+                                  "$ref": "#/components/schemas/showTextRange"
                                 },
                                 "paragraph_style": {
                                   "description": "Paragraph-level styling to apply, such as alignment, spacing or indent level. At least one of portion_style or paragraph_style is required.",
@@ -597,7 +402,7 @@
                                     "solid": {
                                       "description": "Paints the border with a single flat color. Set either solid or no_fill, never both.",
                                       "type": "object",
-                                      "$ref": "#/$defs/protoSolidFill"
+                                      "$ref": "#/components/schemas/protoSolidFill"
                                     },
                                     "no_fill": {
                                       "description": "No stroke fill — stroke-off toggle (oneof variant)",
@@ -625,7 +430,7 @@
                               "color": {
                                 "description": "Color the shadow is drawn in.",
                                 "type": "object",
-                                "$ref": "#/$defs/protoColor"
+                                "$ref": "#/components/schemas/protoColor"
                               },
                               "transparency": {
                                 "format": "float",
@@ -724,7 +529,7 @@
                                 "solid": {
                                   "description": "Fills the area with a single flat color. Set only one of no_fill, solid or gradient.",
                                   "type": "object",
-                                  "$ref": "#/$defs/protoSolidFill"
+                                  "$ref": "#/components/schemas/protoSolidFill"
                                 },
                                 "gradient": {
                                   "description": "Fills the area with a blend running between two or more colors. Set only one of no_fill, solid or gradient.",
@@ -737,12 +542,12 @@
                                         "start": {
                                           "description": "Point at which the gradient axis begins, in normalized coordinates from 0 to 1 across the object's bounding box. Mandatory.",
                                           "type": "object",
-                                          "$ref": "#/$defs/protoPoint"
+                                          "$ref": "#/components/schemas/protoPoint"
                                         },
                                         "end": {
                                           "description": "Point at which the gradient axis ends, in normalized coordinates from 0 to 1 across the object's bounding box. Mandatory.",
                                           "type": "object",
-                                          "$ref": "#/$defs/protoPoint"
+                                          "$ref": "#/components/schemas/protoPoint"
                                         }
                                       },
                                       "required": [
@@ -761,7 +566,7 @@
                                         "center": {
                                           "description": "Point the gradient radiates from, in normalized coordinates from 0 to 1 across the object's bounding box. Mandatory.",
                                           "type": "object",
-                                          "$ref": "#/$defs/protoPoint"
+                                          "$ref": "#/components/schemas/protoPoint"
                                         },
                                         "spread_x": {
                                           "format": "float",
@@ -798,7 +603,7 @@
                                           "color": {
                                             "description": "Color the gradient takes at this stop. Mandatory.",
                                             "type": "object",
-                                            "$ref": "#/$defs/protoColor"
+                                            "$ref": "#/components/schemas/protoColor"
                                           },
                                           "position": {
                                             "format": "float",
@@ -952,6 +757,199 @@
             "type": "string"
           }
         }
+      },
+      "ShowGroupOpRequest": {
+        "type": "object",
+        "properties": {
+          "op": {
+            "description": "Which operation to run: group combines objects into a new group, ungroup breaks existing groups apart. Mandatory.",
+            "type": "string",
+            "maxLength": 50,
+            "enum": [
+              "group",
+              "ungroup"
+            ]
+          },
+          "nested_groups": {
+            "minItems": 1,
+            "maxItems": 10000,
+            "description": "Ids of the objects to combine, given as one array per new group so several groups can be formed in a single call. Required when op is group.",
+            "type": "array",
+            "items": {
+              "type": "array"
+            }
+          },
+          "groups": {
+            "minItems": 1,
+            "maxItems": 10000,
+            "description": "Ids of the groups to break apart, from 1 to 10000. Required when op is ungroup.",
+            "type": "array",
+            "items": {
+              "pattern": "^[a-f0-9A-F]{8}-[a-f0-9A-F]{4}-[a-f0-9A-F]{4}-[a-f0-9A-F]{4}-[a-f0-9A-F]{12}$",
+              "type": "string",
+              "maxLength": 100
+            }
+          }
+        },
+        "required": [
+          "op"
+        ]
+      },
+      "protoColor": {
+        "allOf": [
+          {
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "rgb",
+                    "hsb"
+                  ]
+                },
+                {
+                  "required": [
+                    "rgb",
+                    "hex"
+                  ]
+                },
+                {
+                  "required": [
+                    "hsb",
+                    "hex"
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "type": "object",
+        "properties": {
+          "hsb": {
+            "description": "Color expressed as hue, saturation and brightness. Set exactly one of rgb, hsb or hex.",
+            "type": "object",
+            "$ref": "#/components/schemas/protoHSBColor"
+          },
+          "hex": {
+            "description": "Color expressed as a hex string such as #4A90D9. Set exactly one of rgb, hsb or hex.",
+            "type": "object",
+            "$ref": "#/components/schemas/protoHexColor"
+          },
+          "rgb": {
+            "description": "Color expressed as red, green and blue channel values. Set exactly one of rgb, hsb or hex.",
+            "type": "object",
+            "$ref": "#/components/schemas/protoRGBColor"
+          }
+        }
+      },
+      "protoHSBColor": {
+        "type": "object",
+        "properties": {
+          "saturation": {
+            "format": "float",
+            "description": "Intensity of the hue, from 0 for a fully desaturated gray to 1 for the pure color. Mandatory.",
+            "type": "number"
+          },
+          "brightness": {
+            "format": "float",
+            "description": "Brightness of the color, from 0 for black to 1 for the fully lit hue. Mandatory.",
+            "type": "number"
+          },
+          "hue": {
+            "format": "float",
+            "description": "Position on the color wheel in degrees, from 0 to 360, where 0 is red, 120 green and 240 blue. Mandatory.",
+            "type": "number"
+          }
+        },
+        "required": [
+          "hue",
+          "saturation",
+          "brightness"
+        ]
+      },
+      "protoHexColor": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "description": "Color written as a hex string, for example #4A90D9. Up to 20 characters. Mandatory.",
+            "type": "string",
+            "maxLength": 20
+          }
+        },
+        "required": [
+          "value"
+        ]
+      },
+      "protoPoint": {
+        "type": "object",
+        "properties": {
+          "x": {
+            "format": "float",
+            "description": "Horizontal position in canvas units, measured rightward from the left edge of the viewbox.",
+            "type": "number"
+          },
+          "y": {
+            "format": "float",
+            "description": "Vertical position in canvas units, measured downward from the top edge of the viewbox.",
+            "type": "number"
+          }
+        }
+      },
+      "protoRGBColor": {
+        "type": "object",
+        "properties": {
+          "red": {
+            "format": "int32",
+            "description": "Red channel intensity, an integer from 0 to 255. Mandatory.",
+            "type": "integer"
+          },
+          "green": {
+            "format": "int32",
+            "description": "Green channel intensity, an integer from 0 to 255. Mandatory.",
+            "type": "integer"
+          },
+          "blue": {
+            "format": "int32",
+            "description": "Blue channel intensity, an integer from 0 to 255. Mandatory.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "red",
+          "green",
+          "blue"
+        ]
+      },
+      "protoSolidFill": {
+        "type": "object",
+        "properties": {
+          "color": {
+            "description": "The single flat color painted across the whole filled area. Mandatory.",
+            "type": "object",
+            "$ref": "#/components/schemas/protoColor"
+          }
+        },
+        "required": [
+          "color"
+        ]
+      },
+      "showTextRange": {
+        "type": "object",
+        "properties": {
+          "start_index": {
+            "format": "int32",
+            "description": "Inclusive start character index on the flattened text (0-based).",
+            "type": "integer"
+          },
+          "end_index": {
+            "format": "int32",
+            "description": "Exclusive end character index; must be greater than start_index.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "start_index",
+          "end_index"
+        ]
       }
     },
     "responses": {

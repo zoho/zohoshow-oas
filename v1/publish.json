@@ -1,25 +1,6 @@
 {
   "components": {
     "schemas": {
-      "ShowEnvelope": {
-        "description": "Standard Zoho Show response envelope.",
-        "type": "object",
-        "properties": {
-          "data": {
-            "description": "Operation payload; endpoint-specific schemas narrow this where available.",
-            "type": "object"
-          },
-          "message": {
-            "type": "string"
-          },
-          "request_uri": {
-            "type": "string"
-          },
-          "status": {
-            "type": "string"
-          }
-        }
-      },
       "PublishParamsRequest": {
         "type": "object",
         "properties": {
@@ -79,6 +60,41 @@
           }
         }
       },
+      "PublishTypeParamsRequest": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Audience the publication is aimed at: ORG_PUBLISH makes it visible only inside the owner's organization, EXTERNAL_WORLD opens it to anyone holding the link. Mandatory.",
+            "type": "string",
+            "enum": [
+              "ORG_PUBLISH",
+              "EXTERNAL_WORLD"
+            ]
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "ShowEnvelope": {
+        "description": "Standard Zoho Show response envelope.",
+        "type": "object",
+        "properties": {
+          "data": {
+            "description": "Operation payload; endpoint-specific schemas narrow this where available.",
+            "type": "object"
+          },
+          "message": {
+            "type": "string"
+          },
+          "request_uri": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      },
       "ShowError": {
         "description": "Standard Zoho Show error response.",
         "type": "object",
@@ -107,22 +123,6 @@
             "type": "string"
           }
         }
-      },
-      "PublishTypeParamsRequest": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Audience the publication is aimed at: ORG_PUBLISH makes it visible only inside the owner's organization, EXTERNAL_WORLD opens it to anyone holding the link. Mandatory.",
-            "type": "string",
-            "enum": [
-              "ORG_PUBLISH",
-              "EXTERNAL_WORLD"
-            ]
-          }
-        },
-        "required": [
-          "type"
-        ]
       }
     },
     "responses": {

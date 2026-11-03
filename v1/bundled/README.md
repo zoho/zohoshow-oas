@@ -1,6 +1,6 @@
 # Bundled specification
 
-`show-api.json` is the whole Zoho Show API in one document — 67 operations, 58 schemas.
+`show-api.json` is the whole Zoho Show API in one document — 67 operations, 93 schemas.
 
 Use it when you want a single client for the entire API:
 

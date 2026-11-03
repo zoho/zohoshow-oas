@@ -6,7 +6,7 @@
       "operations": 67,
       "role": "bundled",
       "paths": 35,
-      "schemas": 58,
+      "schemas": 93,
       "description": "Published OpenAPI specification for Zoho Show REST and SDK APIs\n\nThis document contains every Zoho Show API operation. The per-resource documents beside it (presentations, slides, data operations, media, and tables, and the rest) are subsets of this one. Generate a client from this file OR from the per-resource files, not both: they describe the same operations, so generating from both produces duplicate types.",
       "title": "Zoho Show API",
       "tags": [
@@ -36,7 +36,9 @@
       "schemas": 7,
       "description": "Create, read and manage presentations.",
       "title": "Presentation",
-      "tags": ["Presentation"]
+      "tags": [
+        "Presentation"
+      ]
     },
     {
       "file": "members-sharing.json",
@@ -47,7 +49,9 @@
       "schemas": 5,
       "description": "Share presentations and manage member roles.",
       "title": "Members (Sharing)",
-      "tags": ["Members"]
+      "tags": [
+        "Members"
+      ]
     },
     {
       "file": "publish.json",
@@ -58,7 +62,9 @@
       "schemas": 4,
       "description": "Publish presentations and manage publish settings.",
       "title": "Publish",
-      "tags": ["Publish"]
+      "tags": [
+        "Publish"
+      ]
     },
     {
       "file": "workspace.json",
@@ -69,7 +75,9 @@
       "schemas": 2,
       "description": "List Show workspaces available to the caller.",
       "title": "Workspace",
-      "tags": ["Workspace"]
+      "tags": [
+        "Workspace"
+      ]
     },
     {
       "file": "themes.json",
@@ -80,7 +88,9 @@
       "schemas": 2,
       "description": "Discover themes and templates.",
       "title": "Themes",
-      "tags": ["Themes"]
+      "tags": [
+        "Themes"
+      ]
     },
     {
       "file": "slides.json",
@@ -88,10 +98,12 @@
       "role": "resource",
       "surface": "rest",
       "paths": 4,
-      "schemas": 7,
+      "schemas": 39,
       "description": "Insert, update, reorder and remove slides.",
       "title": "Slides",
-      "tags": ["Slides"]
+      "tags": [
+        "Slides"
+      ]
     },
     {
       "file": "masters.json",
@@ -102,7 +114,9 @@
       "schemas": 2,
       "description": "Read the slide masters of a presentation.",
       "title": "Masters",
-      "tags": ["Masters"]
+      "tags": [
+        "Masters"
+      ]
     },
     {
       "file": "layouts.json",
@@ -110,10 +124,12 @@
       "role": "resource",
       "surface": "rest",
       "paths": 1,
-      "schemas": 4,
+      "schemas": 38,
       "description": "Insert, update and remove master layouts.",
       "title": "Layouts",
-      "tags": ["Layouts"]
+      "tags": [
+        "Layouts"
+      ]
     },
     {
       "file": "tables.json",
@@ -121,10 +137,12 @@
       "role": "resource",
       "surface": "rest",
       "paths": 8,
-      "schemas": 11,
+      "schemas": 30,
       "description": "Create and modify presentation tables, rows, columns and cells.",
       "title": "Tables",
-      "tags": ["Tables"]
+      "tags": [
+        "Tables"
+      ]
     },
     {
       "file": "media.json",
@@ -132,10 +150,12 @@
       "role": "resource",
       "surface": "rest",
       "paths": 4,
-      "schemas": 25,
+      "schemas": 44,
       "description": "Insert and manage pictures, videos and audio on a slide.",
       "title": "Media",
-      "tags": ["Media"]
+      "tags": [
+        "Media"
+      ]
     },
     {
       "file": "flowchart.json",
@@ -146,7 +166,9 @@
       "schemas": 3,
       "description": "Create flowcharts on a slide.",
       "title": "Flowchart",
-      "tags": ["Flowchart"]
+      "tags": [
+        "Flowchart"
+      ]
     },
     {
       "file": "shapes.json",
@@ -154,10 +176,12 @@
       "role": "resource",
       "surface": "rest",
       "paths": 1,
-      "schemas": 4,
+      "schemas": 17,
       "description": "Insert, update and remove shapes in a slide, master or layout.",
       "title": "Shapes",
-      "tags": ["Shapes"]
+      "tags": [
+        "Shapes"
+      ]
     },
     {
       "file": "connectors.json",
@@ -165,10 +189,12 @@
       "role": "resource",
       "surface": "rest",
       "paths": 1,
-      "schemas": 4,
+      "schemas": 11,
       "description": "Insert, update and remove connectors between objects.",
       "title": "Connectors",
-      "tags": ["Connectors"]
+      "tags": [
+        "Connectors"
+      ]
     },
     {
       "file": "group-shapes.json",
@@ -176,10 +202,12 @@
       "role": "resource",
       "surface": "rest",
       "paths": 1,
-      "schemas": 4,
+      "schemas": 11,
       "description": "Group, ungroup and manage grouped shapes.",
       "title": "Group Shapes",
-      "tags": ["Group Shapes"]
+      "tags": [
+        "Group Shapes"
+      ]
     },
     {
       "file": "text.json",
@@ -190,7 +218,9 @@
       "schemas": 2,
       "description": "Read and edit text content of an object.",
       "title": "Text",
-      "tags": ["Text"]
+      "tags": [
+        "Text"
+      ]
     }
   ],
   "title": "Zoho Show API",
