@@ -10,9 +10,6 @@ drive Show from a tool that speaks OpenAPI.
 ## Repository structure
 
 ```
-openapi.json             the whole API in one document; identical to
-                         v1/bundled/show-api.json
-
 v1/
   index.json             machine-readable catalogue of every document below
 
@@ -52,11 +49,11 @@ resolving references into the others.
 | You want | Use |
 |---|---|
 | a client for one area of the API | that area's document, e.g. `v1/slides.json` |
-| a client for the whole API | `openapi.json` (same file as `v1/bundled/show-api.json`) |
+| a client for the whole API | `v1/bundled/show-api.json` |
 | to decide without opening them | `v1/index.json`: every document with its operation and schema counts |
 
-`bundled/show-api.json` (and the identical root `openapi.json`) is the **same
-operations** as the per-resource documents, collected into one file. Generate from the bundle *or* from the per-resource
+`bundled/show-api.json` is the **same operations** as the per-resource documents,
+collected into one file. Generate from the bundle *or* from the per-resource
 documents, not both, or you will get two copies of every shared type. That is
 why it sits in its own directory rather than beside them.
 
