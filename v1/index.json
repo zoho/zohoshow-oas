@@ -3,10 +3,10 @@
   "files": [
     {
       "file": "bundled/show-api.json",
-      "operations": 67,
+      "operations": 65,
       "role": "bundled",
-      "paths": 35,
-      "schemas": 93,
+      "paths": 33,
+      "schemas": 92,
       "description": "Published OpenAPI specification for Zoho Show REST and SDK APIs\n\nThis document contains every Zoho Show API operation. The per-resource documents beside it (presentations, slides, data operations, media, and tables, and the rest) are subsets of this one. Generate a client from this file OR from the per-resource files, not both: they describe the same operations, so generating from both produces duplicate types.",
       "title": "Zoho Show API",
       "tags": [
@@ -29,11 +29,11 @@
     },
     {
       "file": "presentation.json",
-      "operations": 10,
+      "operations": 8,
       "role": "resource",
       "surface": "rest",
-      "paths": 8,
-      "schemas": 7,
+      "paths": 6,
+      "schemas": 6,
       "description": "Create, read and manage presentations.",
       "title": "Presentation",
       "tags": [

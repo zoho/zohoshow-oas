@@ -136,7 +136,7 @@ call the API. See the comments at the top of the file for setup.
 ## Reading the spec
 
 **Every operation declares its type.** `x-mcp-operation-type` is published on
-all 67 operations, so a tool can tell reads from writes without inferring it
+all 65 operations, so a tool can tell reads from writes without inferring it
 from the HTTP verb.
 
 **Errors are modelled.** Operations declare `400`, `429` and `500` responses.
